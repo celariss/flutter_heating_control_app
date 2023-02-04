@@ -1,3 +1,8 @@
+/// This file defines a base implementation for a mqtt_client
+/// 
+/// Authors: Jérôme Cuq
+/// License: BSD 3-Clause
+
 import 'package:mqtt_client/mqtt_client.dart';
 
 class MqttUtil {

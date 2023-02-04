@@ -8,7 +8,7 @@
 ##
 
 This flutter app is part of the "heating control project" and acts as a flutter client for the "heating control server".
-For more information about the project, see the server repo located here : [heating_control_srv]
+For more information about the project, see the server repository located here : [heating_control_server]
 
 The app connects to a MQTT broker to  :
 - subscribe to all data published  by the heating control server (devices data, shedules, ...)
@@ -17,7 +17,7 @@ The app connects to a MQTT broker to  :
 > Note: The only language currently available in this app is French (see TODO section)
 
 ## Target platforms
-This flutter app can be run for the following targets :
+This flutter app can be run on the following targets :
 - Android device,
 - Windows, as a desktop application
 - Browser
@@ -64,7 +64,7 @@ And it depends on following flutter plugins :
 - in `assets/cfg/config.yaml`, set mqtt/port and mqtt/secure fields
 - create `assets/cfg/secrets.yaml` and set brokerAddress, user and password in mqtt section
 
-  for example :
+  Example of secrets.yaml file :
   ```
   mqtt:
     brokerAddress: mybroker.com
@@ -72,8 +72,8 @@ And it depends on following flutter plugins :
     password: superpass_12
   ```
 #### 2- Setup your Flutter dev environment
-- Heating control App requires [Flutter] v3.3+ to compile.
-- Go to https://docs.flutter.dev/get-started/install and follow instructions
+- Heating control App requires [Flutter] v3.3+ to build.
+- Go to https://docs.flutter.dev/get-started/install and follow instructions.
 
 #### 3- Build the app
 - On android (complete instructions in https://docs.flutter.dev/deployment/android to build the apk)
@@ -97,7 +97,7 @@ This README has been written using [Dillinger]
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-  [heating_control_srv]: <https://github.com/celariss/heating-control-srv/>
+  [heating_control_server]: <https://github.com/celariss/heating-control-server/>
   [flutter]: <https://flutter.dev/>
   [mqtt]: <https://mqtt.org/>
   [mqtt_client]: <https://pub.dev/packages/mqtt_client>
