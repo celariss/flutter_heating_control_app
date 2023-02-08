@@ -46,13 +46,14 @@ class MessageInfo {
 
 class Device {
   final String name;
+  final String mqttId;
   bool isAvailable = false;
   double actualSetpoint = -1.0;
   double? pendingSetpoint;
   bool pendingSetpointSent = false;
   //double ?setpointInCurrentSchedule;
   double currentTemperature = -1.0;
-  Device(this.name);
+  Device(this.name, this.mqttId);
 }
 
 class DeviceSetpoint {
@@ -707,7 +708,7 @@ class ModelCtrl {
         List devicesData = jsonDecode(payload);
         _devices.clear();
         for (Map devData in devicesData) {
-          _devices[devData['name']] = Device(devData['name']);
+          _devices[devData['name']] = Device(devData['name'], devData['mqttid']);
         }
         onDevicesEvent.broadcast(Value(_devices));
       } else if (topic == Settings().MQTT.onSchedulerTopic) {
@@ -751,18 +752,25 @@ class ModelCtrl {
     List<String> list = topic.split('/');
     if (list.length > 1) {
       String paramName = list[list.length - 1];
-      String deviceName = list[list.length - 2];
+      String deviceMqttId = list[list.length - 2];
+      Device ?device;
+      for (Device dev in _devices.values) {
+        if (dev.mqttId==deviceMqttId) {
+          device = dev;
+          break;
+        }
+      }
 
-      if (_devices.containsKey(deviceName)) {
+      if (device!=null) {
         switch (paramName) {
           case 'on_setpoint':
             double? doubleValue = str2Double(data);
             if (doubleValue == null) {
               return;
             }
-            _devices[deviceName]!.actualSetpoint = doubleValue;
+            device.actualSetpoint = doubleValue;
             //if (_devices[deviceName]!.pendingSetpoint == value) {
-            _devices[deviceName]!.pendingSetpoint = null;
+            device.pendingSetpoint = null;
             //}
             break;
 
@@ -771,11 +779,11 @@ class ModelCtrl {
             if (doubleValue == null) {
               return;
             }
-            _devices[deviceName]!.currentTemperature = doubleValue;
+            device.currentTemperature = doubleValue;
             break;
 
           case 'on_state':
-            _devices[deviceName]!.isAvailable = (data == 'true' ? true : false);
+            device.isAvailable = (data == 'true' ? true : false);
             break;
 
           default:

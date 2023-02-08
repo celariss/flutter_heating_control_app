@@ -1,0 +1,2 @@
+V0.2.0 (08/02/2023) :
+	- Update for server v0.9.1 compatibility

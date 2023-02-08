@@ -97,7 +97,7 @@ This README has been written using [Dillinger]
 
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
-  [heating_control_server]: <https://github.com/celariss/heating-control-server/>
+  [heating_control_server]: <https://github.com/celariss/heating_control_server/>
   [flutter]: <https://flutter.dev/>
   [mqtt]: <https://mqtt.org/>
   [mqtt_client]: <https://pub.dev/packages/mqtt_client>
