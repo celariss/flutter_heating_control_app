@@ -6,7 +6,8 @@ import 'package:selectable_list/selectable_list.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
-import 'heater.dart';
+import 'deviceseditor.dart';
+import 'thermostat.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             HOME PAGE
@@ -131,7 +132,7 @@ class _HomePage extends State<HomePage> {
             ),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(10, 7, 10, 30),
+              padding: const EdgeInsets.fromLTRB(10, 7, 10, 15),
               child: SelectableList<String, String?>(
                 key: UniqueKey(),
                 items: schedulesList,
@@ -174,13 +175,23 @@ class _HomePage extends State<HomePage> {
                 },
               )),
           Wrap(
+            spacing: 10.0,
+            runSpacing: 0.0,
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: [Container(), Common.createCircleIconButton(Icons.edit_note, iconSize: 50, onPressed: () {
+              DevicesEditorWidget.editDevices(context);
+            })]
+          ),
+          const SizedBox(height: 15),
+          Wrap(
             spacing: 20.0,
             runSpacing: 0.0,
             alignment: WrapAlignment.center,
             children: ModelCtrl()
                 .getDevices()
                 .values
-                .map((device) => Heater.heaterWidgetBuilder(
+                .map((device) => Thermostat.heaterWidgetBuilder(
                       device,
                       (deviceName, setpoint) {
                         setState(() => ModelCtrl().setDeviceSetpoint(deviceName, setpoint));

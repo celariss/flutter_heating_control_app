@@ -2,18 +2,11 @@ themeName: DarkGreen
 temperatureSetDefaultColor: 0xFF000099
 defaultSetpoint: 18
 mqtt:
-  setScheduleTopic: 'heatingcontrol/command/set_schedule'
-  setTemperatureSetsTopic: 'heatingcontrol/command/set_tempsets'
-  setTemperatureSetNameTopic: 'heatingcontrol/command/set_tempset_name'
-  setScheduleNameTopic: 'heatingcontrol/command/set_schedule_name'
-  setActiveScheduleTopic: 'heatingcontrol/command/set_active_schedule'
-  setSchedulesOrder: 'heatingcontrol/command/set_schedules_order'
-  deleteScheduleTopic: 'heatingcontrol/command/delete_schedule'
-  setDeviceSetpoint: 'heatingcontrol/command/set_setpoint'
-  onResponseTopic: 'heatingcontrol/command/on_response'
-  onSchedulerTopic: 'heatingcontrol/config/on_scheduler'
-  onDevicesTopic: 'heatingcontrol/config/on_devices'
-  onDeviceChangeTopic: 'heatingcontrol/devices/#'
+  SendTopic: 'heatingcontrol/command'
+  onResponseTopic: 'heatingcontrol/on_cmd_response'
+  onSchedulerTopic: 'heatingcontrol/serverdata/on_scheduler'
+  onDevicesTopic: 'heatingcontrol/serverdata/on_devices'
+  onDeviceChangeTopic: 'heatingcontrol/serverdata/devices/#'
   # normal: 1883, secure: 8883
   # websocket: 1884, secure: 8884
   port: 8884

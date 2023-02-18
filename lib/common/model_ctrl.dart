@@ -1,9 +1,9 @@
 /// This file defines the Controller to gives access to the data model
 /// It is used by all widget to get and set values in data
-/// Each change in model is transfered to the heating control server, 
+/// Each change in model is transfered to the heating control server,
 /// that processes the change and sends back the new model in case of success,
 /// or the old one in case of failure (with error description)
-/// 
+///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
 
@@ -12,7 +12,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'common.dart';
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
 
@@ -77,7 +76,7 @@ class ModelCtrl {
   Timer? setSetpointTimer;
   Map _schedulerData = {};
   Map _savedSchedulerData = {};
-  final Map<String, Device> _devices = {};
+  Map<String, Device> _devices = {};
   List<Timeslot> _todayActiveSetpoints = [];
   var onSchedulesEvent = Event<Value<Map>>();
   var onDevicesEvent = Event<Value<Map<String, Device>>>();
@@ -339,14 +338,16 @@ class ModelCtrl {
 
   void setActiveSchedule(String scheduleName) {
     Map message = {};
-    message['schedule_name'] = scheduleName;
-    _mqttPublishMap(Settings().MQTT.setActiveScheduleTopic, message);
+    message['command'] = 'set_active_schedule';
+    message['params'] = {'schedule_name': scheduleName};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void deleteSchedule(String scheduleName) {
     Map message = {};
-    message['schedule_name'] = scheduleName;
-    _mqttPublishMap(Settings().MQTT.deleteScheduleTopic, message);
+    message['command'] = 'delete_schedule';
+    message['params'] = {'schedule_name': scheduleName};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void deleteScheduleItem(String scheduleName, int scheduleItemIdx) {
@@ -432,33 +433,51 @@ class ModelCtrl {
   void onScheduleNameChanged(String scheduleName, String newName) {
     if (scheduleName != newName) {
       Map message = {};
-      message['old_name'] = scheduleName;
-      message['new_name'] = newName;
-      _mqttPublishMap(Settings().MQTT.setScheduleNameTopic, message);
+      message['command'] = 'set_schedule_name';
+      message['params'] = {'old_name': scheduleName, 'new_name': newName};
+      _mqttPublishMap(Settings().MQTT.sendTopic, message);
     }
+  }
+
+  void setDeviceName(String deviceName, String newName) {
+    if (deviceName != newName) {
+      Map message = {};
+      message['command'] = 'set_device_name';
+      message['params'] = {'old_name': deviceName, 'new_name': newName};
+      _mqttPublishMap(Settings().MQTT.sendTopic, message);
+    }
+  }
+
+  void setDevicesOrder(List<String> deviceNames) {
+    Map message = {};
+    message['command'] = 'set_devices_order';
+    message['params'] = deviceNames;
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void onTemperatureSetNameChanged(String scheduleName, [String tempSetName = '', String newTempSetName = '']) {
     if (tempSetName != newTempSetName) {
       Map message = {};
-      message['old_name'] = tempSetName;
-      message['new_name'] = newTempSetName;
-      message['schedule_name'] = scheduleName;
-      _mqttPublishMap(Settings().MQTT.setTemperatureSetNameTopic, message);
+      message['command'] = 'set_tempset_name';
+      message['params'] = {'old_name': tempSetName, 'new_name': newTempSetName, 'schedule_name': scheduleName};
+      _mqttPublishMap(Settings().MQTT.sendTopic, message);
     }
   }
 
   void onTemperatureSetsChanged([String scheduleName = '']) {
     List tempSetsData = getTemperatureSets(scheduleName);
     Map message = {};
-    message['temperature_sets'] = tempSetsData;
-    message['schedule_name'] = scheduleName;
-    _mqttPublishMap(Settings().MQTT.setTemperatureSetsTopic, message);
+    message['command'] = 'set_tempsets';
+    message['params'] = {'temperature_sets': tempSetsData, 'schedule_name': scheduleName};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void onSchedulesReorder() {
-    List message = getSchedules().map((e) => e['alias']).toList();
-    _mqttPublishString(Settings().MQTT.setSchedulesOrder, jsonEncode(message));
+    Map message = {};
+    List params = getSchedules().map((e) => e['alias']).toList();
+    message['command'] = 'set_schedules_order';
+    message['params'] = params;
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void onScheduleChanged(String scheduleName) {
@@ -703,29 +722,36 @@ class ModelCtrl {
     if (kDebugMode) {
       print('ModelCtrl: MQTT Message notification:: topic is <$topic}>, payload is <-- $payload -->');
     }
-    try {
-      if (topic == Settings().MQTT.onDevicesTopic) {
-        List devicesData = jsonDecode(payload);
-        _devices.clear();
-        for (Map devData in devicesData) {
-          _devices[devData['name']] = Device(devData['name'], devData['mqttid']);
-        }
-        onDevicesEvent.broadcast(Value(_devices));
-      } else if (topic == Settings().MQTT.onSchedulerTopic) {
-        _schedulerData = jsonDecode(payload);
-        _savedSchedulerData = jsonDecode(payload);
-        _todayActiveSetpoints = getScheduleSetpoints(DateTime.now());
-        onSchedulesEvent.broadcast(Value(_schedulerData));
-      } else if (topic == Settings().MQTT.onResponseTopic) {
-        Map responseData = jsonDecode(payload);
-        _onServerResponse(responseData);
-      } else if (topic.startsWith(Settings().MQTT.onDeviceChangeTopic.replaceFirst('#', ''))) {
-        _onDeviceChange(topic, payload);
+    //try {
+    if (topic == Settings().MQTT.onDevicesTopic) {
+      List devicesData = jsonDecode(payload);
+      Map<String,Device> devices = {};
+      for (Map devData in devicesData) {
+        devices[devData['name']] = Device(devData['name'], devData['mqttid']);
       }
-    } catch (e) {
+      for (Device device in _devices.values) {
+        if (devices.containsKey(device.name)) {
+          devices[device.name] = device;
+        }
+      }
+      _devices = devices;
+      onDevicesEvent.broadcast(Value(_devices));
+    } else if (topic == Settings().MQTT.onSchedulerTopic) {
+      _schedulerData = jsonDecode(payload);
+      _savedSchedulerData = jsonDecode(payload);
+      _todayActiveSetpoints = getScheduleSetpoints(DateTime.now());
+      onSchedulesEvent.broadcast(Value(_schedulerData));
+    } else if (topic == Settings().MQTT.onResponseTopic) {
+      Map responseData = jsonDecode(payload);
+      _onServerResponse(responseData);
+    } else if (topic.startsWith(Settings().MQTT.onDeviceChangeTopic.replaceFirst('#', ''))) {
+      Map data = jsonDecode(payload);
+      _onDeviceChange(topic, data);
+    }
+    /*} catch (e) {
       print('ModelCtrl: Error in MQTT message format : $e');
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttMessageError)));
-    }
+    }*/
   }
 
   void _onServerResponse(Map responseData) {
@@ -744,51 +770,32 @@ class ModelCtrl {
   void _onScheduleChanged(Map scheduleData) {
     //onSchedulesEvent.broadcast(Value(schedulerData));
     if (scheduleData.isNotEmpty) {
-      _mqttPublishMap(Settings().MQTT.setScheduleTopic, scheduleData);
+      Map message = {};
+      message['command'] = 'set_schedule';
+      message['params'] = scheduleData;
+      _mqttPublishMap(Settings().MQTT.sendTopic, message);
     }
   }
 
-  void _onDeviceChange(String topic, String data) {
+  void _onDeviceChange(String topic, Map data) {
     List<String> list = topic.split('/');
     if (list.length > 1) {
-      String paramName = list[list.length - 1];
-      String deviceMqttId = list[list.length - 2];
-      Device ?device;
+      String deviceMqttId = list[list.length - 1];
+      Device? device;
       for (Device dev in _devices.values) {
-        if (dev.mqttId==deviceMqttId) {
+        if (dev.mqttId == deviceMqttId) {
           device = dev;
           break;
         }
       }
 
-      if (device!=null) {
-        switch (paramName) {
-          case 'on_setpoint':
-            double? doubleValue = str2Double(data);
-            if (doubleValue == null) {
-              return;
-            }
-            device.actualSetpoint = doubleValue;
-            //if (_devices[deviceName]!.pendingSetpoint == value) {
-            device.pendingSetpoint = null;
-            //}
-            break;
-
-          case 'on_current_temp':
-            double? doubleValue = str2Double(data);
-            if (doubleValue == null) {
-              return;
-            }
-            device.currentTemperature = doubleValue;
-            break;
-
-          case 'on_state':
-            device.isAvailable = (data == 'true' ? true : false);
-            break;
-
-          default:
-            return;
-        }
+      if (device != null) {
+        device.actualSetpoint = data['setpoint'];
+        //if (_devices[deviceName]!.pendingSetpoint == value) {
+        device.pendingSetpoint = null;
+        //}
+        device.currentTemperature = data['current_temp'];
+        device.isAvailable = (data['state'] == 'true' ? true : false);
       }
       onDevicesEvent.broadcast(Value(_devices));
     }
@@ -846,8 +853,10 @@ class ModelCtrl {
         if (kDebugMode) {
           print('ModelCtrl::_onSetSetpointTimeOut -> Send setpoint for device ${device.name}');
         }
-        Map data = {'device_name': device.name, 'setpoint': device.pendingSetpoint};
-        if (_mqttPublishMap(Settings().MQTT.setDeviceSetpoint, data)) {
+        Map message = {};
+        message['command'] = 'set_setpoint';
+        message['params'] = {"device_name": device.name, "setpoint": device.pendingSetpoint};
+        if (_mqttPublishMap(Settings().MQTT.sendTopic, message)) {
           device.pendingSetpointSent = true;
         }
       }

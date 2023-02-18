@@ -65,12 +65,13 @@ And it depends on following flutter plugins :
 - create `assets/cfg/secrets.yaml` and set brokerAddress, user and password in mqtt section
 
   Example of secrets.yaml file :
-  ```
+  ```yaml
   mqtt:
     brokerAddress: mybroker.com
     user: mqtt_user
     password: superpass_12
   ```
+
 #### 2- Setup your Flutter dev environment
 - Heating control App requires [Flutter] v3.3+ to build.
 - Go to https://docs.flutter.dev/get-started/install and follow instructions.

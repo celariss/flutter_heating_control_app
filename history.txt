@@ -1,2 +1,6 @@
+V0.3.0 (18/02/2023) :
+	- Update for server v0.9.3 interface compatibility
+	- Added devices editor to reorder devices and change their name
+
 V0.2.0 (08/02/2023) :
 	- Update for server v0.9.1 compatibility

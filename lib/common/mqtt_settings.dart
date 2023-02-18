@@ -7,14 +7,7 @@
 class MQTTSettings {
   MQTTSettings();
   MQTTSettings.fromMap(Map config)
-      : setScheduleTopic = config['setScheduleTopic'],
-        setTemperatureSetsTopic = config['setTemperatureSetsTopic'],
-        setTemperatureSetNameTopic = config['setTemperatureSetNameTopic'],
-        setScheduleNameTopic = config['setScheduleNameTopic'],
-        setActiveScheduleTopic = config['setActiveScheduleTopic'],
-        setSchedulesOrder = config['setSchedulesOrder'],
-        deleteScheduleTopic = config['deleteScheduleTopic'],
-        setDeviceSetpoint = config['setDeviceSetpoint'],
+      : sendTopic = config['SendTopic'],
         onResponseTopic = config['onResponseTopic'],
         onSchedulerTopic = config['onSchedulerTopic'],
         onDevicesTopic = config['onDevicesTopic'],
@@ -25,14 +18,7 @@ class MQTTSettings {
         user = config['user'],
         password = config['password'];
 
-  String setScheduleTopic = '';
-  String setTemperatureSetsTopic = '';
-  String setTemperatureSetNameTopic = '';
-  String setScheduleNameTopic = '';
-  String setActiveScheduleTopic = '';
-  String setSchedulesOrder = '';
-  String deleteScheduleTopic = '';
-  String setDeviceSetpoint = '';
+  String sendTopic = '';
   String onResponseTopic = '';
   String onSchedulerTopic = '';
   String onDevicesTopic = '';

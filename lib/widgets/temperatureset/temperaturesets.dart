@@ -31,10 +31,12 @@ class _TemperatureSetsState extends State<TemperatureSets> {
             if (oldIndex < newIndex) {
               newIndex -= 1;
             }
-            final Map item = _data.removeAt(oldIndex);
-            _data.insert(newIndex, item);
+            if (oldIndex != newIndex) {
+              final Map item = _data.removeAt(oldIndex);
+              _data.insert(newIndex, item);
+              ModelCtrl().swapTemperatureSets(oldIndex, newIndex);
+            }
           });
-          ModelCtrl().swapTemperatureSets(oldIndex, newIndex);
         });
   }
 }

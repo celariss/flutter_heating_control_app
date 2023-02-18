@@ -76,8 +76,7 @@ class _SchedulesPage extends State<SchedulesPage> {
     if (ModelCtrl().getSchedule(tapedName).isEmpty) {
       ModelCtrl().createSchedule(tapedName);
     } else {
-      Common.showSnackBar(context, 'Ce planning existe déjà ...',
-          backColor: AppTheme().errorColor, duration_ms: 4000);
+      Common.showSnackBar(context, 'Ce planning existe déjà ...', backColor: AppTheme().errorColor, duration_ms: 4000);
     }
   }
 
@@ -114,7 +113,9 @@ class _SchedulesPage extends State<SchedulesPage> {
             if (oldIndex < newIndex) {
               newIndex -= 1;
             }
-            ModelCtrl().swapSchedules(oldIndex, newIndex);
+            if (oldIndex != newIndex) {
+              ModelCtrl().swapSchedules(oldIndex, newIndex);
+            }
           }),
     );
   }

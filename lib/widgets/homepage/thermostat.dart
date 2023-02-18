@@ -7,9 +7,8 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 
-class Heater {
-  static Widget heaterWidgetBuilder(
-      Device device, void Function(String deviceName, double setpoint) onSetpoint) {
+class Thermostat {
+  static Widget heaterWidgetBuilder(Device device, void Function(String deviceName, double setpoint) onSetpoint) {
     double minValue = 7;
     double maxValue = 30;
     double? activeSetpoint = ModelCtrl().getActiveSetpoint(device.name);
@@ -142,3 +141,4 @@ class Heater {
     ]);
   }
 }
+

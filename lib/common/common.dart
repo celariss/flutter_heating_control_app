@@ -244,6 +244,8 @@ class Common {
         return AlertDialog(
             title: Text(title, style: TextStyle(color: AppTheme().focusColor)),
             backgroundColor: AppTheme().background2Color,
+            contentPadding: const EdgeInsets.all(0),
+            //insetPadding: const EdgeInsets.all(0),
             content: SingleChildScrollView(
               //shrinkWrap: true,
               child: content,
