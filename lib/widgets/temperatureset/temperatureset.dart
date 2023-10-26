@@ -152,10 +152,12 @@ class TemperatureSet {
                   navigate(context, ProductComments.route,
                       isRootNavigator: false,
                       arguments: {'id': argsId.toString()});*/
-            _showTemperaturePicker(context, data['setpoint'].toDouble(), 7, 35).then((value) {
+            _showTemperaturePicker(context, data['setpoint'].toDouble(), Settings().minSetpoint, Settings().maxSetpoint).then((value) {
               //setState(() => data['setpoint'] = value);
-              data['setpoint'] = value;
-              ModelCtrl().onTemperatureSetsChanged(scheduleName);
+              if (data['setpoint'] != value) {
+                data['setpoint'] = value;
+                ModelCtrl().onTemperatureSetsChanged(scheduleName);
+              }
             });
           },
           contentPadding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
@@ -180,20 +182,25 @@ class TemperatureSet {
     }
     int intValue = temperature.toInt();
     int decValue = (temperature * 10.0).toInt() % 10;
-    List<int> intList = List<int>.generate(max - min, (i) => i + min);
+    List<int> intList = List<int>.generate(max - min+1, (i) => i + min);
     List<int> decList = List<int>.generate(10, (i) => i);
     await Picker(
-        adapter: PickerDataAdapter<String>(pickerdata: [intList, decList], isArray: true),
+        adapter: PickerDataAdapter<String>(pickerData: [intList, decList], isArray: true),
         selecteds: [intValue - min, decValue],
         hideHeader: true,
         cancelText: 'Annuler',
         confirmText: 'Valider',
+        cancelTextStyle: TextStyle(color: AppTheme().focusColor),
+        confirmTextStyle: TextStyle(color: AppTheme().focusColor),
         backgroundColor: AppTheme().background2Color,
         textStyle: TextStyle(color: AppTheme().specialTextColor, fontSize: 18),
         selectedTextStyle: TextStyle(color: AppTheme().normalTextColor, fontSize: 22),
         //title: new Text("Please Select"),
         onConfirm: (Picker picker, List value) {
           result = intList[value[0]].toDouble() + value[1].toDouble() / 10;
+          if (result > max) {
+            result = max.toDouble();
+          }
         }).showDialog(context, backgroundColor: AppTheme().background2Color);
     return result;
   }

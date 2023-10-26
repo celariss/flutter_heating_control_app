@@ -77,7 +77,12 @@ class Configuration {
     if (context!=null) {
       bundle = DefaultAssetBundle.of(context);
     }
-    String content = await bundle.loadString(path);
+    String content;
+    try {
+      content = await bundle.loadString(path);
+    } on FlutterError {
+      return false;
+    }
     switch (type) {
       case FileType.yaml:
         addFromYamlString(content, targetSection: targetSection);
@@ -85,6 +90,8 @@ class Configuration {
       case FileType.json:
         addFromJsonString(content, targetSection: targetSection);
         break;
+      default:
+        return false;
     }
     return true;
   }

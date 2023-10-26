@@ -1,0 +1,38 @@
+Flutter documentation :
+    - How to build on Android :
+	  https://docs.flutter.dev/deployment/android
+	- How to build on Windows :
+	  https://docs.flutter.dev/deployment/windows
+	
+To build on Android :
+	flutter build apk --split-per-abi
+	flutter install --use-application-binary=build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
+    (resulting binary in .\build\app\outputs\flutter-apk\à
+
+
+To build on Windows :
+	flutter build windows
+    (resulting binary in .\build\windows\runner\Release\)
+
+To update project version :
+	- Edit 'version' field in pubspec.yaml file
+	  => The next build will automatically update 'flutter.versionCode' and 'flutter.versionName' in file 'android/local.properties'
+
+To update project icons :
+	- Run following command after any change in 'assets/images/' :
+      flutter pub run flutter_launcher_icons
+	
+To add a dependency :
+    1- Add the dependency in file pubspec.yaml :
+	   flutter pub add <lib>
+    2- Download missing dependencies from file pubspec.yaml :
+	   flutter pub get
+	   
+To upgrade dependencies to latest versions :
+    flutter pub upgrade --major-versions
+	
+About the navbar_router lib :
+    - url :
+	  https://pub.dev/packages/navbar_router
+    - Explanation about nav_bar implementation and use :
+	  https://medium.com/flutter-community/everything-about-the-bottomnavigationbar-in-flutter-e99e5470dddb

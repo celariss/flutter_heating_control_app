@@ -1,3 +1,5 @@
+import 'package:shared_preferences/shared_preferences.dart';
+
 /// Defines the MQTT part of app settings
 ///
 /// Authors: Jérôme Cuq
@@ -17,6 +19,14 @@ class MQTTSettings {
         secure = config['secure'],
         user = config['user'],
         password = config['password'];
+
+  void saveToSharedPrefs()async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setString('brokerAddress', brokerAddress);
+    prefs.setString('user', user);
+    prefs.setString('password', password);
+    // TBD
+  }
 
   String sendTopic = '';
   String onResponseTopic = '';

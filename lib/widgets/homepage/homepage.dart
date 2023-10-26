@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
+import 'package:provider/provider.dart';
 import 'package:selectable_list/selectable_list.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../common/themenotifier.dart';
 import 'deviceseditor.dart';
+import 'settingspage.dart';
 import 'thermostat.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             HOME PAGE
 ///////////////////////////////////////////////////////////////////////////
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  const HomePage({super.key});
   static const String route = '/';
 
   @override
@@ -113,8 +116,19 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    // We need this line witrh listen:true to ensure refresh of this page
+    Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: AppBar(title: const Text('Général'), actions: [
+        Common.createCircleIconButton(
+            Icons.settings,
+            //iconSize: 50,
+            iconColor: AppTheme().normalTextColor,
+            backColor: AppTheme().background3Color,
+            onPressed: () {
+              NavbarNotifier.hideBottomNavBar = false;
+              Common.navBarNavigate(context, SettingsPage.route, isRootNavigator: false);
+            },),
         Common.createCircleIcon(
             size: 32,
             icon: Icon(ModelCtrl().isConnectedToServer() ? Icons.link : Icons.link_off, color: Colors.white),

@@ -1,16 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
+import 'package:provider/provider.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../common/themenotifier.dart';
 import 'schedule.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             SCHEDULES PAGE
 ///////////////////////////////////////////////////////////////////////////
 class SchedulesPage extends StatefulWidget {
-  const SchedulesPage({Key? key}) : super(key: key);
+  const SchedulesPage({super.key});
   static const String route = '/';
 
   @override
@@ -82,6 +84,8 @@ class _SchedulesPage extends State<SchedulesPage> {
 
   @override
   Widget build(BuildContext context) {
+    // We need this line with listen:true to ensure refresh of this page
+    Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: AppBar(title: const Text('Plannings'), actions: [
         Common.createCircleIcon(

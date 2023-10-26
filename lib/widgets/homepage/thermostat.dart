@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:heating_control_app/common/settings.dart';
 import 'package:sleek_circular_slider/sleek_circular_slider.dart';
 
 import '../../common/common.dart';
@@ -9,8 +10,8 @@ import '../../common/theme.dart';
 
 class Thermostat {
   static Widget heaterWidgetBuilder(Device device, void Function(String deviceName, double setpoint) onSetpoint) {
-    double minValue = 7;
-    double maxValue = 30;
+    double minValue = Settings().minSetpoint.toDouble();
+    double maxValue = Settings().maxSetpoint.toDouble();
     double? activeSetpoint = ModelCtrl().getActiveSetpoint(device.name);
     bool pending = device.pendingSetpoint != null;
     bool manualMode = activeSetpoint != null && activeSetpoint != device.actualSetpoint;

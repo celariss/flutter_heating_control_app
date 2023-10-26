@@ -6,11 +6,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';
+import 'package:provider/provider.dart';
 import 'common/common.dart';
 import 'common/theme.dart';
+import 'common/themenotifier.dart';
 import 'widgets/homepage/homepage.dart';
 import 'common/model_ctrl.dart';
 import 'common/settings.dart';
+import 'widgets/homepage/settingspage.dart';
 import 'widgets/schedule/schedulespage.dart';
 import 'widgets/temperatureset/temperaturesetspage.dart';
 import 'widgets/timeslotset/timeslotsetpage.dart';
@@ -24,13 +27,17 @@ Future<void> main() async {
   YamlWriter writer = YamlWriter();
   String serialized = writer.write(test);*/
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider<ThemeNotifier>(
+      create: (_) => ThemeNotifier(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({Key? key})
-      : modelCtrl = ModelCtrl(),
-        super(key: key);
+  MyApp({super.key})
+      : modelCtrl = ModelCtrl();
 
   final ModelCtrl modelCtrl;
 
@@ -38,23 +45,50 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     ModelCtrl().connect();
     NavbarNotifier.hideBottomNavBar = false;
-    return MaterialApp(
+    return Consumer<ThemeNotifier>(
+      builder: (context, appState, child) {
+        return MaterialApp(
         title: 'Heating Control App',
         theme: ThemeData(
+          primaryColor: AppTheme().background3Color,
+          secondaryHeaderColor: AppTheme().background3Color,
+          cardColor: AppTheme().background2Color,
+          scaffoldBackgroundColor: AppTheme().background1Color,
+          unselectedWidgetColor: AppTheme().specialTextColor,
           // Color visible during transition between pages
           canvasColor: AppTheme().background1Color,
+          dialogBackgroundColor: AppTheme().background2Color,
+          
           appBarTheme: AppBarTheme(
             color: AppTheme().appBarColor,
           ),
-          textTheme: Theme.of(context).textTheme.apply(
+
+          buttonTheme: ButtonThemeData(
+            buttonColor: AppTheme().buttonBackColor,
+          ),
+          
+          textTheme: TextTheme(
+                bodyMedium: TextStyle(color: AppTheme().normalTextColor), // thermostat setpoint
+                labelLarge: TextStyle(color: AppTheme().buttonTextColor), // button text
+                titleMedium: TextStyle(color: AppTheme().normalTextColor), // input text
+                titleLarge: TextStyle(color: AppTheme().normalTextColor), // card header text
+              ).apply(
                 bodyColor: AppTheme().normalTextColor,
                 displayColor: AppTheme().normalTextColor,
                 decorationColor: AppTheme().normalTextColor,
               ),
-          scaffoldBackgroundColor: AppTheme().background1Color,
-          unselectedWidgetColor: AppTheme().specialTextColor,
+            
+          primaryTextTheme: TextTheme(
+            titleLarge: TextStyle(color: AppTheme().normalTextColor), // app header text
+          ),
+
+          inputDecorationTheme: InputDecorationTheme(
+            labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
+          ),
         ),
         home: const RootPage());
+      }
+    );
   }
 }
 
@@ -62,7 +96,7 @@ class MyApp extends StatelessWidget {
 // ROOT PAGE : root page, contains the nav bar
 ///////////////////////////////////////////////////////////////////////////
 class RootPage extends StatefulWidget {
-  const RootPage({Key? key}) : super(key: key);
+  const RootPage({super.key});
 
   @override
   State<RootPage> createState() => _RootPageState();
@@ -75,19 +109,21 @@ class _RootPageState extends State<RootPage> {
     NavbarItem(Icons.schedule, 'Plannings', backgroundColor: AppTheme().background2Color),
   ];
 
-  final Map<int, Map<String, Widget>> _routes = const {
+  Map<int, Map<String, Widget>> routes = {
     0: {
-      '/': HomePage(),
+      '/': const HomePage(),
+      SettingsPage.route: const SettingsPage(),
     },
     1: {
-      '/': TemperatureSetsPage(),
+      '/': const TemperatureSetsPage(),
     },
     2: {
-      '/': SchedulesPage(),
-      TimeSlotSetPage.route: TimeSlotSetPage(),
+      '/': const SchedulesPage(),
+      TimeSlotSetPage.route: const TimeSlotSetPage(),
     },
   };
 
+  ThemeNotifier ?themeNotifier;
   DateTime oldTime = DateTime.now();
   DateTime newTime = DateTime.now();
 
@@ -178,6 +214,8 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
+    // We need this line witrh listen:true to ensure refresh of NavBarRouter when current theme changes
+    themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final size = MediaQuery.of(context).size;
     return Scaffold(
       resizeToAvoidBottomInset: false,
@@ -196,8 +234,9 @@ class _RootPageState extends State<RootPage> {
         },
       ),
       body: NavbarRouter(
+        type: NavbarType.standard,
         errorBuilder: (context) {
-          return const Center(child: Text('Error 404'));
+          return const Center(child: Text('NavBarRouter Error : unknown route'));
         },
         isDesktop: size.width > 600 ? true : false,
         onBackButtonPressed: (isExitingApp) {
@@ -221,10 +260,14 @@ class _RootPageState extends State<RootPage> {
         decoration: NavbarDecoration(
             showUnselectedLabels: true,
             backgroundColor: AppTheme().background2Color,
+            indicatorColor: AppTheme().background2Color,
             selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.bold, color: AppTheme().focusColor),
-            unselectedLabelTextStyle: TextStyle(color: AppTheme().normalTextColor),
             selectedIconTheme: IconThemeData(color: AppTheme().focusColor),
+            selectedIconColor: AppTheme().focusColor,
+            unselectedLabelTextStyle: TextStyle(color: AppTheme().normalTextColor),
             unselectedIconTheme: IconThemeData(color: AppTheme().normalTextColor),
+            unselectedLabelColor: AppTheme().normalTextColor,
+            unselectedIconColor: AppTheme().normalTextColor,
             unselectedItemColor: AppTheme().normalTextColor,
             isExtended: size.width > 800 ? true : false,
             navbarType: BottomNavigationBarType.fixed),
@@ -235,13 +278,13 @@ class _RootPageState extends State<RootPage> {
             DestinationRouter(
               navbarItem: items[i],
               destinations: [
-                for (int j = 0; j < _routes[i]!.keys.length; j++)
+                for (int j = 0; j < routes[i]!.keys.length; j++)
                   Destination(
-                    route: _routes[i]!.keys.elementAt(j),
-                    widget: _routes[i]!.values.elementAt(j),
+                    route: routes[i]!.keys.elementAt(j),
+                    widget: routes[i]!.values.elementAt(j),
                   ),
               ],
-              initialRoute: _routes[i]!.keys.first,
+              initialRoute: routes[i]!.keys.first,
             ),
         ],
       ),

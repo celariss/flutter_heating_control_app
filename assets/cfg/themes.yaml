@@ -37,7 +37,7 @@ themes:
   heaterWidgetTitleColor: "0xFF6A1B9A"
   buttonBackColor: "0xFF0D47A1"
   buttonTextColor: "0xFFFFFFFF"
-  selectedColor: "0xFF7CB342"
+  selectedColor: "0xFF2196F3"
   notSelectedColor: "0xFFBDBDBD"
   warningColor: "0xFFFB8C00"
   errorColor: "0xFFC62828"

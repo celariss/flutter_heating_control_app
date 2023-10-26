@@ -81,10 +81,10 @@ And it depends on following flutter plugins :
 From the repo root folder, type :
     ```sh
     flutter build apk --split-per-abi
-    flutter install
+    flutter install --use-application-binary=build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
     ```
     The last command installs the apk on the connected android device
-    > Note: The built apk is located in `.\build\app\outputs\flutter-apk\`
+    > Note: Please replace `app-arm64-v8a-release.apk` by the flavor needed by your device. The built apk files are located in `.\build\app\outputs\flutter-apk\`.
 
 - On Windows (complete instructions in https://docs.flutter.dev/deployment/windows to build the exe)
 From the repo root folder, type :

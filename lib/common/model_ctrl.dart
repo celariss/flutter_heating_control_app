@@ -92,12 +92,14 @@ class ModelCtrl {
   }
 
   void connect() {
+    if (_mqttClient==null) {
+      _mqttClient ??= MQTTClient(Settings().MQTT.brokerAddress, Settings().MQTT.port,
+          ssl: Settings().MQTT.secure, user: Settings().MQTT.user, password: Settings().MQTT.password);
+      _mqttClient!.onConnected = _onMqttConnected;
+      _mqttClient!.onDisconnected = _onMqttDisconnected;
+      _mqttClient!.onMessageString = _onMqttMessageString;
+    }
     //_mqttClient.logging(on:true);
-    _mqttClient ??= MQTTClient(Settings().MQTT.brokerAddress, Settings().MQTT.port,
-        ssl: Settings().MQTT.secure, user: Settings().MQTT.user, password: Settings().MQTT.password);
-    _mqttClient!.onConnected = _onMqttConnected;
-    _mqttClient!.onDisconnected = _onMqttDisconnected;
-    _mqttClient!.onMessageString = _onMqttMessageString;
     if (_mqttClient!.isConnected() == false) {
       _mqttClient!.connect();
     }
@@ -107,6 +109,7 @@ class ModelCtrl {
     stopServerResponseWaitTimer();
     stopSetSetpointTimer();
     _mqttClient!.disconnect();
+    _mqttClient = null;
   }
 
   bool isConnectedToServer() {
@@ -395,7 +398,7 @@ class ModelCtrl {
     }
   }
 
-  createTimeSlotSet(String scheduleName, int scheduleItemIdx, {Map? data}) {
+  void createTimeSlotSet(String scheduleName, int scheduleItemIdx, {Map? data}) {
     Map schedule = getSchedule(scheduleName);
     if (schedule.isNotEmpty &&
         (schedule['schedule_items'].length > scheduleItemIdx) &&
@@ -673,11 +676,11 @@ class ModelCtrl {
   }
 
   bool _mqttPublishString(String topic, String data) {
-    if (_isConnectedToServer && _mqttClient!.isConnected() == false) {
+    if (_isConnectedToServer == true && _mqttClient!.isConnected() == false) {
       _isConnectedToServer = false;
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerDisconnected)));
     }
-    if (_isConnectedToServer && _mqttClient!.publish(topic, data)) {
+    if (_isConnectedToServer == true && _mqttClient!.publish(topic, data)) {
       startServerResponseWaitTimer();
       return true;
     }
@@ -704,11 +707,11 @@ class ModelCtrl {
     }
     stopServerResponseWaitTimer();
     stopSetSetpointTimer();
-    _mqttClient!.unsubscribe(Settings().MQTT.onSchedulerTopic);
-    _mqttClient!.unsubscribe(Settings().MQTT.onDevicesTopic);
-    _mqttClient!.unsubscribe(Settings().MQTT.onResponseTopic);
-    _mqttClient!.unsubscribe(Settings().MQTT.onDeviceChangeTopic);
-    if (_isConnectedToServer = true) {
+    //_mqttClient!.unsubscribe(Settings().MQTT.onSchedulerTopic);
+    //_mqttClient!.unsubscribe(Settings().MQTT.onDevicesTopic);
+    //_mqttClient!.unsubscribe(Settings().MQTT.onResponseTopic);
+    //_mqttClient!.unsubscribe(Settings().MQTT.onDeviceChangeTopic);
+    if (_isConnectedToServer == true) {
       _isConnectedToServer = false;
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerDisconnected)));
       _onDevicesNotAvailable();

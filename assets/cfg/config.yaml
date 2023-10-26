@@ -1,6 +1,9 @@
 themeName: DarkGreen
 temperatureSetDefaultColor: 0xFF000099
 defaultSetpoint: 18
+minSetpoint: 7
+maxSetpoint: 30
+# MQTT topics to use to communicate with the heating control server
 mqtt:
   SendTopic: 'heatingcontrol/command'
   onResponseTopic: 'heatingcontrol/on_cmd_response'

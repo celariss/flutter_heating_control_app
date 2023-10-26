@@ -71,26 +71,28 @@ class MQTTClient {
       await client.connect();
     } on NoConnectionException {
       // Raised by the client when connection fails.
-      client.disconnect();
     } on SocketException {
       // Raised by the socket layer
-      client.disconnect();
+    } on ArgumentError {
+      // Raised when the url has an invalid format
+    } on Exception {
+      // Other Exception
     }
 
     /// Check we are connected
     if (client.connectionStatus!.state != MqttConnectionState.connected) {
       client.disconnect();
+    } else {
+      /// The client has a change notifier object(see the Observable class) which we then listen to get
+      /// notifications of published updates to each subscribed topic.
+      client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
+        final recMess = c![0].payload as MqttPublishMessage;
+        final pt = utf8.decode(recMess.payload.message);
+        if (onMessageString != null) {
+          onMessageString!(c[0].topic, pt);
+        }
+      });
     }
-
-    /// The client has a change notifier object(see the Observable class) which we then listen to to get
-    /// notifications of published updates to each subscribed topic.
-    client.updates?.listen((List<MqttReceivedMessage<MqttMessage?>>? c) {
-      final recMess = c![0].payload as MqttPublishMessage;
-      final pt = utf8.decode(recMess.payload.message);
-      if (onMessageString != null) {
-        onMessageString!(c[0].topic, pt);
-      }
-    });
 
     return client.connectionStatus!;
   }
