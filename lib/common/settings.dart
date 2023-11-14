@@ -68,6 +68,16 @@ class Settings {
     MQTT.saveToSharedPrefs();
   }
 
+  void setMqttPort(int value) {
+    MQTT.port = value;
+    MQTT.saveToSharedPrefs();
+  }
+
+  void setMqttSecure(bool value) {
+    MQTT.secure = value;
+    MQTT.saveToSharedPrefs();
+  }
+
   void setMqttPassword(String value) {
     MQTT.password = value;
     MQTT.saveToSharedPrefs();

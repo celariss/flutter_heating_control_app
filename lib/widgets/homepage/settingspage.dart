@@ -28,6 +28,8 @@ class _SettingsPage extends State<SettingsPage> {
   final FocusNode _actionNode = FocusNode();
   final GlobalKey<FormState> _mqttUrlKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _mqttUserKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _mqttPortKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> _mqttSecureKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _mqttPasswordKey = GlobalKey<FormState>();
   ThemeNotifier ?themeNotifier;
 
@@ -35,6 +37,8 @@ class _SettingsPage extends State<SettingsPage> {
   String mqttUrl = Settings().MQTT.brokerAddress;
   String mqttUser = Settings().MQTT.user;
   String mqttPassword = Settings().MQTT.password;
+  int mqttPort = Settings().MQTT.port;
+  bool mqttSecure = Settings().MQTT.secure;
   String themeName = Settings().themeName;
   List<String> themesList = Settings().getThemesList();
 
@@ -88,6 +92,8 @@ class _SettingsPage extends State<SettingsPage> {
           Settings().setMqttPassword(mqttPassword);
           Settings().setMqttUser(mqttUser);
           Settings().setMqttUrl(mqttUrl);
+          Settings().setMqttPort(mqttPort);
+          Settings().setMqttSecure(mqttSecure);
           ModelCtrl().disconnect();
           ModelCtrl().connect();
         }
@@ -140,6 +146,14 @@ class _SettingsPage extends State<SettingsPage> {
               mqttPassword = value;
               mqttChanged = true;
             }),
+            _buildCardSettingsInt(_mqttPortKey, 'Port (WebSocket)', mqttPort, (value) {
+              mqttPort = value;
+              mqttChanged = true;
+            }, 'Une valeur est obligatoire'),
+            _buildCardSettingsBool(_mqttSecureKey, 'SSL', mqttSecure, (value) {
+              mqttSecure = value;
+              mqttChanged = true;
+            }, 'Une valeur est obligatoire'),
           ],
         ),
       ],
@@ -179,6 +193,53 @@ class _SettingsPage extends State<SettingsPage> {
       //inputMask: '000.000.000.000',
       validator: (value) {
         if (requiredText!=null && (value == null || value.isEmpty)) return requiredText;
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          onChanged(value);
+        });
+      },
+    );
+  }
+
+CardSettingsInt _buildCardSettingsInt(Key key, String label, int initialValue, void Function(dynamic) onChanged, String ?requiredText) {
+    return CardSettingsInt(
+      key: key,
+      label: label,
+      initialValue: initialValue,
+      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      //focusNode: _focusNode,
+      inputAction: TextInputAction.next,
+      maxLength: 32,
+      //inputActionNode: _actionNode,
+      //inputMask: '000.000.000.000',
+      validator: (value) {
+        if (requiredText!=null && (value == null)) return requiredText;
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          onChanged(value);
+        });
+      },
+    );
+  }
+
+CardSettingsSwitch _buildCardSettingsBool(Key key, String label, bool initialValue, void Function(dynamic) onChanged, String ?requiredText) {
+    return CardSettingsSwitch(
+      key: key,
+      label: label,
+      initialValue: initialValue,
+      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      //focusNode: _focusNode,
+      //inputAction: TextInputAction.next,
+      //inputActionNode: _actionNode,
+      //inputMask: '000.000.000.000',
+      validator: (value) {
+        if (requiredText!=null && (value == null)) return requiredText;
         return null;
       },
       onChanged: (value) {

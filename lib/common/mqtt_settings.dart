@@ -25,6 +25,8 @@ class MQTTSettings {
     prefs.setString('brokerAddress', brokerAddress);
     prefs.setString('user', user);
     prefs.setString('password', password);
+    prefs.setInt('port', port);
+    prefs.setBool('secure', secure);
     // TBD
   }
 
