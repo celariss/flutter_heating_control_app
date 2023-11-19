@@ -51,6 +51,7 @@ class _SchedulesPage extends State<SchedulesPage> {
     super.initState();
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
   void _addScrollListener() {
@@ -61,6 +62,7 @@ class _SchedulesPage extends State<SchedulesPage> {
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     _scrollController.dispose();
     super.dispose();
   }
@@ -82,17 +84,17 @@ class _SchedulesPage extends State<SchedulesPage> {
     }
   }
 
+  // We need to update the AppBafr to reflect connexion state in connexion icon
+  void _onMessageEvent(args) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     // We need this line with listen:true to ensure refresh of this page
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
-      appBar: AppBar(title: const Text('Plannings'), actions: [
-        Common.createCircleIcon(
-            size: 32,
-            icon: Icon(ModelCtrl().isConnectedToServer() ? Icons.link : Icons.link_off, color: Colors.white),
-            backColor: ModelCtrl().isConnectedToServer() ? Colors.green.shade700 : Colors.red.shade800),
-      ]),
+      appBar: Common.createAppBar('Plannings'),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.createFloatingButton(
         size: 55,

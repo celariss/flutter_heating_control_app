@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'common/common.dart';
 import 'common/theme.dart';
 import 'common/themenotifier.dart';
+import 'utils/package.dart';
 import 'widgets/homepage/homepage.dart';
 import 'common/model_ctrl.dart';
 import 'common/settings.dart';
@@ -21,6 +22,7 @@ import 'widgets/timeslotset/timeslotsetpage.dart';
 Future<void> main() async {
   // Right before doing any loading
   WidgetsFlutterBinding.ensureInitialized();
+  await Package().init();
   await Settings().loadConfigFile();
 
   /*Map test = AppTheme().saveToMap();
@@ -162,6 +164,7 @@ class _RootPageState extends State<RootPage> {
     Color backColor = AppTheme().errorColor;
     String msgText = message.text;
     bool refresh = false;
+    int duration = 2000;
     switch (message.type) {
       case EMsgInfoType.info:
         backColor = AppTheme().successColor;
@@ -171,6 +174,7 @@ class _RootPageState extends State<RootPage> {
         break;
       case EMsgInfoType.error:
         backColor = AppTheme().errorColor;
+        duration = 4000;
         break;
     }
     Color textColor = Common.contrastColor(backColor);
@@ -186,6 +190,9 @@ class _RootPageState extends State<RootPage> {
       case EMsgInfoCode.mqttMessageError:
         msgText = 'Message défectueux reçu du serveur !';
         break;
+      case EMsgInfoCode.controlServerAvailable:
+        msgText = 'Serveur de contrôle du chauffage disponible';
+        break;
       case EMsgInfoCode.controlServerUnavailable:
         msgText = 'Serveur de contrôle du chauffage injoignable !';
         break;
@@ -195,7 +202,8 @@ class _RootPageState extends State<RootPage> {
     if (refresh) {
       setState(() {});
     }
-    Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, duration_ms: 4000);
+    Common.hideSnackBar(context);
+    Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, duration_ms: duration);
   }
 
   @override

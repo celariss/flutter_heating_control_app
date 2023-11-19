@@ -10,6 +10,7 @@ class MQTTSettings {
   MQTTSettings();
   MQTTSettings.fromMap(Map config)
       : sendTopic = config['SendTopic'],
+        onIsAliveTopic = config['onIsAliveTopic'],
         onResponseTopic = config['onResponseTopic'],
         onSchedulerTopic = config['onSchedulerTopic'],
         onDevicesTopic = config['onDevicesTopic'],
@@ -18,9 +19,10 @@ class MQTTSettings {
         port = config['port'],
         secure = config['secure'],
         user = config['user'],
-        password = config['password'];
+        password = config['password'],
+        isAliveTimeout = config['isAliveTimeout'];
 
-  void saveToSharedPrefs()async {
+  void saveToSharedPrefs() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     prefs.setString('brokerAddress', brokerAddress);
     prefs.setString('user', user);
@@ -31,10 +33,12 @@ class MQTTSettings {
   }
 
   String sendTopic = '';
+  String onIsAliveTopic = '';
   String onResponseTopic = '';
   String onSchedulerTopic = '';
   String onDevicesTopic = '';
   String onDeviceChangeTopic = '';
+  int    isAliveTimeout = 0;
 
   int port = 0;
   bool secure = false;

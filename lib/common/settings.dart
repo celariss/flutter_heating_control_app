@@ -36,6 +36,7 @@ class Settings {
       defaultSetpoint = _getParamDouble(config, 'defaultSetpoint', 19.0);
       minSetpoint = _getParamInt(config, 'minSetpoint', 7);
       maxSetpoint = _getParamInt(config, 'maxSetpoint', 30);
+      thermostatResolution = _getParamDouble(config, 'thermostatResolution', 0.5);
       themeName = _getParam(config, 'themeName', '');
       _themes = _getParam(config, 'themes', []);
       setTheme(themeName);
@@ -83,11 +84,17 @@ class Settings {
     MQTT.saveToSharedPrefs();
   }
 
+  void setThermostatResolution(double value) {
+    thermostatResolution = value;
+    prefs!.setDouble('thermostatResolution', thermostatResolution);
+  }
+
   MQTTSettings MQTT = MQTTSettings();
   int temperatureSetDefaultColor = 0;
   double defaultSetpoint = 0;
   int minSetpoint = 0;
   int maxSetpoint = 0;
+  double thermostatResolution = 0;
   String themeName = '';
 
   bool _initDone = false;

@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import '../../common/settings.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
+import '../../utils/package.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             SETTINGS PAGE
@@ -24,8 +25,6 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPage extends State<SettingsPage> {
   final _scrollController = ScrollController();
   Size size = Size.zero;
-  final FocusNode _focusNode = FocusNode();
-  final FocusNode _actionNode = FocusNode();
   final GlobalKey<FormState> _mqttUrlKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _mqttUserKey = GlobalKey<FormState>();
   final GlobalKey<FormState> _mqttPortKey = GlobalKey<FormState>();
@@ -118,6 +117,11 @@ class _SettingsPage extends State<SettingsPage> {
       children: <CardSettingsSection>[
         CardSettingsSection(
           header: CardSettingsHeader(
+            label: 'Version application : v${Package().getPackageInfo()?.version}',
+          ),
+        ),
+        CardSettingsSection(
+          header: CardSettingsHeader(
             label: 'Général',
           ),
           children: <CardSettingsWidget>[
@@ -125,6 +129,9 @@ class _SettingsPage extends State<SettingsPage> {
               themeName = value;
               Settings().setTheme(themeName);
               themeNotifier!.refreshAppTheme();
+            }),
+            _buildCardSettingsListPicker_Type('Résolution thermostats', ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
+              Settings().setThermostatResolution(double.parse(value));
             }),
           ],
         ),
@@ -217,6 +224,32 @@ CardSettingsInt _buildCardSettingsInt(Key key, String label, int initialValue, v
       //inputMask: '000.000.000.000',
       validator: (value) {
         if (requiredText!=null && (value == null)) return requiredText;
+        return null;
+      },
+      onChanged: (value) {
+        setState(() {
+          onChanged(value);
+        });
+      },
+    );
+  }
+
+CardSettingsDouble _buildCardSettingsDouble(Key key, String label, double initialValue, double min_, double max_, void Function(dynamic) onChanged, String ?requiredText, String ?badValueText) {
+    return CardSettingsDouble(
+      key: key,
+      label: label,
+      initialValue: initialValue,
+      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
+      autovalidateMode: AutovalidateMode.onUserInteraction,
+      //focusNode: _focusNode,
+      inputAction: TextInputAction.next,
+      decimalDigits: 2,
+      unitLabel: '°',
+      //inputActionNode: _actionNode,
+      //inputMask: '000.000.000.000',
+      validator: (value) {
+        if (requiredText!=null && (value == null)) return requiredText;
+        if (badValueText!=null && (value == null)) return requiredText;
         return null;
       },
       onChanged: (value) {

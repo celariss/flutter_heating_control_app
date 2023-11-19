@@ -12,6 +12,8 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:heating_control_app/utils/configuration.dart';
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
 
@@ -34,7 +36,7 @@ class ServerResponse {
 
 enum EMsgInfoType { info, warning, error }
 
-enum EMsgInfoCode { other, mqttServerConnected, mqttServerDisconnected, controlServerUnavailable, mqttMessageError }
+enum EMsgInfoCode { other, mqttServerConnected, mqttServerDisconnected, controlServerAvailable, controlServerUnavailable, mqttMessageError }
 
 class MessageInfo {
   final EMsgInfoType type;
@@ -52,6 +54,8 @@ class Device {
   bool pendingSetpointSent = false;
   //double ?setpointInCurrentSchedule;
   double currentTemperature = -1.0;
+  double minTemperature = -1.0;
+  double maxTemperature = -1.0;
   Device(this.name, this.mqttId);
 }
 
@@ -72,6 +76,7 @@ class ModelCtrl {
   // OK pour Web et io
   MQTTClient? _mqttClient;
 
+  Timer? isAliveWaitTimer;
   Timer? serverResponseWaitTimer;
   Timer? setSetpointTimer;
   Map _schedulerData = {};
@@ -83,7 +88,8 @@ class ModelCtrl {
   var onServerResponseEvent = Event<Value<ServerResponse>>();
   var onMessageEvent = Event<Value<MessageInfo>>();
 
-  bool _isConnectedToServer = false;
+  bool _isConnectedToCtrlServer = false;
+  bool _isConnectedToMQTT = false;
 
   static final ModelCtrl _instance = ModelCtrl._internal();
   ModelCtrl._internal();
@@ -106,14 +112,19 @@ class ModelCtrl {
   }
 
   void disconnect() {
+    stopIsAliveWaitTimer();
     stopServerResponseWaitTimer();
     stopSetSetpointTimer();
     _mqttClient!.disconnect();
     _mqttClient = null;
   }
 
-  bool isConnectedToServer() {
-    return _isConnectedToServer;
+  bool isConnectedToCtrlServer() {
+    return _isConnectedToCtrlServer;
+  }
+
+  bool isConnectedToMQTT() {
+    return _isConnectedToMQTT;
   }
 
   double? getActiveSetpoint(String deviceName, [List<int>? time]) {
@@ -676,11 +687,12 @@ class ModelCtrl {
   }
 
   bool _mqttPublishString(String topic, String data) {
-    if (_isConnectedToServer == true && _mqttClient!.isConnected() == false) {
-      _isConnectedToServer = false;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerDisconnected)));
+    if (_isConnectedToCtrlServer == true && _mqttClient!.isConnected() == false) {
+      _isConnectedToCtrlServer = false;
+      _isConnectedToMQTT = false;
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
     }
-    if (_isConnectedToServer == true && _mqttClient!.publish(topic, data)) {
+    if (_isConnectedToCtrlServer == true && _mqttClient!.publish(topic, data)) {
       startServerResponseWaitTimer();
       return true;
     }
@@ -691,29 +703,33 @@ class ModelCtrl {
     if (kDebugMode) {
       print('ModelCtrl: MQTT CONNECTED');
     }
-    if (_isConnectedToServer == false) {
-      _isConnectedToServer = true;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.info, code: EMsgInfoCode.mqttServerConnected)));
+    if (_isConnectedToMQTT == false) {
+      _isConnectedToMQTT = true;
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerConnected)));
     }
     _mqttClient!.subscribe(Settings().MQTT.onSchedulerTopic);
+    _mqttClient!.subscribe(Settings().MQTT.onIsAliveTopic);
     _mqttClient!.subscribe(Settings().MQTT.onDevicesTopic);
     _mqttClient!.subscribe(Settings().MQTT.onResponseTopic);
     _mqttClient!.subscribe(Settings().MQTT.onDeviceChangeTopic);
+    startIsAliveWaitTimer();
   }
 
   void _onMqttDisconnected(bool unexpected) {
     if (kDebugMode) {
       print('ModelCtrl: MQTT DISCONNECTED');
     }
+    stopIsAliveWaitTimer();
     stopServerResponseWaitTimer();
     stopSetSetpointTimer();
     //_mqttClient!.unsubscribe(Settings().MQTT.onSchedulerTopic);
     //_mqttClient!.unsubscribe(Settings().MQTT.onDevicesTopic);
     //_mqttClient!.unsubscribe(Settings().MQTT.onResponseTopic);
     //_mqttClient!.unsubscribe(Settings().MQTT.onDeviceChangeTopic);
-    if (_isConnectedToServer == true) {
-      _isConnectedToServer = false;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerDisconnected)));
+    if (_isConnectedToMQTT == true) {
+      _isConnectedToMQTT = false;
+      _isConnectedToCtrlServer = false;
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
       _onDevicesNotAvailable();
     }
     if (unexpected) {
@@ -726,7 +742,24 @@ class ModelCtrl {
       print('ModelCtrl: MQTT Message notification:: topic is <$topic}>, payload is <-- $payload -->');
     }
     //try {
-    if (topic == Settings().MQTT.onDevicesTopic) {
+    if (topic == Settings().MQTT.onIsAliveTopic) {
+      stopIsAliveWaitTimer();
+      DateTime? isaliveDate = DateTime.tryParse(payload);
+      bool isalive = payload != '' && isaliveDate!=null && DateTime.now().difference(isaliveDate).inSeconds<Settings().MQTT.isAliveTimeout;
+      if (isalive) {
+        startIsAliveWaitTimer();
+      }
+      if (isalive != _isConnectedToCtrlServer){
+        if (isalive) {
+          _isConnectedToCtrlServer = true;
+          onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.info, code: EMsgInfoCode.controlServerAvailable)));
+        }
+        else {
+          _isConnectedToCtrlServer = false;
+          onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
+        }
+      }
+    } else if (topic == Settings().MQTT.onDevicesTopic) {
       List devicesData = jsonDecode(payload);
       Map<String,Device> devices = {};
       for (Map devData in devicesData) {
@@ -799,8 +832,42 @@ class ModelCtrl {
         //}
         device.currentTemperature = data['current_temp'];
         device.isAvailable = (data['state'] == 'true' ? true : false);
+        if (data['min_temp'] != null) {
+          device.minTemperature = data['min_temp'];
+        }
+        if (data['max_temp'] != null) {
+          device.maxTemperature = data['max_temp'];
+        }
       }
       onDevicesEvent.broadcast(Value(_devices));
+    }
+  }
+
+  void startIsAliveWaitTimer() {
+    if (isAliveWaitTimer != null) {
+      stopServerResponseWaitTimer();
+    }
+    if (Settings().MQTT.isAliveTimeout>0) {
+      isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
+    }
+  }
+
+  void stopIsAliveWaitTimer() {
+    if (isAliveWaitTimer != null) {
+      if (isAliveWaitTimer!.isActive) {
+        isAliveWaitTimer!.cancel();
+      }
+      isAliveWaitTimer = null;
+    }
+  }
+
+  void _onIsAliveTimeOut() {
+    isAliveWaitTimer = null;
+
+    // We notify the problem with the heating control server
+    if (_isConnectedToCtrlServer) { 
+      _isConnectedToCtrlServer = false;
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
     }
   }
 
@@ -826,7 +893,8 @@ class ModelCtrl {
     _schedulerData = cloneMap(_savedSchedulerData);
     onSchedulesEvent.broadcast(Value(_schedulerData));
     // We notify the problem with the heating control server
-    onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.controlServerUnavailable)));
+    _isConnectedToCtrlServer = false;
+    onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
     _onDevicesNotAvailable();
   }
 

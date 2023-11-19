@@ -58,6 +58,7 @@ class _HomePage extends State<HomePage> {
     internalSelectedScheduleName = selectedScheduleName;
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
   void _addScrollListener() {
@@ -68,6 +69,7 @@ class _HomePage extends State<HomePage> {
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     _scrollController.dispose();
     super.dispose();
   }
@@ -84,6 +86,11 @@ class _HomePage extends State<HomePage> {
       internalSelectedScheduleName = selectedScheduleName;
       setState(() {});
     }
+  }
+
+  // We need to update the AppBafr to reflect connexion state in connexion icon
+  void _onMessageEvent(args) {
+    setState(() {});
   }
 
   String selectedScheduleName = '';
@@ -119,7 +126,7 @@ class _HomePage extends State<HomePage> {
     // We need this line witrh listen:true to ensure refresh of this page
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
-      appBar: AppBar(title: const Text('Général'), actions: [
+      appBar: Common.createAppBar('Accueil', actions:[
         Common.createCircleIconButton(
             Icons.settings,
             //iconSize: 50,
@@ -128,11 +135,7 @@ class _HomePage extends State<HomePage> {
             onPressed: () {
               NavbarNotifier.hideBottomNavBar = false;
               Common.navBarNavigate(context, SettingsPage.route, isRootNavigator: false);
-            },),
-        Common.createCircleIcon(
-            size: 32,
-            icon: Icon(ModelCtrl().isConnectedToServer() ? Icons.link : Icons.link_off, color: Colors.white),
-            backColor: ModelCtrl().isConnectedToServer() ? Colors.green.shade700 : Colors.red.shade800),
+            },)
       ]),
       body: SingleChildScrollView(
         child: Column(children: [

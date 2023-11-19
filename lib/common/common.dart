@@ -3,6 +3,7 @@
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
 
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../utils/platform.dart';
@@ -16,6 +17,17 @@ double? str2Double(String str) {
     return double.parse(str);
   } catch (formatException) {}
   return null;
+}
+
+double floor(double value, double precision, {double? minValue, double? maxValue}) {
+  value = (value/precision).floor() * precision;
+  if (minValue!=null) {
+    value = max(minValue, value);
+  }
+  if (maxValue!=null) {
+    value = min(maxValue, value);
+  }
+  return value;
 }
 
 class MenuItem_ {
@@ -87,6 +99,18 @@ class Common {
       return Colors.black;
     }
     return Colors.white;
+  }
+
+  static AppBar createAppBar(String title, {List<Widget> actions = const []}) {
+    return AppBar(title: Text(title), actions:
+        actions + [
+        Common.createCircleIcon(
+            size: 32,
+            icon: Icon(ModelCtrl().isConnectedToCtrlServer() ? Icons.link : Icons.link_off, color: Colors.white),
+            backColor: ModelCtrl().isConnectedToCtrlServer() ? Colors.green.shade700 : ModelCtrl().isConnectedToMQTT() ? Colors.orange.shade700 : Colors.red.shade800
+          ),
+      ]
+      );
   }
 
   static Future<void> navBarNavigate(BuildContext context, String route,

@@ -10,7 +10,7 @@ import 'timeslot_set_editor.dart';
 //             TIMESLOTSET PAGE
 ///////////////////////////////////////////////////////////////////////////
 class TimeSlotSetPage extends StatefulWidget {
-  const TimeSlotSetPage({Key? key}) : super(key: key);
+  const TimeSlotSetPage({super.key});
   static const String route = '/timeslotset';
 
   @override
@@ -53,19 +53,21 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     super.initState();
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     //ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
   @override
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     //ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _onDevicesEvent(args) {
+  /*void _onDevicesEvent(args) {
     setState(() {});
-  }
+  }*/
 
   void _onSchedulesEvent(args) {
     Map schedulerData = args!.value;
@@ -73,6 +75,11 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     if (schedulerData.containsKey('temperature_sets')) {
       globalTemperatureSetsData = List<Map>.from(schedulerData['temperature_sets'] as List);
     }
+    setState(() {});
+  }
+
+  // We need to update the AppBafr to reflect connexion state in connexion icon
+  void _onMessageEvent(args) {
     setState(() {});
   }
 
@@ -85,12 +92,7 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     //Map timeslotSetData = args['timeslotSetData'];
 
     return Scaffold(
-      appBar: AppBar(title: const Text("Edition d'une Plage hebdomadaire"), actions: [
-        Common.createCircleIcon(
-            size: 32,
-            icon: Icon(ModelCtrl().isConnectedToServer() ? Icons.link : Icons.link_off, color: Colors.white),
-            backColor: ModelCtrl().isConnectedToServer() ? Colors.green.shade700 : Colors.red.shade800),
-      ]),
+      appBar: Common.createAppBar("Edition d'une Plage hebdomadaire"),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: TimeSlotSetEditor(

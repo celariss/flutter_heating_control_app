@@ -1,3 +1,12 @@
+V0.4.0 (19/11/2023) :
+	- Update for server v0.9.4 interface compatibility
+		. Reading of IsAlive message to change connexion icon color dynamically
+		. Reading of min/max temperatures in devices data 
+	- upgraded dependencies to latest versions
+	- added settings page with theme selection and mqtt settings
+	- bug fix : now working without secrets.yaml
+	- added minSetpoint and maxSetpoint default value to config.yaml
+
 V0.3.0 (18/02/2023) :
 	- Update for server v0.9.3 interface compatibility
 	- Added devices editor to reorder devices and change their name

@@ -11,7 +11,7 @@ import 'temperaturesets.dart';
 //             TemperatureSetsPage PAGE
 ///////////////////////////////////////////////////////////////////////////
 class TemperatureSetsPage extends StatefulWidget {
-  const TemperatureSetsPage({Key? key}) : super(key: key);
+  const TemperatureSetsPage({super.key});
   static const String route = '/';
 
   @override
@@ -54,12 +54,14 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     super.initState();
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
   @override
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     _scrollController.dispose();
     super.dispose();
   }
@@ -77,15 +79,15 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     setState(() {});
   }
 
+  // We need to update the AppBafr to reflect connexion state in connexion icon
+  void _onMessageEvent(args) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Jeux de T°'), actions: [
-        Common.createCircleIcon(
-            size: 32,
-            icon: Icon(ModelCtrl().isConnectedToServer() ? Icons.link : Icons.link_off, color: Colors.white),
-            backColor: ModelCtrl().isConnectedToServer() ? Colors.green.shade700 : Colors.red.shade800),
-      ]),
+      appBar: Common.createAppBar('Jeux de T°'),
       body: TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: ''),
       key: UniqueKey(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,

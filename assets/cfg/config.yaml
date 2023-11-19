@@ -3,13 +3,16 @@ temperatureSetDefaultColor: 0xFF000099
 defaultSetpoint: 18
 minSetpoint: 7
 maxSetpoint: 30
+thermostatResolution: 0.5
 # MQTT topics to use to communicate with the heating control server
 mqtt:
   SendTopic: 'heatingcontrol/command'
+  onIsAliveTopic: 'heatingcontrol/serverdata/is_alive'
   onResponseTopic: 'heatingcontrol/on_cmd_response'
   onSchedulerTopic: 'heatingcontrol/serverdata/on_scheduler'
   onDevicesTopic: 'heatingcontrol/serverdata/on_devices'
   onDeviceChangeTopic: 'heatingcontrol/serverdata/devices/#'
+  isAliveTimeout: 10
   # normal: 1883, secure: 8883
   # websocket: 1884, secure: 8884
   port: 8884

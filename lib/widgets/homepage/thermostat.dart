@@ -10,8 +10,8 @@ import '../../common/theme.dart';
 
 class Thermostat {
   static Widget heaterWidgetBuilder(Device device, void Function(String deviceName, double setpoint) onSetpoint) {
-    double minValue = Settings().minSetpoint.toDouble();
-    double maxValue = Settings().maxSetpoint.toDouble();
+    double minValue = device.minTemperature>=0 ? device.minTemperature : Settings().minSetpoint.toDouble();
+    double maxValue = device.maxTemperature>=0 ? device.maxTemperature : Settings().maxSetpoint.toDouble();
     double? activeSetpoint = ModelCtrl().getActiveSetpoint(device.name);
     bool pending = device.pendingSetpoint != null;
     bool manualMode = activeSetpoint != null && activeSetpoint != device.actualSetpoint;
@@ -79,7 +79,7 @@ class Thermostat {
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.keyboard_double_arrow_left, color: AppTheme().focusColor),
                           onPressed: () {
-                            double newValue = min(maxValue, max(minValue, ((value - 0.5) * 2).floor() / 2));
+                            double newValue = floor(value - Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
                               onSetpoint(device.name, newValue);
                             }
@@ -92,7 +92,7 @@ class Thermostat {
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.keyboard_double_arrow_right, color: AppTheme().focusColor),
                           onPressed: () {
-                            double newValue = min(maxValue, max(minValue, ((value + 0.5) * 2).floor() / 2));
+                            double newValue = floor(value + Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
                               onSetpoint(device.name, newValue);
                             }
