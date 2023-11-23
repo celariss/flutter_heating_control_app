@@ -38,7 +38,6 @@ This flutter app can be run on the following targets :
 
 ## TODO
 - Add multi-language support (+ translate in english)
-- Add settings page for MQTT connection parameters, color theme, ...
 - Add comments in code !
 - Add auto-tests
 
@@ -91,7 +90,7 @@ From the repo root folder, type :
     ```sh
     flutter build windows
     ```
-    The built exe is located in `.\build\windows\runner\Release\`
+    The built exe is located in `.\build\windows\x64\runner\Release\`
 
 ## Other
 This README has been written using [Dillinger]

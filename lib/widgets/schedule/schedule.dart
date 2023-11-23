@@ -72,6 +72,16 @@ class Schedule {
       );
     }).toList();
 
+    double rightPadding = 0;
+    switch (Theme.of(context).platform) {
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+        case TargetPlatform.macOS:
+          rightPadding = 35;
+          break;
+        default:
+    }
+
     bool isExpanded = Common.getSavedState('schedule_' + scheduleData['alias'], false) as bool;
     return StatefulBuilder(
       key: Key(scheduleData['alias']),
@@ -89,6 +99,7 @@ class Schedule {
               isExpanded = expanded;
             });
           },
+          tilePadding: EdgeInsets.fromLTRB(0, 0, rightPadding, 0),
           leading: leading,
           title: title_,
           children: children,

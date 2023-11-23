@@ -79,7 +79,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     setState(() {});
   }
 
-  // We need to update the AppBafr to reflect connexion state in connexion icon
+  // We need to update the AppBar to reflect connexion state in connexion icon
   void _onMessageEvent(args) {
     setState(() {});
   }

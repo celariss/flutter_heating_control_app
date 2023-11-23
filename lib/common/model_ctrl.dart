@@ -17,6 +17,7 @@ import 'package:heating_control_app/utils/configuration.dart';
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
 
+import 'common.dart';
 import 'settings.dart';
 import 'timetool.dart';
 
@@ -154,7 +155,20 @@ class ModelCtrl {
           List devices = item['devices'];
           List<Timeslot> timeslots = [];
           List<int> startTime = [0, 0, 0];
-          for (Map ts in tss['timeslots']) {
+          List tsList = [];
+          if (tss.containsKey('timeslots')) {
+            tsList = tss['timeslots'];
+          }
+          else {
+            String weekKind = '';
+            if (weekNumber(date)%2==0) {
+              weekKind = 'A';
+            } else {
+              weekKind = 'B';
+            }
+            tsList = tss['timeslots_$weekKind'];
+          }
+          for (Map ts in tsList) {
             startTime = TimeTool.parseTimeStr(ts['start_time']) ?? startTime;
             if (timeslots.isNotEmpty) {
               timeslots[timeslots.length - 1].endTime = startTime;

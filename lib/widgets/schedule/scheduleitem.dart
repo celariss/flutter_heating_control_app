@@ -11,8 +11,7 @@ class ScheduleItem extends StatelessWidget {
   final Map scheduleItemData;
 
   const ScheduleItem(
-      {Key? key, required this.scheduleItemData, required this.scheduleName, required this.scheduleItemIdx})
-      : super(key: key);
+      {super.key, required this.scheduleItemData, required this.scheduleName, required this.scheduleItemIdx});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +33,17 @@ class ScheduleItem extends StatelessWidget {
     if (scheduleItemIdx < ModelCtrl().getSchedule(scheduleName)['schedule_items'].length - 1) {
       moveBtns.add(downBtn);
     }
+
+    double rightPadding = 0;
+    switch (Theme.of(context).platform) {
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+        case TargetPlatform.macOS:
+          rightPadding = 35;
+          break;
+        default:
+    }
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
       child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
@@ -78,7 +88,10 @@ class ScheduleItem extends StatelessWidget {
                 //controller: _scrollController,
                 itemCount: timeslotsSets.length,
                 itemBuilder: (context, index) {
-                  return Column(key: Key(index.toString()), children: [
+                  return Padding(
+                    key: Key(index.toString()), 
+                    padding: EdgeInsets.fromLTRB(0, 0, rightPadding, 0),
+                    child:Column(children: [
                     const SizedBox(height: 3),
                     TimeslotsSet(
                         timeslotSetData: timeslotsSets[index],
@@ -86,7 +99,7 @@ class ScheduleItem extends StatelessWidget {
                         scheduleItemIdx: scheduleItemIdx,
                         timeslotSetIdx: index),
                     const SizedBox(height: 8),
-                  ]);
+                  ]));
                 },
                 onReorder: (oldIndex, newIndex) {
                   if (oldIndex < newIndex) {

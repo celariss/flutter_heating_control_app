@@ -5,13 +5,13 @@ import '../../common/model_ctrl.dart';
 import '../../common/timetool.dart';
 
 class Timeslots {
-  static List<Widget> timeslotsBuilder(BuildContext context, ScheduleDataPosition schedulePos, Map timeslotSetData,
+  static List<Widget> timeslotsBuilder(BuildContext context, ScheduleDataPosition schedulePos, Map timeslotSetData, String key,
       {required Widget Function(
               List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet)
           timeSlotBuilder}) {
     List<Widget> timeslots = [];
 
-    List<dynamic> timeslotsData = timeslotSetData['timeslots'];
+    List<dynamic> timeslotsData = timeslotSetData[key];
     List<int> startTime = [0, 0, 0];
     for (int tsIndex = 0; tsIndex < timeslotsData.length; tsIndex++) {
       List<int> endTime;

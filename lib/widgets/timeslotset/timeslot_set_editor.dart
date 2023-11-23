@@ -10,23 +10,25 @@ class TimeSlotSetEditor extends StatefulWidget {
   final String scheduleName;
   final int scheduleItemIdx;
   final int timeslotSetIdx;
+  final String tsKey;
 
   const TimeSlotSetEditor(
-      {super.key, required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx});
+      {super.key, required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx, required this.tsKey});
 
   @override
   State<TimeSlotSetEditor> createState() =>
-      _TimeSlotSetEditor(scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, timeslotSetIdx: timeslotSetIdx);
+      _TimeSlotSetEditor(scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, timeslotSetIdx: timeslotSetIdx, tsKey: tsKey);
 }
 
 class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
   final String scheduleName;
   final int scheduleItemIdx;
   final int timeslotSetIdx;
+  String tsKey;
   Map timeslotSetData = {};
   bool pullData = true;
 
-  _TimeSlotSetEditor({required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx});
+  _TimeSlotSetEditor({required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx, required this.tsKey});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +51,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
               size: 55,
               icon: const Icon(Icons.add, color: Colors.white),
               onPressed: () {
-                List timeslots = timeslotSetData['timeslots'];
+                List timeslots = timeslotSetData[tsKey];
                 Map lastTimeslot = timeslots[timeslots.length - 1];
                 List<int> lastTime = TimeTool.parseTimeStr(lastTimeslot['start_time']) ?? [0, 0, 0];
                 List<int> startTime = [];
@@ -62,7 +64,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
                 } else {
                   startTime = [lastTime[0] + (24 - lastTime[0]) ~/ 2, 0, 0];
                 }
-                timeslotSetData['timeslots'].add({
+                timeslotSetData[tsKey].add({
                   'start_time': TimeTool.timeToString(startTime),
                   'temperature_set': lastTimeslot['temperature_set']
                 });
@@ -87,12 +89,12 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData, passiveMode: true),
       const SizedBox(height: 10),
       Row(
-          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData,
+          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey,
               timeSlotBuilder: Timeslots.buildTimeslotCompact)),
       const SizedBox(height: 20),
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, timeSlotBuilder: buildTimeslotEditor),
+        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, timeSlotBuilder: buildTimeslotEditor),
       ),
       // Widget to avoid content being hidden by navbar
       const SizedBox(height: 55)
@@ -123,7 +125,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       // Widget that shows the date range of this timeslot set
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _buildTimeRange(timeslotSetData['timeslots'], startTime, endTime, schedulePos.timeslotIdx, setState),
+        children: _buildTimeRange(timeslotSetData[tsKey], startTime, endTime, schedulePos.timeslotIdx, setState),
       ),
       const SizedBox(width: 10),
       Column(children: [
@@ -210,7 +212,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
             List<int> diff = TimeTool.subTime(nextTime, currentTime);
             List<int> newTime = TimeTool.fromMinutes(TimeTool.getTotalMinutes(diff) ~/ 2);
             newTime = TimeTool.addTime(currentTime, newTime, precision: 10);
-            timeslotSetData['timeslots'].insert(tsIndex + 1,
+            timeslotSetData[tsKey].insert(tsIndex + 1,
                 {'start_time': TimeTool.timeToString(newTime), 'temperature_set': currentTimeslot['temperature_set']});
             setState(() {
               pullData = false;

@@ -60,9 +60,50 @@ class MyApp extends StatelessWidget {
           // Color visible during transition between pages
           canvasColor: AppTheme().background1Color,
           dialogBackgroundColor: AppTheme().background2Color,
+          iconTheme: IconThemeData(color: AppTheme().specialTextColor),
+          navigationRailTheme: NavigationRailThemeData(
+            unselectedLabelTextStyle: TextStyle(
+              color: AppTheme().normalTextColor
+              ),
+            unselectedIconTheme: IconThemeData(
+              color: AppTheme().normalTextColor
+            )
+          ),
+          /*bottomNavigationBarTheme: BottomNavigationBarThemeData(
+            unselectedItemColor: AppTheme().normalTextColor,
+            unselectedLabelStyle: TextStyle(
+              color: AppTheme().normalTextColor)
+          ),
+          navigationBarTheme: NavigationBarThemeData(
+            labelTextStyle: MaterialStateProperty.resolveWith((states) {
+            if (states.contains(MaterialState.selected)) {
+              return TextStyle(
+                color: AppTheme().focusColor,
+              );
+            }
+            return TextStyle(
+                color: AppTheme().normalTextColor,
+            );
+          }),
+          ),*/
+          listTileTheme: ListTileThemeData(
+            textColor: AppTheme().specialTextColor,
+          ),
+          cardTheme: CardTheme(
+            color: AppTheme().background2Color,
+          ),
+          scrollbarTheme: ScrollbarThemeData(
+            trackColor: MaterialStateProperty.all(AppTheme().normalTextColor),
+            thumbColor: MaterialStateProperty.all(AppTheme().focusColor)
+          ),
+          chipTheme: const ChipThemeData(
+            shape: StadiumBorder(),
+            padding: EdgeInsets.all(0)
+          ),
           
           appBarTheme: AppBarTheme(
             color: AppTheme().appBarColor,
+            foregroundColor: AppTheme().normalTextColor,
           ),
 
           buttonTheme: ButtonThemeData(
@@ -106,7 +147,7 @@ class RootPage extends StatefulWidget {
 
 class _RootPageState extends State<RootPage> {
   List<NavbarItem> items = [
-    NavbarItem(Icons.home, 'Général', backgroundColor: AppTheme().background2Color),
+    NavbarItem(Icons.home, 'Accueil', backgroundColor: AppTheme().background2Color),
     NavbarItem(Icons.list, 'Jeux de T°', backgroundColor: AppTheme().background2Color),
     NavbarItem(Icons.schedule, 'Plannings', backgroundColor: AppTheme().background2Color),
   ];

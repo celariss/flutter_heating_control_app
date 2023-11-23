@@ -1,3 +1,9 @@
+V0.5.0 (23/11/2023) :
+	- compatibility with server v0.9.5 : added odd/even weeks in schedules item
+	- upgraded to flutter 3.16.0
+	- upgraded dependencies
+	- fixed many user experience related issues (desktop and mobile targets)
+
 V0.4.0 (19/11/2023) :
 	- Update for server v0.9.4 interface compatibility
 		. Reading of IsAlive message to change connexion icon color dynamically

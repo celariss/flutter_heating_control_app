@@ -84,9 +84,9 @@ class _SettingsPage extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     themeNotifier = Provider.of<ThemeNotifier>(context);
-    return WillPopScope(
+    return PopScope(
       // Called when user click on back button of the navigation bar
-      onWillPop:() async {
+      onPopInvoked: (bool didPop) {
         if (mqttChanged) {
           Settings().setMqttPassword(mqttPassword);
           Settings().setMqttUser(mqttUser);
@@ -96,7 +96,6 @@ class _SettingsPage extends State<SettingsPage> {
           ModelCtrl().disconnect();
           ModelCtrl().connect();
         }
-        return true;
       },
       child: Scaffold(
       appBar: AppBar(title: const Text('Paramètres')),

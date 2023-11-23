@@ -54,6 +54,7 @@ class _DevicesEditorWidgetState extends State<DevicesEditorWidget> {
             // The two following lines are here to avoid "viewport has unbounded height" error
             // and allows the scroll to work in nested listviews
             //physics: const BouncingScrollPhysics(),
+            physics: const NeverScrollableScrollPhysics(),
             shrinkWrap: true,
             itemCount: devices.length,
             itemBuilder: (BuildContext context, int index) =>
@@ -79,9 +80,12 @@ class _DevicesEditorWidgetState extends State<DevicesEditorWidget> {
     }
     Widget leading = Icon(Common.getDeviceIconData(), color: null);
     Widget title = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        Text(name, style: TextStyle(fontSize: Common.getRadioListTextSize(), fontWeight: FontWeight.bold, color: null)),
-      ]),
+      Flexible(child: Text(
+        name,
+        overflow: TextOverflow.fade,
+        style: TextStyle(fontSize: Common.getRadioListTextSize(),
+        fontWeight: FontWeight.bold, color: null)),
+      ),
       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
         IconButton(
           icon: Icon(Icons.edit, color: AppTheme().focusColor),
@@ -119,14 +123,17 @@ class _DevicesEditorWidgetState extends State<DevicesEditorWidget> {
         title: "Changer le nom de l'équipement",
         onValidate: () => onValidate(deviceName, nameCtrl.text),
         content: StatefulBuilder(builder: (context, setState) {
-          return Column(
+          return SizedBox(
+            width: min(MediaQuery.of(context).size.width, 800),
+            child: Column(
             children: [
               TextFormField(
                 controller: nameCtrl,
+                style: TextStyle(color: AppTheme().specialTextColor),
                 decoration: const InputDecoration(hintText: 'Nom'),
               ),
             ],
-          );
+          ));
         }));
   }
 }

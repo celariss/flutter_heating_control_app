@@ -89,6 +89,7 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     final String scheduleName = args['scheduleName'];
     final int scheduleItemIdx = args['scheduleItemIdx'];
     final int timeslotSetIdx = args['timeslotSetIdx'];
+    final String tsKey = args['tsKey'];
     //Map timeslotSetData = args['timeslotSetData'];
 
     return Scaffold(
@@ -96,7 +97,7 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
       body: Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: TimeSlotSetEditor(
-            scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, timeslotSetIdx: timeslotSetIdx),
+            scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, tsKey: tsKey, timeslotSetIdx: timeslotSetIdx),
       ),
     );
   }

@@ -54,6 +54,16 @@ class TemperatureSet {
       );
     }
 
+    double rightPadding = 0;
+    switch (Theme.of(context).platform) {
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+        case TargetPlatform.macOS:
+          rightPadding = 35;
+          break;
+        default:
+    }
+
     return StatefulBuilder(
       key: Key(tempSetData['alias']),
       builder: (BuildContext context, setState) {
@@ -70,6 +80,7 @@ class TemperatureSet {
               isExpanded = expanded;
             });
           },
+          tilePadding: EdgeInsets.fromLTRB(0, 0, rightPadding, 0),
           leading: leading,
           title: title_,
           children: devicesList.map((dev) => _buildDeviceTile(context, dev, scheduleName)).toList(),
@@ -142,6 +153,15 @@ class TemperatureSet {
   }
 
   static Widget _buildDeviceTile(BuildContext context, Map data, String scheduleName) {
+    double rightPadding = 0;
+    switch (Theme.of(context).platform) {
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+        case TargetPlatform.macOS:
+          rightPadding = 30;
+          break;
+        default:
+    }
     //return Builder(builder: (context) {
     return StatefulBuilder(builder: (context, setState) {
       return Padding(
@@ -160,11 +180,11 @@ class TemperatureSet {
               }
             });
           },
-          contentPadding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
+          contentPadding: EdgeInsets.fromLTRB(50, 0, rightPadding, 0),
           visualDensity: VisualDensity.compact,
-          horizontalTitleGap: 0,
+          horizontalTitleGap: 10,
           leading: Icon(Common.getDeviceIconData(), color: AppTheme().specialTextColor), //SizedBox(),
-          title: Text(data['device_name']),
+          title: Text(data['device_name'], style:TextStyle(color: AppTheme().normalTextColor)),
           trailing: Text('${data['setpoint'].toStringAsFixed(1)}°',
               style: TextStyle(fontSize: 16, color: AppTheme().focusColor, fontWeight: FontWeight.bold)),
         ),

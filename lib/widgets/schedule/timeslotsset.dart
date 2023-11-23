@@ -1,8 +1,11 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
+import '../../common/theme.dart';
 import '../timeslotset/timeslotsetpage.dart';
 import 'timeslots.dart';
 
@@ -13,46 +16,85 @@ class TimeslotsSet extends StatelessWidget {
   final Map timeslotSetData;
 
   const TimeslotsSet(
-      {Key? key,
+      {super.key,
       required this.timeslotSetData,
       required this.scheduleName,
       required this.scheduleItemIdx,
-      required this.timeslotSetIdx})
-      : super(key: key);
+      required this.timeslotSetIdx});
 
   @override
   Widget build(BuildContext context) {
+    bool fortnight = timeslotSetData.containsKey('timeslots_A');
+    List<Widget> widgets = [
+      Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData),
+      buildTimeSlotsInkWell(context, fortnight ? 'timeslots_A' : 'timeslots', fortnight ? 2 : 0),
+    ];
+    if (fortnight) {
+      widgets.add(const SizedBox(height:10));
+      widgets.add(buildTimeSlotsInkWell(context, 'timeslots_B', 1));
+    }
+
     return Row(mainAxisSize: MainAxisSize.min, children: [
       _timeslotsSetMenuBuilder(
-          context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData),
-      Expanded(
-          child: Column(children: [
-        Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData),
-        InkWell(
-          onTap: () {
-            NavbarNotifier.hideBottomNavBar = false;
-            Common.navBarNavigate(context, TimeSlotSetPage.route, isRootNavigator: false, arguments: {
-              'scheduleName': scheduleName,
-              'scheduleItemIdx': scheduleItemIdx,
-              'timeslotSetIdx': timeslotSetIdx,
-              'timeslotSetData': timeslotSetData
-            });
-          },
-          child: Row(
-              children: Timeslots.timeslotsBuilder(
-                  context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData,
-                  timeSlotBuilder: Timeslots.buildTimeslotCompact)),
-        ),
-      ])),
-    ]);
+        context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData),
+        Expanded(
+            child: Column(children: widgets),
+        )
+      ]);
+  }
+
+  Widget buildTimeSlotsInkWell(BuildContext context, String tsKey, int weekNumber) {
+    List<Widget> children = [];
+    if (weekNumber==1) {
+      children.add(Text('sB', style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
+      children.add(const SizedBox(width: 5));
+    } else if (weekNumber==2) {
+      children.add(Text('sA', style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
+      children.add(const SizedBox(width: 5));
+    }
+    children.addAll(Timeslots.timeslotsBuilder(
+          context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData, tsKey,
+          timeSlotBuilder: Timeslots.buildTimeslotCompact));
+    
+    return InkWell(
+      onTap: () {
+        NavbarNotifier.hideBottomNavBar = false;
+        Common.navBarNavigate(context, TimeSlotSetPage.route, isRootNavigator: false, arguments: {
+          'scheduleName': scheduleName,
+          'scheduleItemIdx': scheduleItemIdx,
+          'timeslotSetIdx': timeslotSetIdx,
+          'timeslotSetData': timeslotSetData,
+          'tsKey': tsKey
+        });
+      },
+      child: Row(crossAxisAlignment: CrossAxisAlignment.center,
+          children: children,
+      ));
   }
 
   static Widget _timeslotsSetMenuBuilder(BuildContext context, ScheduleDataPosition pos, Map timeslotSetData) {
     return Common.createPopupMenu(
-      [MenuItem_(Icons.copy, 'Dupliquer', 'clone'), MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')],
+      [MenuItem_(Icons.copy, 'Quinzaine on/off', 'switch_mode'),
+       MenuItem_(Icons.copy, 'Dupliquer', 'clone'),
+       MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')],
       //iconColor: Colors.white,
       onSelected: (itemValue) async {
         switch (itemValue) {
+          case 'switch_mode':
+          Map timeslotSetData_ = ModelCtrl.cloneMap(timeslotSetData);
+          if (timeslotSetData_.containsKey('timeslots')) {
+            timeslotSetData_['timeslots_A'] = timeslotSetData_['timeslots'];
+            timeslotSetData_['timeslots_B'] = timeslotSetData_['timeslots'];
+            timeslotSetData_.remove('timeslots');
+          }
+          else {
+            timeslotSetData_['timeslots'] = timeslotSetData_['timeslots_A'];
+            timeslotSetData_.remove('timeslots_A');
+            timeslotSetData_.remove('timeslots_B');
+          }
+          ModelCtrl().setTimeslotSet(pos.scheduleName, pos.scheduleItemIdx, pos.timeslotSetIdx, timeslotSetData_);
+          break;
+
           case 'clone':
             Map timeslotSetData_ = ModelCtrl.cloneMap(timeslotSetData);
             timeslotSetData_['dates'] = [];

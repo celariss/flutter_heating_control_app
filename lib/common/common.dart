@@ -30,6 +30,17 @@ double floor(double value, double precision, {double? minValue, double? maxValue
   return value;
 }
 
+int weeksBetween(DateTime from, DateTime to) {
+  from = DateTime.utc(from.year, from.month, from.day);
+  to = DateTime.utc(to.year, to.month, to.day);
+  return (to.difference(from).inDays / 7).ceil();
+}
+
+int weekNumber(DateTime date) {
+  final firstJan = DateTime(date.year, 1, 1);
+  return(weeksBetween(firstJan, date));
+}
+
 class MenuItem_ {
   final IconData icon;
   final String text;
@@ -138,7 +149,7 @@ class Common {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
-  static createCircleIcon({required Icon icon, required double size, required Color backColor}) {
+  static Widget createCircleIcon({required Icon icon, required double size, required Color backColor}) {
     return Container(
       width: size,
       height: size,
@@ -268,7 +279,7 @@ class Common {
         return AlertDialog(
             title: Text(title, style: TextStyle(color: AppTheme().focusColor)),
             backgroundColor: AppTheme().background2Color,
-            contentPadding: const EdgeInsets.all(0),
+            contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
             //insetPadding: const EdgeInsets.all(0),
             content: SingleChildScrollView(
               //shrinkWrap: true,
@@ -288,12 +299,13 @@ class Common {
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
         title: 'Sélection des équipements',
-        onValidate: onValidate, content: StatefulBuilder(builder: (context, setState) {
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: devices.map((dev) => _buildDeviceChip(context, setState, dev, filters)).toList(),
-      );
-    }));
+        onValidate: onValidate,
+        content: StatefulBuilder(builder: (context, setState) {
+          return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: devices.map((dev) => _buildDeviceChip(context, setState, dev, filters)).toList(),
+          );
+        }));
   }
 
   static Widget _buildDeviceChip(
@@ -380,9 +392,16 @@ class Common {
         onValidate: () => onValidate(context, data, nameCtrl.text),
         content: Column(
           children: [
-            TextFormField(
-              controller: nameCtrl,
-              decoration: const InputDecoration(hintText: 'Nom du planning'),
+            Row(
+              children: [
+                const Text('Nom : '),
+                const SizedBox(width:20),
+              Flexible(flex:2, child: TextFormField(
+                style: TextStyle(color: AppTheme().specialTextColor), 
+                controller: nameCtrl,
+                decoration: const InputDecoration(hintText: 'Nom du planning'),
+              )),
+              ],
             ),
           ],
         ));
@@ -441,36 +460,44 @@ class Common {
         title: 'Propriétés du Jeu',
         onValidate: () => onValidate(data, scheduleName, color, nameCtrl.text),
         content: StatefulBuilder(builder: (context, setState) {
-          return Column(
-            children: [
-              TextFormField(
-                controller: nameCtrl,
-                decoration: const InputDecoration(hintText: 'Nom du jeu'),
-              ),
-              const SizedBox(height: 20),
-              Row(
+          return Column(  
                 children: [
-                  const Flexible(child: SizedBox(height: 30.0, child: Text('Couleur'))),
-                  const Spacer(flex: 2),
-                  InkResponse(
-                    onTap: () {
-                      showColorPicker(context, color).then((value) {
-                        setState(() => color = value);
-                      });
-                    },
-                    child: Container(
-                      width: 30.0,
-                      height: 30.0,
-                      decoration: BoxDecoration(
-                        color: color,
-                        shape: BoxShape.circle,
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Text('Nom : '),
+                    const SizedBox(width:20),
+                  Flexible(flex:2, child: TextFormField(
+                    style: TextStyle(color: AppTheme().specialTextColor), 
+                    controller: nameCtrl,
+                    decoration: const InputDecoration(hintText: 'Nom du jeu'),
+                  )),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    const Flexible(child: SizedBox(height: 30.0, child: Text('Couleur : '))),
+                    const Spacer(flex: 2),
+                    InkResponse(
+                      onTap: () {
+                        showColorPicker(context, color).then((value) {
+                          setState(() => color = value);
+                        });
+                      },
+                      child: Container(
+                        width: 30.0,
+                        height: 30.0,
+                        decoration: BoxDecoration(
+                          color: color,
+                          shape: BoxShape.circle,
+                        ),
                       ),
                     ),
-                  ),
-                ],
-              )
-            ],
-          );
+                  ],
+                ),
+              ],
+            );
         }));
   }
 
