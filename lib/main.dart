@@ -5,6 +5,7 @@
 /// License: BSD 3-Clause
 
 import 'package:flutter/material.dart';
+import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import 'common/common.dart';
@@ -106,6 +107,10 @@ class MyApp extends StatelessWidget {
             foregroundColor: AppTheme().normalTextColor,
           ),
 
+          dialogTheme: DialogTheme(
+            backgroundColor: AppTheme().background2Color,
+          ),
+
           buttonTheme: ButtonThemeData(
             buttonColor: AppTheme().buttonBackColor,
           ),
@@ -156,6 +161,7 @@ class _RootPageState extends State<RootPage> {
     0: {
       '/': const HomePage(),
       SettingsPage.route: const SettingsPage(),
+      DevicesEditorPage.route: const DevicesEditorPage(),
     },
     1: {
       '/': const TemperatureSetsPage(),

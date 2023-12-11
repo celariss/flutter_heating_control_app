@@ -59,7 +59,7 @@ And it depends on following flutter plugins :
 
 > You must install first a heating control server along with a MQTT broker
 
-#### 1- Edit configuration file
+#### 1- Edit configuration file (optional)
 - in `assets/cfg/config.yaml`, set mqtt/port and mqtt/secure fields
 - create `assets/cfg/secrets.yaml` and set brokerAddress, user and password in mqtt section
 
@@ -70,6 +70,7 @@ And it depends on following flutter plugins :
     user: mqtt_user
     password: superpass_12
   ```
+> Note: connexion parameters can also be set in running app, using the settings page 
 
 #### 2- Setup your Flutter dev environment
 - Heating control App requires [Flutter] v3.3+ to build.

@@ -43,12 +43,16 @@ class Schedule {
     Widget leading = Icon(Icons.schedule, color: AppTheme().focusColor);
     String name = scheduleData['alias'];
     double fontSize = dense ? Common.getRadioListTextSize() : Common.getListViewTextSize();
+    List<Widget> titleChildren = [];
+    titleChildren.add(Text(name, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)));
+    Map activeSchedule = ModelCtrl().getActiveSchedule();
+    if (activeSchedule.containsKey('alias') && activeSchedule['alias'] == scheduleData['alias']) {
+      titleChildren.add(Common.createActiveScheduleTag());
+    }
     Widget title = Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-              Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-                Text(name, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
-              ]),
+              Row(mainAxisAlignment: MainAxisAlignment.start, children: titleChildren),
             ] +
             ((dense == true)
                 ? []

@@ -6,13 +6,15 @@ import '../../common/timetool.dart';
 
 class Timeslots {
   static List<Widget> timeslotsBuilder(BuildContext context, ScheduleDataPosition schedulePos, Map timeslotSetData, String key,
+      bool isActive,
       {required Widget Function(
-              List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet)
+              List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive)
           timeSlotBuilder}) {
     List<Widget> timeslots = [];
 
     List<dynamic> timeslotsData = timeslotSetData[key];
     List<int> startTime = [0, 0, 0];
+    DateTime now = DateTime.now();
     for (int tsIndex = 0; tsIndex < timeslotsData.length; tsIndex++) {
       List<int> endTime;
       if (tsIndex == timeslotsData.length - 1) {
@@ -25,7 +27,16 @@ class Timeslots {
       Map tempSet = ModelCtrl().buildTemperatureSet(tempSetName, schedulePos.scheduleName);
       schedulePos = ScheduleDataPosition.clone(schedulePos);
       schedulePos.timeslotIdx = tsIndex;
-      timeslots.add(timeSlotBuilder(startTime, endTime, schedulePos, timeslotsData, tempSet));
+      // Detect wether this timeslot is the active one
+      bool isActiveTimeslot = false;
+      if (isActive) {
+        if (now.hour>startTime[0] || now.hour==startTime[0] && now.minute>=startTime[1]) {
+          if (now.hour<endTime[0] || now.hour==endTime[0] && now.minute<endTime[1]) {
+            isActiveTimeslot = true;
+          }
+        }
+      }
+      timeslots.add(timeSlotBuilder(startTime, endTime, schedulePos, timeslotsData, tempSet, isActiveTimeslot));
       startTime = endTime;
     }
 
@@ -33,7 +44,7 @@ class Timeslots {
   }
 
   static Widget buildTimeslotCompact(
-      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet) {
+      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive) {
     double timeslotsHeight = 20.0;
     Color color = Color(ModelCtrl.getGUIParamHex(tempSet, 'iconColor', 0xFF000000));
     int flexValue = endTime[0] * 12 + (endTime[1] ~/ 5) - (startTime[0] * 12 + (startTime[1] ~/ 5));
@@ -50,11 +61,23 @@ class Timeslots {
                   : null,
     );
 
-    return Flexible(
+    List<Widget> children = [
+      Container(
+        height: timeslotsHeight,
+        decoration: deco,
+      )
+    ];
+    if (isActive) {
+      children.add(Common.createActiveScheduleTag());
+    }
+
+    return 
+      Flexible(
         flex: flexValue,
-        child: Container(
-          height: timeslotsHeight,
-          decoration: deco,
-        ));
+        child: Stack(
+          alignment: AlignmentDirectional.center,
+          children: children
+        )
+      );
   }
 }

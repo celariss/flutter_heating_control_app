@@ -49,6 +49,7 @@ class MessageInfo {
 class Device {
   final String name;
   final String mqttId;
+  final String serverEntity;
   bool isAvailable = false;
   double actualSetpoint = -1.0;
   double? pendingSetpoint;
@@ -57,7 +58,23 @@ class Device {
   double currentTemperature = -1.0;
   double minTemperature = -1.0;
   double maxTemperature = -1.0;
-  Device(this.name, this.mqttId);
+  Device(this.name, this.mqttId, this.serverEntity, Device ?state) {
+    if (state!=null) {
+      isAvailable = state.isAvailable;
+      actualSetpoint = state.actualSetpoint;
+      pendingSetpoint = state.pendingSetpoint;
+      pendingSetpointSent = state.pendingSetpointSent;
+      currentTemperature = state.currentTemperature;
+      minTemperature = state.minTemperature;
+      maxTemperature = state.maxTemperature;
+    }
+  }
+}
+
+class Entity {
+  final String name;
+  final String serverEntity;
+  Entity(this.name, this.serverEntity);
 }
 
 class DeviceSetpoint {
@@ -83,9 +100,11 @@ class ModelCtrl {
   Map _schedulerData = {};
   Map _savedSchedulerData = {};
   Map<String, Device> _devices = {};
+  Map<String, Entity> _entities = {};
   List<Timeslot> _todayActiveSetpoints = [];
   var onSchedulesEvent = Event<Value<Map>>();
   var onDevicesEvent = Event<Value<Map<String, Device>>>();
+  var onEntitiesEvent = Event<Value<Map<String, Entity>>>();
   var onServerResponseEvent = Event<Value<ServerResponse>>();
   var onMessageEvent = Event<Value<MessageInfo>>();
 
@@ -102,9 +121,9 @@ class ModelCtrl {
     if (_mqttClient==null) {
       _mqttClient ??= MQTTClient(Settings().MQTT.brokerAddress, Settings().MQTT.port,
           ssl: Settings().MQTT.secure, user: Settings().MQTT.user, password: Settings().MQTT.password);
-      _mqttClient!.onConnected = _onMqttConnected;
-      _mqttClient!.onDisconnected = _onMqttDisconnected;
-      _mqttClient!.onMessageString = _onMqttMessageString;
+      _mqttClient!.onConnected = _onMqttConnectedCallback;
+      _mqttClient!.onDisconnected = _onMqttDisconnectedCallback;
+      _mqttClient!.onMessageString = _onMqttMessageStringCallback;
     }
     //_mqttClient.logging(on:true);
     if (_mqttClient!.isConnected() == false) {
@@ -294,6 +313,13 @@ class ModelCtrl {
     }
   }
 
+  void createDevice(String devName, String srvEntity) {
+    Map message = {};
+    message['command'] = 'add_device';
+    message['params'] = {'name': devName, 'srventity': srvEntity};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
+  }
+
   void createTemperatureSet(int colorValue, String tempSetName, {String scheduleName = '', Map? newTempSetData}) {
     Map tempSetData = {'alias': tempSetName, 'devices': []};
     if (newTempSetData != null) {
@@ -305,33 +331,47 @@ class ModelCtrl {
   }
 
   void createSchedule(String scheduleName, [Map? scheduleContent]) {
-    if (_devices.isNotEmpty &&
-        scheduleName.isNotEmpty &&
+    if (getSchedule(scheduleName).isNotEmpty) {
+      // The server would replace an existing schedule
+      return;
+    }
+
+    Map scheduleData = {};
+    if (scheduleContent!=null) {
+      scheduleData = scheduleContent;
+    } else {
+      // If there is at least 1 device and 1 temperature set, then we can create the first schedule item
+      bool bCreateScheduleItem = _devices.isNotEmpty &&
         _schedulerData.isNotEmpty &&
         _schedulerData.containsKey('temperature_sets') &&
-        (_schedulerData['temperature_sets'].length > 0)) {
+        (_schedulerData['temperature_sets'].length > 0);
+
+      Map scheduleItem = {};
+      if (!bCreateScheduleItem) {
+        // a schedule without any schedule item is not allowed
+        return;
+      }
+
       String deviceName = _devices.keys.first;
       String tempSetName = _schedulerData['temperature_sets'][0]['alias'];
-      Map scheduleData = scheduleContent ??
+      scheduleItem = {
+        'devices': [deviceName],
+        'timeslots_sets': [
           {
-            'schedule_items': [
-              {
-                'devices': [deviceName],
-                'timeslots_sets': [
-                  {
-                    'dates': ['1', '2', '3', '4', '5', '6', '7'],
-                    'timeslots': [
-                      {'start_time': '00:00:00', 'temperature_set': tempSetName}
-                    ]
-                  }
-                ]
-              }
+            'dates': ['1', '2', '3', '4', '5', '6', '7'],
+            'timeslots': [
+              {'start_time': '00:00:00', 'temperature_set': tempSetName}
             ]
-          };
-
-      scheduleData['alias'] = createAvailableScheduleName(scheduleName);
-      _onScheduleChanged(scheduleData);
+          }
+        ]
+      };
+      scheduleData = {
+            'schedule_items': [scheduleItem]
+          };     
     }
+
+    scheduleData['alias'] = createAvailableScheduleName(scheduleName);
+    _onScheduleChanged(scheduleData);
   }
 
   String createAvailableScheduleName(String desiredAlias) {
@@ -476,6 +516,23 @@ class ModelCtrl {
     }
   }
 
+  void setDeviceEntity(String deviceName, String serverEntity) {
+    Device ?device = getDevices()[deviceName];
+    if (device!=null && device.serverEntity!=serverEntity && serverEntity!='') {
+      Map message = {};
+      message['command'] = 'set_device_entity';
+      message['params'] = {'name': deviceName, 'new_srventity': serverEntity};
+      _mqttPublishMap(Settings().MQTT.sendTopic, message);
+    }
+  }
+
+  void deleteDevice(String deviceName) {
+    Map message = {};
+    message['command'] = 'delete_device';
+    message['params'] = {'name': deviceName};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
+  }
+
   void setDevicesOrder(List<String> deviceNames) {
     Map message = {};
     message['command'] = 'set_devices_order';
@@ -569,6 +626,10 @@ class ModelCtrl {
 
   Map<String, Device> getDevices() {
     return _devices;
+  }
+
+  Map<String, Entity> getEntities() {
+    return _entities;
   }
 
   /// Get the temperature sets for given [scheduleName]
@@ -701,10 +762,8 @@ class ModelCtrl {
   }
 
   bool _mqttPublishString(String topic, String data) {
-    if (_isConnectedToCtrlServer == true && _mqttClient!.isConnected() == false) {
-      _isConnectedToCtrlServer = false;
-      _isConnectedToMQTT = false;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
+    if (_mqttClient!.isConnected() == false) {
+      _onMQTTDisconnected(true);
     }
     if (_isConnectedToCtrlServer == true && _mqttClient!.publish(topic, data)) {
       startServerResponseWaitTimer();
@@ -713,7 +772,7 @@ class ModelCtrl {
     return false;
   }
 
-  void _onMqttConnected() {
+  void _onMqttConnectedCallback() {
     if (kDebugMode) {
       print('ModelCtrl: MQTT CONNECTED');
     }
@@ -724,34 +783,16 @@ class ModelCtrl {
     _mqttClient!.subscribe(Settings().MQTT.onSchedulerTopic);
     _mqttClient!.subscribe(Settings().MQTT.onIsAliveTopic);
     _mqttClient!.subscribe(Settings().MQTT.onDevicesTopic);
+    _mqttClient!.subscribe(Settings().MQTT.onEntitiesTopic);
     _mqttClient!.subscribe(Settings().MQTT.onResponseTopic);
     _mqttClient!.subscribe(Settings().MQTT.onDeviceChangeTopic);
-    startIsAliveWaitTimer();
   }
 
-  void _onMqttDisconnected(bool unexpected) {
-    if (kDebugMode) {
-      print('ModelCtrl: MQTT DISCONNECTED');
-    }
-    stopIsAliveWaitTimer();
-    stopServerResponseWaitTimer();
-    stopSetSetpointTimer();
-    //_mqttClient!.unsubscribe(Settings().MQTT.onSchedulerTopic);
-    //_mqttClient!.unsubscribe(Settings().MQTT.onDevicesTopic);
-    //_mqttClient!.unsubscribe(Settings().MQTT.onResponseTopic);
-    //_mqttClient!.unsubscribe(Settings().MQTT.onDeviceChangeTopic);
-    if (_isConnectedToMQTT == true) {
-      _isConnectedToMQTT = false;
-      _isConnectedToCtrlServer = false;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
-      _onDevicesNotAvailable();
-    }
-    if (unexpected) {
-      connect();
-    }
+  void _onMqttDisconnectedCallback(bool unexpected) {
+    _onMQTTDisconnected(unexpected);
   }
 
-  void _onMqttMessageString(String topic, String payload) {
+  void _onMqttMessageStringCallback(String topic, String payload) {
     if (kDebugMode) {
       print('ModelCtrl: MQTT Message notification:: topic is <$topic}>, payload is <-- $payload -->');
     }
@@ -763,29 +804,44 @@ class ModelCtrl {
       if (isalive) {
         startIsAliveWaitTimer();
       }
-      if (isalive != _isConnectedToCtrlServer){
+      if (isalive != _isConnectedToCtrlServer) {
         if (isalive) {
-          _isConnectedToCtrlServer = true;
-          onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.info, code: EMsgInfoCode.controlServerAvailable)));
+          _onCtrlServerConnected();
         }
         else {
-          _isConnectedToCtrlServer = false;
-          onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
+          _onCtrlServerDisconnected();
         }
       }
     } else if (topic == Settings().MQTT.onDevicesTopic) {
       List devicesData = jsonDecode(payload);
-      Map<String,Device> devices = {};
+      Map<String,Device> newDevices = {};
       for (Map devData in devicesData) {
-        devices[devData['name']] = Device(devData['name'], devData['mqttid']);
-      }
-      for (Device device in _devices.values) {
-        if (devices.containsKey(device.name)) {
-          devices[device.name] = device;
+        String serverEntity = '?';
+        if (devData.containsKey('srventity')) {
+          serverEntity = devData['srventity'];
         }
+        String devName = devData['name'];
+        Device ?existingDevice = _devices.containsKey(devName) ? _devices[devName] : null;
+        newDevices[devName] = Device(devName, devData['mqttid'], serverEntity, existingDevice);
       }
-      _devices = devices;
+      _devices = newDevices;
       onDevicesEvent.broadcast(Value(_devices));
+    } else if (topic == Settings().MQTT.onEntitiesTopic) {
+      List entitiesData = jsonDecode(payload);
+      Map<String,Entity> entities = {};
+      for (Map entData in entitiesData) {
+        String devname = '?';
+        String serverEntity = '?';
+        if (entData.containsKey('name')) {
+          devname = entData['name'];
+        }
+        if (entData.containsKey('srventity')) {
+          serverEntity = entData['srventity'];
+        }
+        entities[devname] = Entity(devname, serverEntity);
+      }
+      _entities = entities;
+      onEntitiesEvent.broadcast(Value(_entities));
     } else if (topic == Settings().MQTT.onSchedulerTopic) {
       _schedulerData = jsonDecode(payload);
       _savedSchedulerData = jsonDecode(payload);
@@ -859,7 +915,7 @@ class ModelCtrl {
 
   void startIsAliveWaitTimer() {
     if (isAliveWaitTimer != null) {
-      stopServerResponseWaitTimer();
+      stopIsAliveWaitTimer();
     }
     if (Settings().MQTT.isAliveTimeout>0) {
       isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
@@ -877,12 +933,7 @@ class ModelCtrl {
 
   void _onIsAliveTimeOut() {
     isAliveWaitTimer = null;
-
-    // We notify the problem with the heating control server
-    if (_isConnectedToCtrlServer) { 
-      _isConnectedToCtrlServer = false;
-      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
-    }
+    _onCtrlServerDisconnected();
   }
 
   void startServerResponseWaitTimer() {
@@ -899,17 +950,6 @@ class ModelCtrl {
       }
       serverResponseWaitTimer = null;
     }
-  }
-
-  void _onServerResponseTimeOut() {
-    serverResponseWaitTimer = null;
-    // Error on previous command => we rollback last changes
-    _schedulerData = cloneMap(_savedSchedulerData);
-    onSchedulesEvent.broadcast(Value(_schedulerData));
-    // We notify the problem with the heating control server
-    _isConnectedToCtrlServer = false;
-    onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
-    _onDevicesNotAvailable();
   }
 
   void startSetSetpointTimer() {
@@ -962,6 +1002,58 @@ class ModelCtrl {
       }
     }
     return false;
+  }
+
+  void _onServerResponseTimeOut() {
+    serverResponseWaitTimer = null;
+    // Error on previous command => we rollback last changes
+    _schedulerData = cloneMap(_savedSchedulerData);
+    onSchedulesEvent.broadcast(Value(_schedulerData));
+    _onCtrlServerDisconnected();
+  }
+
+  void _onCtrlServerDisconnected() {
+    if (_isConnectedToCtrlServer) {
+      _isConnectedToCtrlServer = false;
+      stopIsAliveWaitTimer();
+      stopServerResponseWaitTimer();
+      stopSetSetpointTimer();
+      // We notify the problem with the heating control server
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.controlServerUnavailable)));
+    }
+  }
+
+  void _onCtrlServerConnected() {
+    if (!_isConnectedToCtrlServer) {
+      _isConnectedToCtrlServer = true;
+      onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.info, code: EMsgInfoCode.controlServerAvailable)));
+      startIsAliveWaitTimer();
+    }
+  }
+
+  void _onMQTTDisconnected(bool reconnect) {
+    if (_isConnectedToCtrlServer || _isConnectedToMQTT) {
+      stopIsAliveWaitTimer();
+      stopServerResponseWaitTimer();
+      stopSetSetpointTimer();
+
+      if (_isConnectedToCtrlServer) {
+        _isConnectedToCtrlServer = false;
+      }
+      if (_isConnectedToMQTT == true) {
+        _isConnectedToMQTT = false;
+        _isConnectedToCtrlServer = false;
+        if (kDebugMode) {
+          print('ModelCtrl: MQTT DISCONNECTED');
+        }
+        onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
+        _onDevicesNotAvailable();
+
+        if (reconnect) {
+          connect();
+        }
+      }
+    }
   }
 
   void _onDevicesNotAvailable() {

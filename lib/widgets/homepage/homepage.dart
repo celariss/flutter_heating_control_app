@@ -8,7 +8,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
-import 'deviceseditor.dart';
+import 'deviceseditorpage.dart';
 import 'settingspage.dart';
 import 'thermostat.dart';
 
@@ -116,7 +116,10 @@ class _HomePage extends State<HomePage> {
 
   String getActiveSchedule() {
     if (schedulerData != null && schedulerData!['active_schedule'] != null) {
-      return schedulerData!['active_schedule'];
+      String res = schedulerData!['active_schedule'];
+      if (res!='') {
+        return res;
+      }
     }
     return noPlanningStr;
   }
@@ -197,7 +200,9 @@ class _HomePage extends State<HomePage> {
             alignment: WrapAlignment.end,
             crossAxisAlignment: WrapCrossAlignment.start,
             children: [Container(), Common.createCircleIconButton(Icons.edit_note, iconSize: 50, onPressed: () {
-              DevicesEditorWidget.editDevices(context);
+              //DevicesEditorWidget.editDevices(context);
+              NavbarNotifier.hideBottomNavBar = false;
+              Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
             })]
           ),
           const SizedBox(height: 15),

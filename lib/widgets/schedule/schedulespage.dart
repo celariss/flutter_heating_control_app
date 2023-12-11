@@ -77,10 +77,12 @@ class _SchedulesPage extends State<SchedulesPage> {
   }
 
   void _onNewScheduleValidate(BuildContext context, Map scheduleData, String tapedName) {
-    if (ModelCtrl().getSchedule(tapedName).isEmpty) {
-      ModelCtrl().createSchedule(tapedName);
-    } else {
+    if (ModelCtrl().getSchedule(tapedName).isNotEmpty) {
       Common.showSnackBar(context, 'Ce planning existe déjà ...', backColor: AppTheme().errorColor, duration_ms: 4000);
+    } else if (ModelCtrl().getDevices().isEmpty || ModelCtrl().getTemperatureSets().isEmpty) {
+      Common.showSnackBar(context, 'Il faut commencer par ajouter un thermostat et créer un jeu de températures ...', backColor: AppTheme().errorColor, duration_ms: 4000);
+    } else {
+      ModelCtrl().createSchedule(tapedName); 
     }
   }
 

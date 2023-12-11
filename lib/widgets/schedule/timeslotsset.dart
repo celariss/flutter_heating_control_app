@@ -24,14 +24,25 @@ class TimeslotsSet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool fortnight = timeslotSetData.containsKey('timeslots_A');
+    Map activeSchedule = ModelCtrl().getActiveSchedule();
+    bool iscurrentScheduleActive = activeSchedule.containsKey('alias') && activeSchedule['alias'] == scheduleName;
+    bool fortnightMode = timeslotSetData.containsKey('timeslots_A');
+    // 0: none, 1: week B, 2: week A or weeks A&B
+    int activeWeek = 0;
+    DateTime now = DateTime.now();
+    if (iscurrentScheduleActive && timeslotSetData['dates'].contains(now.weekday.toString())) {
+      activeWeek = 2;
+      if (fortnightMode) {
+        activeWeek = (weekNumber(now)%2==0) ? 2 : 1;
+      }
+    }
     List<Widget> widgets = [
       Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData),
-      buildTimeSlotsInkWell(context, fortnight ? 'timeslots_A' : 'timeslots', fortnight ? 2 : 0),
+      buildTimeSlotsInkWell(context, fortnightMode ? 'timeslots_A' : 'timeslots', fortnightMode ? 2 : 0, activeWeek==2),
     ];
-    if (fortnight) {
+    if (fortnightMode) {
       widgets.add(const SizedBox(height:10));
-      widgets.add(buildTimeSlotsInkWell(context, 'timeslots_B', 1));
+      widgets.add(buildTimeSlotsInkWell(context, 'timeslots_B', 1, activeWeek==1));
     }
 
     return Row(mainAxisSize: MainAxisSize.min, children: [
@@ -43,7 +54,7 @@ class TimeslotsSet extends StatelessWidget {
       ]);
   }
 
-  Widget buildTimeSlotsInkWell(BuildContext context, String tsKey, int weekNumber) {
+  Widget buildTimeSlotsInkWell(BuildContext context, String tsKey, int weekNumber, bool isActive) {
     List<Widget> children = [];
     if (weekNumber==1) {
       children.add(Text('sB', style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
@@ -53,7 +64,7 @@ class TimeslotsSet extends StatelessWidget {
       children.add(const SizedBox(width: 5));
     }
     children.addAll(Timeslots.timeslotsBuilder(
-          context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData, tsKey,
+          context, ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx), timeslotSetData, tsKey, isActive,
           timeSlotBuilder: Timeslots.buildTimeslotCompact));
     
     return InkWell(

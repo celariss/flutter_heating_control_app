@@ -89,12 +89,12 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData, passiveMode: true),
       const SizedBox(height: 10),
       Row(
-          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey,
+          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, false,
               timeSlotBuilder: Timeslots.buildTimeslotCompact)),
       const SizedBox(height: 20),
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, timeSlotBuilder: buildTimeslotEditor),
+        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, false, timeSlotBuilder: buildTimeslotEditor),
       ),
       // Widget to avoid content being hidden by navbar
       const SizedBox(height: 55)
@@ -102,7 +102,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
   }
 
   Widget buildTimeslotEditor(
-      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet) {
+      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive) {
     double minHeight = 120;
     double bottomPadding = 12;
     Color color = Color(ModelCtrl.getGUIParamHex(tempSet, 'iconColor', 0xFF000000));

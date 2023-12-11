@@ -14,6 +14,7 @@ class MQTTSettings {
         onResponseTopic = config['onResponseTopic'],
         onSchedulerTopic = config['onSchedulerTopic'],
         onDevicesTopic = config['onDevicesTopic'],
+        onEntitiesTopic = config['onEntitiesTopic'],
         onDeviceChangeTopic = config['onDeviceChangeTopic'],
         brokerAddress = config['brokerAddress'],
         port = config['port'],
@@ -37,6 +38,7 @@ class MQTTSettings {
   String onResponseTopic = '';
   String onSchedulerTopic = '';
   String onDevicesTopic = '';
+  String onEntitiesTopic = '';
   String onDeviceChangeTopic = '';
   int    isAliveTimeout = 0;
 

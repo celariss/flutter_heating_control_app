@@ -149,6 +149,17 @@ class Common {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
   }
 
+  /// create a widget that can be used to tag an active schedule element
+  static Widget createActiveScheduleTag() {
+    //return const Icon(Icons.circle, color: Colors.red, size:10);
+    Decoration deco = BoxDecoration(
+      color: Colors.red,
+      shape: BoxShape.circle,
+      border: Border.all(width:2, color:AppTheme().background1Color)
+    );
+    return Container(decoration: deco, width:12, height: 12, alignment: Alignment.center,);
+  }
+
   static Widget createCircleIcon({required Icon icon, required double size, required Color backColor}) {
     return Container(
       width: size,
@@ -237,6 +248,7 @@ class Common {
       {required String title,
       required DlgButtons dlgButtons,
       required Widget content,
+      EdgeInsets ?insetPadding,
       void Function()? onValidate}) async {
     await showDialog(
       context: context,
@@ -280,7 +292,7 @@ class Common {
             title: Text(title, style: TextStyle(color: AppTheme().focusColor)),
             backgroundColor: AppTheme().background2Color,
             contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-            //insetPadding: const EdgeInsets.all(0),
+            insetPadding: insetPadding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
             content: SingleChildScrollView(
               //shrinkWrap: true,
               child: content,
@@ -396,7 +408,7 @@ class Common {
               children: [
                 const Text('Nom : '),
                 const SizedBox(width:20),
-              Flexible(flex:2, child: TextFormField(
+                Flexible(flex:2, child: TextFormField(
                 style: TextStyle(color: AppTheme().specialTextColor), 
                 controller: nameCtrl,
                 decoration: const InputDecoration(hintText: 'Nom du planning'),
