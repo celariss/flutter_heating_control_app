@@ -2,7 +2,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-
+library;
 
 import 'dart:io';
 import 'dart:convert';
@@ -111,6 +111,7 @@ class Configuration {
       case FileType.json:
         addFromJsonString(content, targetSection: targetSection);
         break;
+      default:
     }
     return true;
   }

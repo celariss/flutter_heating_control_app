@@ -1,0 +1,188 @@
+{
+    "no": "No",
+    "yes": "Yes",
+    "new_": "New",
+    "unknown": "Unknown",
+    
+    "editAction": "Edit{item, select, eqptlist{ devices list} other{}}",
+    "@editAction": {
+      "placeholders": {
+        "item": {
+          "type": "String"
+        }
+      }
+    },
+    "addAction": "Add{item, select, slots{ daily timeslots} subschedule{ sub-schedule} other{}}",
+    "@addAction": {
+      "placeholders": {
+        "item": {
+          "type": "String"
+        }
+      }
+    },
+    "cloneAction": "Clone",
+    "removeAction": "Remove",
+    "closeAction": "Close",
+    "cancelAction": "Cancel",
+    "validateAction": "Validate",
+    "continueAction": "Continue",
+
+    "popupPickDeviceTitle": "Devices selection",
+    "popupPickPlanningTitle": "Pick a planning",
+    "popupPickColorTitle": "Pick a color",
+    "popupErrorTitle": "Error",
+    "popupWarningTitle": "Warning",
+
+    "removeConfirmation": "Do you confirm the removing of {item, select, eqpt{equipement} schedule{schedule} tempset{temperature set} subschedule{this sub-schedule} timeslots{this daily timeslots} other{}} '{name}' ?",
+    "@removeConfirmation": {
+      "placeholders": {
+        "item": {
+          "type": "String"
+        },
+        "name": {
+          "type": "String"
+        }
+      }
+    },
+
+    "errorDuplicateKey": "The key '{key}' already exists ...",
+    "@errorDuplicateKey": {
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+
+    "weekChipMonday": "Mo",
+    "weekChipTuesday": "Tu",
+    "weekChipWednesday": "We",
+    "weekChipThurday": "Th",
+    "weekChipFriday": "Fr",
+    "weekChipSaturday": "Sa",
+    "weekChipSunday": "Su",
+
+    "navbarHome": "Home",
+    "@navbarHome": {
+      "description": "Title of the home navbar item"
+    },
+    "navbarTempsets": "T° Sets",
+    "@navbarTempsets": {
+      "description": "Title of the temperature sets navbar item"
+    },
+    "navbarPlannings": "Schedules",
+    "@navbarPlannings": {
+      "description": "Title of the plannings navbar item"
+    },
+    "snackbarBackButton": "Press twice to exit",
+    "@snackbarBackButton": {
+      "description": "Text shown in snackbar after back button has been hit"
+    },
+
+    "msgInfoCode_mqttServerConnected": "Connected to server",
+    "msgInfoCode_mqttServerDisconnected": "Disconnected from server !",
+    "msgInfoCode_mqttMessageError": "Malformed message received from server !",
+    "msgInfoCode_controlServerAvailable": "Heating control server available",
+    "msgInfoCode_controlServerUnavailable": "Heating control server unavailable !",
+
+    "srvResponseDialogTitle": "Change has been refused",
+    "@srvResponseDialogTitle": {
+      "description": "Popup dialog title that displays error received from server"
+    },
+    "srvResponseRefused": "Change has been refused !",
+    "@srvResponseRefused": {
+      "description": "text displayed when server refused last command"
+    },
+    "srvResponseDuplicateKey": "Key '{key}' is already declared !",
+    "@srvResponseDuplicateKey": {
+      "description": "text displayed when server error is DUPLICATE_UNIQUE_KEY",
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+    "srvResponseEmptyList": "The list can't be empty !",
+    "@srvResponseEmptyList": {
+      "description": "text displayed when server error is EMPTY_LIST"
+    },
+    "srvResponseBadValue": "Value '{value}' is not allowed !",
+    "@srvResponseBadValue": {
+      "description": "text displayed when server error is BAD_VALUE",
+      "placeholders": {
+          "value": {
+          "type": "String"
+          }
+      }
+    },
+    "srvResponseCircularRef": "Circular reference detected between following temp sets : {aliases}",
+    "@srvResponseCircularRef": {
+      "description": "text displayed when server error is CIRCULAR_REF",
+      "placeholders": {
+          "aliases": {
+          "type": "List<String>"
+          }
+      }
+    },
+    "srvResponseMissingValue": "Value '{value}' is missing in list !",
+    "@srvResponseMissingValue": {
+      "description": "text displayed when server error is MISSING_VALUE",
+      "placeholders": {
+          "value": {
+          "type": "String"
+          }
+      }
+    },
+
+    "settingsPageTitle": "Settings",
+    "settingsAppVersion": "Application version : v{version}",
+    "@settingsAppVersion": {
+      "placeholders": {
+          "version": {
+          "type": "String"
+          }
+      }
+    },
+
+    "settingsErrorMandatoryValue": "value is mandatory",
+    "settingsGroupMain": "Main",
+    "settingsLanguage": "Language",
+    "settingsSystemLanguage": "System",
+    "settingsTheme": "Theme",
+    "settingsThermostatRes": "thermostats resolution",
+    "settingsGroupMqtt": "MQTT connexion settings",
+    "settingsBrokerAddress": "Broker adresss",
+    "settingsUsername": "Username",
+    "settingsPassword": "Password",
+    "settingsPortNumber": "Port (WebSocket)",
+    "settingsIsPortSecured": "SSL",
+
+    "devicesEditorTitle": "List of thermostats",
+    "devicesEditorEditTitle": "Device properties",
+    "devicesEditorEditEntity": "Entity",
+    "devicesEditorEditName": "Name",
+
+    "homePageTitle": "Home",
+    "homePageNoActiveSchedule": "No active schedule",
+    "homePageActiveSchedule": "Current active schedule",
+
+    "tempSetsPageTitle": "Temperature Sets",
+    "tempSetEditTitle": "Temperature set properties",
+    "tempSetEditName": "Name",
+    "tempSetEditNameHint": "Set name",
+    "tempSetEditColor": "Color",
+
+    "timeslotWeekA": "wA",
+    "timeslotWeekB": "wB",
+    "timeslotAddAfter": "Add after",
+    "timeslotSetEditTitle": "Edition of a daily schedule",
+
+    "schedulesPageTitle": "Schedules",
+    "schedulesPageErrorMissingThermostatAndTempSet": "Please first add a thermostat and create a temperature set ...",
+    "scheduleEditTitle": "Planning properties",
+    "scheduleEditName": "Name",
+    "scheduleEditNameHint": "Planning name",
+
+    "timeslotsFortnightSwitch": "Fortnight mode on/off",
+    "timeslotsErrorNotEmpty": "Some weekdays are still active on this daily timeslots"
+}

@@ -3,6 +3,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library convert_helpers;
 
 import 'package:yaml/yaml.dart';
 

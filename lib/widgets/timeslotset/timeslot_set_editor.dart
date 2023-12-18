@@ -3,6 +3,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/timetool.dart';
+import '../../utils/localizations.dart';
 import '../schedule/timeslots.dart';
 import '../temperatureset/temperaturesets_utils.dart';
 
@@ -16,19 +17,14 @@ class TimeSlotSetEditor extends StatefulWidget {
       {super.key, required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx, required this.tsKey});
 
   @override
-  State<TimeSlotSetEditor> createState() =>
-      _TimeSlotSetEditor(scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, timeslotSetIdx: timeslotSetIdx, tsKey: tsKey);
+  State<TimeSlotSetEditor> createState() => _TimeSlotSetEditor();
 }
 
 class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
-  final String scheduleName;
-  final int scheduleItemIdx;
-  final int timeslotSetIdx;
-  String tsKey;
   Map timeslotSetData = {};
   bool pullData = true;
 
-  _TimeSlotSetEditor({required this.scheduleName, required this.scheduleItemIdx, required this.timeslotSetIdx, required this.tsKey});
+  _TimeSlotSetEditor();
 
   @override
   Widget build(BuildContext context) {
@@ -36,12 +32,12 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     // IF pullData==true, the build cause is external => local data are not up to date
     if (pullData || timeslotSetData.isEmpty) {
       timeslotSetData =
-          ModelCtrl.cloneMap(ModelCtrl().getTimeslotSet(scheduleName, scheduleItemIdx, timeslotSetIdx) ?? {});
+          ModelCtrl.cloneMap(ModelCtrl().getTimeslotSet(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx) ?? {});
     } else {
       Common.setSavedState('timeslotset_data', timeslotSetData);
     }
     pullData = true;
-    ScheduleDataPosition pos = ScheduleDataPosition(scheduleName, scheduleItemIdx, timeslotSetIdx);
+    ScheduleDataPosition pos = ScheduleDataPosition(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx);
     return SingleChildScrollView(
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       Row(
@@ -51,7 +47,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
               size: 55,
               icon: const Icon(Icons.add, color: Colors.white),
               onPressed: () {
-                List timeslots = timeslotSetData[tsKey];
+                List timeslots = timeslotSetData[widget.tsKey];
                 Map lastTimeslot = timeslots[timeslots.length - 1];
                 List<int> lastTime = TimeTool.parseTimeStr(lastTimeslot['start_time']) ?? [0, 0, 0];
                 List<int> startTime = [];
@@ -64,7 +60,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
                 } else {
                   startTime = [lastTime[0] + (24 - lastTime[0]) ~/ 2, 0, 0];
                 }
-                timeslotSetData[tsKey].add({
+                timeslotSetData[widget.tsKey].add({
                   'start_time': TimeTool.timeToString(startTime),
                   'temperature_set': lastTimeslot['temperature_set']
                 });
@@ -79,22 +75,22 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
             //backColor: Colors.green.shade700,
             onPressed: () {
               ModelCtrl()
-                  .setTimeslotSet(scheduleName, scheduleItemIdx, timeslotSetIdx, ModelCtrl.cloneMap(timeslotSetData));
+                  .setTimeslotSet(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx, ModelCtrl.cloneMap(timeslotSetData));
               Navigator.of(context).pop();
             },
           ),
         ],
       ),
       const SizedBox(height: 10),
-      Common.createWeekChips(scheduleName, scheduleItemIdx, timeslotSetIdx, timeslotSetData, passiveMode: true),
+      Common.createWeekChips(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx, timeslotSetData, passiveMode: true),
       const SizedBox(height: 10),
       Row(
-          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, false,
+          children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, widget.tsKey, false,
               timeSlotBuilder: Timeslots.buildTimeslotCompact)),
       const SizedBox(height: 20),
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
-        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, tsKey, false, timeSlotBuilder: buildTimeslotEditor),
+        children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, widget.tsKey, false, timeSlotBuilder: buildTimeslotEditor),
       ),
       // Widget to avoid content being hidden by navbar
       const SizedBox(height: 55)
@@ -107,7 +103,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     double bottomPadding = 12;
     Color color = Color(ModelCtrl.getGUIParamHex(tempSet, 'iconColor', 0xFF000000));
 
-    Map? scheduleItem = ModelCtrl().getScheduleItem(scheduleName, scheduleItemIdx);
+    Map? scheduleItem = ModelCtrl().getScheduleItem(widget.scheduleName, widget.scheduleItemIdx);
     List<String> scheduleItemDevs = [];
     if (scheduleItem != null) {
       scheduleItemDevs = (scheduleItem['devices'] as List).map((e) => e as String).toList();
@@ -125,7 +121,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       // Widget that shows the date range of this timeslot set
       Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: _buildTimeRange(timeslotSetData[tsKey], startTime, endTime, schedulePos.timeslotIdx, setState),
+        children: _buildTimeRange(timeslotSetData[widget.tsKey], startTime, endTime, schedulePos.timeslotIdx, setState),
       ),
       const SizedBox(width: 10),
       Column(children: [
@@ -143,7 +139,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
                           style: TextStyle(fontWeight: FontWeight.bold, color: Common.contrastColor(color)))),
                 ),
                 onTap: () {
-                  TemperatureSetsUtils.pickTemperatureSet(context, scheduleName, tempSet['alias'],
+                  TemperatureSetsUtils.pickTemperatureSet(context, widget.scheduleName, tempSet['alias'],
                       onValidate: (selTempSet) {
                     timeslotsData[schedulePos.timeslotIdx]['temperature_set'] = selTempSet;
                     setState(() {
@@ -196,7 +192,10 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     });*/
 
     Widget menuBtn = Common.createPopupMenu(
-      [MenuItem_(Icons.edit, 'Ajouter dessous', 'add'), MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')],
+      [
+        MyMenuItem(Icons.edit, wcLocalizations().timeslotAddAfter, 'add'),
+        MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')
+      ],
       //iconColor: Colors.white,
       onSelected: (itemValue) async {
         switch (itemValue) {
@@ -212,7 +211,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
             List<int> diff = TimeTool.subTime(nextTime, currentTime);
             List<int> newTime = TimeTool.fromMinutes(TimeTool.getTotalMinutes(diff) ~/ 2);
             newTime = TimeTool.addTime(currentTime, newTime, precision: 10);
-            timeslotSetData[tsKey].insert(tsIndex + 1,
+            timeslotSetData[widget.tsKey].insert(tsIndex + 1,
                 {'start_time': TimeTool.timeToString(newTime), 'temperature_set': currentTimeslot['temperature_set']});
             setState(() {
               pullData = false;

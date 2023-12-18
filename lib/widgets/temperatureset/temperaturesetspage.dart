@@ -5,6 +5,7 @@ import 'package:navbar_router/navbar_router.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../utils/localizations.dart';
 import 'temperaturesets.dart';
 
 ///////////////////////////////////////////////////////////////////////////
@@ -52,6 +53,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
   @override
   void initState() {
     super.initState();
+    _onUpdateTempsetsData(ModelCtrl().getSchedulerData());
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
@@ -72,11 +74,15 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
 
   void _onSchedulesEvent(args) {
     Map schedulerData = args!.value;
+    _onUpdateTempsetsData(schedulerData);
+    setState(() {});
+  }
+
+  void _onUpdateTempsetsData(Map schedulerData) {
     globalTemperatureSetsData = [];
     if (schedulerData.containsKey('temperature_sets')) {
       globalTemperatureSetsData = List<Map>.from(schedulerData['temperature_sets'] as List);
     }
-    setState(() {});
   }
 
   // We need to update the AppBar to reflect connexion state in connexion icon
@@ -87,7 +93,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: Common.createAppBar('Jeux de T°'),
+      appBar: Common.createAppBar(wcLocalizations().tempSetsPageTitle),
       body: TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: ''),
       key: UniqueKey(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
@@ -95,7 +101,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
         size: 55,
         icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
         onPressed: () {
-          Map tempSetData = {'alias': 'New'};
+          Map tempSetData = {'alias': wcLocalizations().new_};
           Common.editTemperatureSetProperties(context, tempSetData, '', _onNewTemperatureSetValidate);
         },
       ),

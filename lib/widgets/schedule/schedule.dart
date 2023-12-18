@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../utils/localizations.dart';
 import 'scheduleitem.dart';
 
 class Schedule {
@@ -86,7 +87,7 @@ class Schedule {
         default:
     }
 
-    bool isExpanded = Common.getSavedState('schedule_' + scheduleData['alias'], false) as bool;
+    bool isExpanded = Common.getSavedState('schedule_${scheduleData['alias']}', false) as bool;
     return StatefulBuilder(
       key: Key(scheduleData['alias']),
       builder: (BuildContext context, setState) {
@@ -98,7 +99,7 @@ class Schedule {
           collapsedIconColor: AppTheme().specialTextColor,
           initiallyExpanded: isExpanded,
           onExpansionChanged: (expanded) {
-            Common.setSavedState('schedule_' + scheduleData['alias'], expanded);
+            Common.setSavedState('schedule_${scheduleData['alias']}', expanded);
             setState(() {
               isExpanded = expanded;
             });
@@ -115,8 +116,8 @@ class Schedule {
   static void _onEditPlanningValidate(BuildContext context, Map scheduleData, String tapedName) {
     if (scheduleData['alias'] != tapedName) {
       if (ModelCtrl().getSchedule(tapedName).isNotEmpty) {
-        Common.showSnackBar(context, "Le nom '$tapedName' est déjà utilisé ...",
-            backColor: AppTheme().errorColor, duration_ms: 4000);
+        Common.showSnackBar(context, wcLocalizations().errorDuplicateKey(tapedName),
+            backColor: AppTheme().errorColor, durationMs: 4000);
       } else {
         ModelCtrl().onScheduleNameChanged(scheduleData['alias'], tapedName);
       }
@@ -127,10 +128,10 @@ class Schedule {
     String name = scheduleData['alias'];
     return Common.createPopupMenu(
       [
-        MenuItem_(Icons.edit, 'Editer', 'edit_name'),
-        MenuItem_(Icons.add, 'Ajouter un sous-planning', 'add_scheduleitem'),
-        MenuItem_(Icons.copy, 'Dupliquer ce planning', 'clone_schedule'),
-        MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')
+        MyMenuItem(Icons.edit, wcLocalizations().editAction(''), 'edit_name'),
+        MyMenuItem(Icons.add, wcLocalizations().addAction('subschedule'), 'add_scheduleitem'),
+        MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone_schedule'),
+        MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')
       ],
       iconColor: iconColor,
       onSelected: (itemValue) async {
@@ -146,7 +147,7 @@ class Schedule {
             break;
           case 'delete':
             bool result =
-                await Common.showWarningDialog(context, "Etes-vous sûr de vouloir supprimer le planning '$name' ?");
+                await Common.showWarningDialog(context, wcLocalizations().removeConfirmation('schedule', name));
             if (result) {
               ModelCtrl().deleteSchedule(name);
             }

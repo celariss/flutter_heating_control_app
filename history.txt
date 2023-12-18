@@ -1,3 +1,7 @@
+V0.7.0 (18/12/2023) :
+	- added multi-languages support
+	- added English language
+
 V0.6.0 (11/12/2023) :
 	- upgraded to flutter 3.16.3
 	- A red mark is now shown on active schedule elements

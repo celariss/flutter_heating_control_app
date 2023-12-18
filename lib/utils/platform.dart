@@ -2,6 +2,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library platform_helpers;
 
 import 'package:flutter/foundation.dart';
 

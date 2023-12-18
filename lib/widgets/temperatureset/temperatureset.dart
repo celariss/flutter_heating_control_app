@@ -5,6 +5,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/settings.dart';
 import '../../common/theme.dart';
+import '../../utils/localizations.dart';
 
 class TemperatureSet {
   static Widget temperatureSetTileBuilder(BuildContext context, Map tempSetData, String scheduleName,
@@ -25,7 +26,7 @@ class TemperatureSet {
       child: Icon(Common.getTempSetIconData(), color: Common.contrastColor(tempSetColor)),
     );
 
-    bool isExpanded = Common.getSavedState('tempSetLV${scheduleName}_' + tempSetData['alias'], false) as bool;
+    bool isExpanded = Common.getSavedState('tempSetLV${scheduleName}_${tempSetData['alias']}', false) as bool;
 
     Widget title = Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -75,7 +76,7 @@ class TemperatureSet {
           collapsedIconColor: AppTheme().specialTextColor,
           initiallyExpanded: isExpanded,
           onExpansionChanged: (expanded) {
-            Common.setSavedState('tempSetLV${scheduleName}_' + tempSetData['alias'], expanded);
+            Common.setSavedState('tempSetLV${scheduleName}_${tempSetData['alias']}', expanded);
             setState(() {
               isExpanded = expanded;
             });
@@ -92,10 +93,10 @@ class TemperatureSet {
   static Widget _temperatureSetMenuBuilder(BuildContext context, Map tempSetData, String scheduleName) {
     return Common.createPopupMenu(
       [
-        MenuItem_(Icons.edit, 'Propriétés', 'edit_properties'),
-        MenuItem_(Common.getDeviceIconData(), 'Modifier la liste', 'change_devices'),
-        MenuItem_(Icons.copy, 'Dupliquer', 'clone'),
-        MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')
+        MyMenuItem(Icons.edit, wcLocalizations().editAction(''), 'edit_properties'),
+        MyMenuItem(Common.getDeviceIconData(), wcLocalizations().editAction('eqptlist'), 'change_devices'),
+        MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone'),
+        MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')
       ],
       onSelected: (itemValue) async {
         switch (itemValue) {
@@ -142,7 +143,7 @@ class TemperatureSet {
 
           case 'delete':
             bool result = await Common.showWarningDialog(
-                context, "${"Etes-vous sûr de vouloir supprimer ce jeu '" + tempSetData['alias']}' ?");
+                context, wcLocalizations().removeConfirmation('tempset', tempSetData['alias']));
             if (result) {
               ModelCtrl().deleteTemperatureSet(tempSetData['alias'], scheduleName);
             }
@@ -208,10 +209,10 @@ class TemperatureSet {
         adapter: PickerDataAdapter<String>(pickerData: [intList, decList], isArray: true),
         selecteds: [intValue - min, decValue],
         hideHeader: true,
-        cancelText: 'Annuler',
-        confirmText: 'Valider',
-        cancelTextStyle: TextStyle(color: AppTheme().focusColor),
-        confirmTextStyle: TextStyle(color: AppTheme().focusColor),
+        cancelText: wcLocalizations().cancelAction,
+        confirmText: wcLocalizations().validateAction,
+        cancelTextStyle: TextStyle(color: AppTheme().buttonTextColor),
+        confirmTextStyle: TextStyle(color: AppTheme().buttonTextColor),
         backgroundColor: AppTheme().background2Color,
         textStyle: TextStyle(color: AppTheme().specialTextColor, fontSize: 18),
         selectedTextStyle: TextStyle(color: AppTheme().normalTextColor, fontSize: 22),
@@ -232,8 +233,8 @@ class TemperatureSet {
       ModelCtrl().onTemperatureSetsChanged(scheduleName);
     }
     if (data['alias'] != tapedName) {
-      bool isExpanded = Common.getSavedState('tempSetLV${scheduleName}_' + data['alias'], false) as bool;
-      Common.removeSavedState('tempSetLV${scheduleName}_' + data['alias']);
+      bool isExpanded = Common.getSavedState('tempSetLV${scheduleName}_${data['alias']}', false) as bool;
+      Common.removeSavedState('tempSetLV${scheduleName}_${data['alias']}');
       Common.setSavedState('tempSetLV${scheduleName}_$tapedName', isExpanded);
       ModelCtrl().onTemperatureSetNameChanged(scheduleName, data['alias'], tapedName);
     }

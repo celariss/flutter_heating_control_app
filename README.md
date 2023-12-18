@@ -37,8 +37,7 @@ This flutter app can be run on the following targets :
 - Manage schedules
 
 ## TODO
-- Add multi-language support (+ translate in english)
-- Add comments in code !
+- Add setting to choose the first day of week
 - Add auto-tests
 
 ## Tech and dependencies

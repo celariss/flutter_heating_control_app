@@ -8,6 +8,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
+import '../../utils/localizations.dart';
 import 'deviceseditorpage.dart';
 import 'settingspage.dart';
 import 'thermostat.dart';
@@ -53,13 +54,27 @@ class _HomePage extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    schedulesList = getScheduleNames();
-    selectedScheduleName = getActiveSchedule();
-    internalSelectedScheduleName = selectedScheduleName;
+    schedulerData = ModelCtrl().getSchedulerData();
+    if (schedulerData!.isEmpty) {
+      schedulerData = null;
+    }
+    updateSchedulesList();
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
+
+  void updateSchedulesList() {
+    noPlanningStr = wcLocalizations().homePageNoActiveSchedule;
+    schedulesList = getScheduleNames();
+    selectedScheduleName = getActiveSchedule();
+    internalSelectedScheduleName = selectedScheduleName;
+  }
+
+  // @override
+  // void didUpdateWidget(covariant HomePage oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  // }
 
   void _addScrollListener() {
     _scrollController.addListener(handleScroll);
@@ -81,9 +96,7 @@ class _HomePage extends State<HomePage> {
   void _onSchedulesEvent(args) {
     if (args != null) {
       schedulerData = args!.value as Map;
-      schedulesList = getScheduleNames();
-      selectedScheduleName = getActiveSchedule();
-      internalSelectedScheduleName = selectedScheduleName;
+      updateSchedulesList();
       setState(() {});
     }
   }
@@ -96,7 +109,7 @@ class _HomePage extends State<HomePage> {
   String selectedScheduleName = '';
   String? internalSelectedScheduleName;
   List<String> schedulesList = [];
-  final String noPlanningStr = 'Aucun planning actif';
+  String noPlanningStr = '';
 
   List<String> getScheduleNames() {
     List<String> result = [noPlanningStr];
@@ -126,10 +139,10 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // We need this line witrh listen:true to ensure refresh of this page
+    // We need this line with listen:true to ensure refresh of this page
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
-      appBar: Common.createAppBar('Accueil', actions:[
+      appBar: Common.createAppBar(wcLocalizations().homePageTitle, actions:[
         Common.createCircleIconButton(
             Icons.settings,
             //iconSize: 50,
@@ -144,7 +157,7 @@ class _HomePage extends State<HomePage> {
         child: Column(children: [
           const SizedBox(height: 10),
           Text(
-            'Planning actif',
+            wcLocalizations().homePageActiveSchedule,
             style: TextStyle(
               fontSize: 30,
               fontWeight: FontWeight.bold,

@@ -1,4 +1,8 @@
-import 'dart:ffi';
+/// This file defines TimeslotsSet widget 
+/// 
+/// Authors: Jérôme Cuq
+/// License: BSD 3-Clause
+library timeslotsset_widget;
 
 import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -7,6 +11,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../timeslotset/timeslotsetpage.dart';
+import '../../utils/localizations.dart';
 import 'timeslots.dart';
 
 class TimeslotsSet extends StatelessWidget {
@@ -57,10 +62,10 @@ class TimeslotsSet extends StatelessWidget {
   Widget buildTimeSlotsInkWell(BuildContext context, String tsKey, int weekNumber, bool isActive) {
     List<Widget> children = [];
     if (weekNumber==1) {
-      children.add(Text('sB', style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
+      children.add(Text(wcLocalizations().timeslotWeekB, style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
       children.add(const SizedBox(width: 5));
     } else if (weekNumber==2) {
-      children.add(Text('sA', style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
+      children.add(Text(wcLocalizations().timeslotWeekA, style: TextStyle(color: AppTheme().focusColor, fontWeight: FontWeight.bold, fontSize: 15),));
       children.add(const SizedBox(width: 5));
     }
     children.addAll(Timeslots.timeslotsBuilder(
@@ -85,9 +90,9 @@ class TimeslotsSet extends StatelessWidget {
 
   static Widget _timeslotsSetMenuBuilder(BuildContext context, ScheduleDataPosition pos, Map timeslotSetData) {
     return Common.createPopupMenu(
-      [MenuItem_(Icons.copy, 'Quinzaine on/off', 'switch_mode'),
-       MenuItem_(Icons.copy, 'Dupliquer', 'clone'),
-       MenuItem_(Icons.cancel_outlined, 'Supprimer', 'delete')],
+      [MyMenuItem(Icons.copy, wcLocalizations().timeslotsFortnightSwitch, 'switch_mode'),
+       MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone'),
+       MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')],
       //iconColor: Colors.white,
       onSelected: (itemValue) async {
         switch (itemValue) {
@@ -115,10 +120,10 @@ class TimeslotsSet extends StatelessWidget {
           case 'delete':
             if (timeslotSetData['dates'].length > 0) {
               Common.showErrorDialog(
-                  context, "Certains jours de la semaine sont encore affectés à cette plage hebdomadaire");
+                  context, wcLocalizations().timeslotsErrorNotEmpty);
             } else {
               bool result = await Common.showWarningDialog(
-                  context, "Etes-vous sûr de vouloir supprimer cette plage hebdomadaire ?");
+                  context, wcLocalizations().removeConfirmation('timeslots', ''));
               if (result) {
                 ModelCtrl().deleteScheduleItemTS(pos.scheduleName, pos.scheduleItemIdx, pos.timeslotSetIdx);
               }

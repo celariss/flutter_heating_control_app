@@ -2,11 +2,13 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library common_helpers;
 
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import '../utils/platform.dart';
+import '../utils/localizations.dart';
 
 import 'model_ctrl.dart';
 import 'settings.dart';
@@ -15,7 +17,9 @@ import 'theme.dart';
 double? str2Double(String str) {
   try {
     return double.parse(str);
-  } catch (formatException) {}
+  } catch (formatException) {
+    // 
+  }
   return null;
 }
 
@@ -41,11 +45,11 @@ int weekNumber(DateTime date) {
   return(weeksBetween(firstJan, date));
 }
 
-class MenuItem_ {
+class MyMenuItem {
   final IconData icon;
   final String text;
   final String value;
-  MenuItem_(this.icon, this.text, this.value);
+  MyMenuItem(this.icon, this.text, this.value);
 }
 
 enum DlgButtons { close, okCancel, continueCancel }
@@ -129,11 +133,11 @@ class Common {
       Navigator.of(context, rootNavigator: isRootNavigator).pushNamed(route, arguments: arguments);
 
   static void showSnackBar(BuildContext context, String text,
-      {Color? backColor, Color? textColor, int duration_ms = 2000}) {
+      {Color? backColor, Color? textColor, int durationMs = 2000}) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         behavior: SnackBarBehavior.floating,
-        duration: Duration(milliseconds: duration_ms),
+        duration: Duration(milliseconds: durationMs),
         backgroundColor: backColor ?? Theme.of(context).snackBarTheme.backgroundColor,
         margin: const EdgeInsets.only(bottom: kBottomNavigationBarHeight, right: 2, left: 2),
         content: Text(
@@ -222,14 +226,14 @@ class Common {
     );
   }
 
-  static Widget createPopupMenu(List<MenuItem_> menuItems,
+  static Widget createPopupMenu(List<MyMenuItem> menuItems,
       {required void Function(dynamic) onSelected, Color? iconColor}) {
     return PopupMenuButton(
       color: AppTheme().background2Color,
       onSelected: onSelected,
       icon: Icon(Icons.more_vert, color: iconColor ?? AppTheme().focusColor),
       itemBuilder: (BuildContext bc) {
-        return menuItems.map((MenuItem_ menuItem) {
+        return menuItems.map((MyMenuItem menuItem) {
           return PopupMenuItem(
             value: menuItem.value,
             child: Row(mainAxisAlignment: MainAxisAlignment.start, children: [
@@ -258,7 +262,7 @@ class Common {
           case DlgButtons.close:
             actions = [
               Common.createTextButton(
-                'Fermer',
+                wcLocalizations().closeAction,
                 onPressed: () {
                   Navigator.of(context).pop();
                   if (onValidate != null) {
@@ -272,13 +276,13 @@ class Common {
           case DlgButtons.continueCancel:
             actions = [
               Common.createTextButton(
-                'Annuler',
+                wcLocalizations().cancelAction,
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
               ),
               Common.createTextButton(
-                dlgButtons == DlgButtons.okCancel ? 'Valider' : 'Continuer',
+                dlgButtons == DlgButtons.okCancel ? wcLocalizations().validateAction : wcLocalizations().continueAction,
                 onPressed: () {
                   Navigator.of(context).pop();
                   if (onValidate != null) {
@@ -310,7 +314,7 @@ class Common {
 
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: 'Sélection des équipements',
+        title: wcLocalizations().popupPickDeviceTitle,
         onValidate: onValidate,
         content: StatefulBuilder(builder: (context, setState) {
           return Column(
@@ -348,7 +352,7 @@ class Common {
   }
 
   static void showErrorDialog(BuildContext context, String alertText) {
-    showModalDialog(context, dlgButtons: DlgButtons.close, title: 'Erreur',
+    showModalDialog(context, dlgButtons: DlgButtons.close, title: wcLocalizations().popupErrorTitle,
         content: StatefulBuilder(builder: (context, setState) {
       return Column(
         children: [
@@ -360,8 +364,13 @@ class Common {
     }));
   }
 
-  static Future<bool> showWarningDialog(BuildContext context, String alertText, {String title='Confirmation', bool closeBtnOnly=false}) async {
+  static Future<bool> showWarningDialog(BuildContext context, String alertText, {String title='', bool closeBtnOnly=false}) async {
     bool result = false;
+
+    final String defaultTitle = wcLocalizations().popupWarningTitle;
+    if (title.isEmpty) {
+      title = defaultTitle;
+    }
 
     await showModalDialog(context,
         dlgButtons: closeBtnOnly ? DlgButtons.close : DlgButtons.continueCancel,
@@ -383,7 +392,7 @@ class Common {
 
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: 'Couleur du jeu',
+        title: wcLocalizations().popupPickColorTitle,
         onValidate: () => result = color,
         content: MaterialPicker(
           pickerColor: color,
@@ -400,18 +409,18 @@ class Common {
     var nameCtrl = TextEditingController(text: data['alias']);
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: 'Propriétés du planning',
+        title: wcLocalizations().scheduleEditTitle,
         onValidate: () => onValidate(context, data, nameCtrl.text),
         content: Column(
           children: [
             Row(
               children: [
-                const Text('Nom : '),
+                Text('${wcLocalizations().scheduleEditName} : '),
                 const SizedBox(width:20),
                 Flexible(flex:2, child: TextFormField(
                 style: TextStyle(color: AppTheme().specialTextColor), 
                 controller: nameCtrl,
-                decoration: const InputDecoration(hintText: 'Nom du planning'),
+                decoration: InputDecoration(hintText: wcLocalizations().scheduleEditNameHint),
               )),
               ],
             ),
@@ -432,7 +441,7 @@ class Common {
     String selectedAlias = defaultScheduleName;
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: "Sélection d'un planning",
+        title: wcLocalizations().popupPickPlanningTitle,
         onValidate: () => onValidate!(selectedAlias),
         content: StatefulBuilder(builder: (context, setState) {
           List itemList = ModelCtrl().getSchedules();
@@ -469,7 +478,7 @@ class Common {
     Color color = Color(ModelCtrl.getGUIParamHex(data, 'iconColor', Settings().temperatureSetDefaultColor));
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: 'Propriétés du Jeu',
+        title: wcLocalizations().tempSetEditTitle,
         onValidate: () => onValidate(data, scheduleName, color, nameCtrl.text),
         content: StatefulBuilder(builder: (context, setState) {
           return Column(  
@@ -477,19 +486,19 @@ class Common {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Text('Nom : '),
+                    Text('${wcLocalizations().tempSetEditName} : '),
                     const SizedBox(width:20),
                   Flexible(flex:2, child: TextFormField(
                     style: TextStyle(color: AppTheme().specialTextColor), 
                     controller: nameCtrl,
-                    decoration: const InputDecoration(hintText: 'Nom du jeu'),
+                    decoration: InputDecoration(hintText: wcLocalizations().tempSetEditNameHint),
                   )),
                   ],
                 ),
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    const Flexible(child: SizedBox(height: 30.0, child: Text('Couleur : '))),
+                    Flexible(child: SizedBox(height: 30.0, child: Text('${wcLocalizations().tempSetEditColor} : '))),
                     const Spacer(flex: 2),
                     InkResponse(
                       onTap: () {
@@ -525,13 +534,13 @@ class Common {
   static Widget createWeekChips(String scheduleName, int scheduleItemIdx, int timeslotSetIdx, Map timeslotSetData,
       {bool passiveMode = false}) {
     var list = [
-      ['1', 'Lu'],
-      ['2', 'Ma'],
-      ['3', 'Me'],
-      ['4', 'Je'],
-      ['5', 'Ve'],
-      ['6', 'Sa'],
-      ['7', 'Di']
+      ['1', wcLocalizations().weekChipMonday],
+      ['2', wcLocalizations().weekChipTuesday],
+      ['3', wcLocalizations().weekChipWednesday],
+      ['4', wcLocalizations().weekChipThurday],
+      ['5', wcLocalizations().weekChipFriday],
+      ['6', wcLocalizations().weekChipSaturday],
+      ['7', wcLocalizations().weekChipSunday]
     ];
     List<Widget> chips = [];
     List<String> weekDayFilters = List<String>.from(timeslotSetData['dates'] as List);

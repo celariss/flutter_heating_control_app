@@ -3,6 +3,7 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library timetool;
 
 import 'dart:math';
 

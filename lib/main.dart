@@ -3,18 +3,22 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library main;
 
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 import 'common/common.dart';
 import 'common/theme.dart';
 import 'common/themenotifier.dart';
-import 'utils/package.dart';
-import 'widgets/homepage/homepage.dart';
 import 'common/model_ctrl.dart';
 import 'common/settings.dart';
+import 'utils/package.dart';
+import 'utils/localizations.dart';
+import 'widgets/homepage/homepage.dart';
 import 'widgets/homepage/settingspage.dart';
 import 'widgets/schedule/schedulespage.dart';
 import 'widgets/temperatureset/temperaturesetspage.dart';
@@ -40,21 +44,35 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   MyApp({super.key})
-      : modelCtrl = ModelCtrl();
+      : modelCtrl = ModelCtrl() {
+        setLocale(Settings().locale);
+      }
 
   final ModelCtrl modelCtrl;
+  static Locale ?_locale;
+
+  static void setLocale(Locale? locale) {
+    _locale = locale;
+  }
 
   @override
   Widget build(BuildContext context) {
     ModelCtrl().connect();
     NavbarNotifier.hideBottomNavBar = false;
+
     return Consumer<ThemeNotifier>(
       builder: (context, appState, child) {
         return MaterialApp(
         title: 'Heating Control App',
         theme: ThemeData(
+          dividerColor: AppTheme().focusColor, // Settings page dividers
+          dividerTheme: const DividerThemeData(
+            color: Colors.transparent, // ugly divider that cuts off the selection in scroll picker (settings page)
+          ),
+          colorScheme: ColorScheme.dark(secondary: AppTheme().focusColor,  // Settings page selected item in list picker
+            ),
           primaryColor: AppTheme().background3Color,
-          secondaryHeaderColor: AppTheme().background3Color,
+          secondaryHeaderColor: AppTheme().background3Color, // Settings page headers background
           cardColor: AppTheme().background2Color,
           scaffoldBackgroundColor: AppTheme().background1Color,
           unselectedWidgetColor: AppTheme().specialTextColor,
@@ -91,7 +109,7 @@ class MyApp extends StatelessWidget {
             textColor: AppTheme().specialTextColor,
           ),
           cardTheme: CardTheme(
-            color: AppTheme().background2Color,
+            color: AppTheme().background2Color, // Background for settings page widgets
           ),
           scrollbarTheme: ScrollbarThemeData(
             trackColor: MaterialStateProperty.all(AppTheme().normalTextColor),
@@ -100,6 +118,11 @@ class MyApp extends StatelessWidget {
           chipTheme: const ChipThemeData(
             shape: StadiumBorder(),
             padding: EdgeInsets.all(0)
+          ),
+
+          switchTheme: SwitchThemeData(
+            trackColor:  MaterialStateProperty.resolveWith((states) =>
+            states.contains(MaterialState.selected) ? AppTheme().focusColor : null)
           ),
           
           appBarTheme: AppBarTheme(
@@ -113,6 +136,13 @@ class MyApp extends StatelessWidget {
 
           buttonTheme: ButtonThemeData(
             buttonColor: AppTheme().buttonBackColor,
+          ),
+          textButtonTheme: TextButtonThemeData(
+            // Buttons shown in popups of Settings page
+            style: ButtonStyle(
+              backgroundColor:MaterialStatePropertyAll(AppTheme().buttonBackColor),
+              textStyle: MaterialStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
+            ),
           ),
           
           textTheme: TextTheme(
@@ -134,6 +164,11 @@ class MyApp extends StatelessWidget {
             labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
           ),
         ),
+
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        locale: _locale,
+        navigatorKey: getNavigatorKey(),
         home: const RootPage());
       }
     );
@@ -151,12 +186,6 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> {
-  List<NavbarItem> items = [
-    NavbarItem(Icons.home, 'Accueil', backgroundColor: AppTheme().background2Color),
-    NavbarItem(Icons.list, 'Jeux de T°', backgroundColor: AppTheme().background2Color),
-    NavbarItem(Icons.schedule, 'Plannings', backgroundColor: AppTheme().background2Color),
-  ];
-
   Map<int, Map<String, Widget>> routes = {
     0: {
       '/': const HomePage(),
@@ -180,28 +209,27 @@ class _RootPageState extends State<RootPage> {
     ServerResponse response = args!.value;
     if (!response.status) {
       if (response.errorCode.isEmpty) {
-        Common.showSnackBar(context, 'Changement refusé !', backColor: AppTheme().errorColor, duration_ms: 4000);
+        Common.showSnackBar(context, wcLocalizations().srvResponseRefused, backColor: AppTheme().errorColor, durationMs: 4000);
       } else {
         String text = response.genericDesc;
         switch (response.errorCode) {
           case 'DUPLICATE_UNIQUE_KEY':
-            text = "L'identifiant '${response.errorMap['key']}' est déjà utilisé !";
+            text = wcLocalizations().srvResponseDuplicateKey(response.errorMap['key']);
             break;
           case 'EMPTY_LIST':
-            text = "La liste ne peut pas être vide !";
+            text = wcLocalizations().srvResponseEmptyList;
             break;
           case 'BAD_VALUE':
-            text = "La valeur '${response.errorMap['value']}' n'est pas autorisée !";
+            text = wcLocalizations().srvResponseBadValue(response.errorMap['value']);
             break;
           case 'CIRCULAR_REF':
-            text =
-                "Une dépendance circulaire a été détectée entre les jeux de température suivants : ${response.errorMap['aliases']}";
+            text = wcLocalizations().srvResponseCircularRef(response.errorMap['aliases']);
             break;
           case 'MISSING_VALUE':
-            text = "La valeur '${response.errorMap['value']}' est manquante dans la liste !";
+            text = wcLocalizations().srvResponseMissingValue(response.errorMap['value']);
             break;
         }
-        Common.showWarningDialog(context, text, title: 'Changement refusé', closeBtnOnly: true);
+        Common.showWarningDialog(context, text, title: wcLocalizations().srvResponseDialogTitle, closeBtnOnly: true);
       }
     }
   }
@@ -227,21 +255,21 @@ class _RootPageState extends State<RootPage> {
     Color textColor = Common.contrastColor(backColor);
     switch (message.code) {
       case EMsgInfoCode.mqttServerConnected:
-        msgText = 'Connecté au serveur';
+        msgText = wcLocalizations().msgInfoCode_mqttServerConnected;
         refresh = true;
         break;
       case EMsgInfoCode.mqttServerDisconnected:
-        msgText = 'Déconnecté du serveur !';
+        msgText = wcLocalizations().msgInfoCode_mqttServerDisconnected;
         refresh = true;
         break;
       case EMsgInfoCode.mqttMessageError:
-        msgText = 'Message défectueux reçu du serveur !';
+        msgText = wcLocalizations().msgInfoCode_mqttMessageError;
         break;
       case EMsgInfoCode.controlServerAvailable:
-        msgText = 'Serveur de contrôle du chauffage disponible';
+        msgText = wcLocalizations().msgInfoCode_controlServerAvailable;
         break;
       case EMsgInfoCode.controlServerUnavailable:
-        msgText = 'Serveur de contrôle du chauffage injoignable !';
+        msgText = wcLocalizations().msgInfoCode_controlServerUnavailable;
         break;
       default:
         break;
@@ -250,7 +278,7 @@ class _RootPageState extends State<RootPage> {
       setState(() {});
     }
     Common.hideSnackBar(context);
-    Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, duration_ms: duration);
+    Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, durationMs: duration);
   }
 
   @override
@@ -269,9 +297,15 @@ class _RootPageState extends State<RootPage> {
 
   @override
   Widget build(BuildContext context) {
-    // We need this line witrh listen:true to ensure refresh of NavBarRouter when current theme changes
-    themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
     final size = MediaQuery.of(context).size;
+    // We need this line with listen:true to ensure refresh of NavBarRouter when current theme changes
+    themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
+    List<NavbarItem> items = [
+        NavbarItem(Icons.home, wcLocalizations().navbarHome, backgroundColor: AppTheme().background2Color),
+        NavbarItem(Icons.list, wcLocalizations().navbarTempsets, backgroundColor: AppTheme().background2Color),
+        NavbarItem(Icons.schedule, wcLocalizations().navbarPlannings, backgroundColor: AppTheme().background2Color),
+      ];
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
@@ -303,7 +337,7 @@ class _RootPageState extends State<RootPage> {
               Common.hideSnackBar(context);
               return isExitingApp;
             } else {
-              Common.showSnackBar(context, 'Appuyez une 2ième fois pour sortir');
+              Common.showSnackBar(context, wcLocalizations().snackbarBackButton);
               return false;
             }
           } else {

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../utils/localizations.dart';
 import 'timeslotsset.dart';
 
 class ScheduleItem extends StatelessWidget {
@@ -117,10 +118,10 @@ class ScheduleItem extends StatelessWidget {
       BuildContext context, Map scheduleItemData, String scheduleName, int scheduleItemIdx) {
     return Common.createPopupMenu(
       [
-        MenuItem_(Common.getDeviceIconData(), 'Editer la liste des vannes', 'edit_devices'),
-        MenuItem_(Icons.add, 'Ajouter une plage hebdomadaire', 'add_timeslotset'),
-        MenuItem_(Icons.copy, 'Dupliquer ce sous-planning', 'clone_scheduleitem'),
-        MenuItem_(Icons.cancel_outlined, 'Supprimer ce sous-planning', 'delete_scheduleitem'),
+        MyMenuItem(Common.getDeviceIconData(), wcLocalizations().editAction('eqptlist'), 'edit_devices'),
+        MyMenuItem(Icons.add, wcLocalizations().addAction('slots'), 'add_timeslotset'),
+        MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone_scheduleitem'),
+        MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete_scheduleitem'),
       ],
       onSelected: (itemValue) async {
         switch (itemValue) {
@@ -144,7 +145,7 @@ class ScheduleItem extends StatelessWidget {
             break;
           case 'delete_scheduleitem':
             bool result =
-                await Common.showWarningDialog(context, "Etes-vous sûr de vouloir supprimer ce sous-planning ?");
+                await Common.showWarningDialog(context, wcLocalizations().removeConfirmation('subschedule', ''));
             if (result) {
               ModelCtrl().deleteScheduleItem(scheduleName, scheduleItemIdx);
             }

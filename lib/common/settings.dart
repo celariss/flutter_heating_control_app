@@ -3,8 +3,10 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library settings;
 
 import 'package:flutter/material.dart';
+import 'package:heating_control_app/utils/localizations.dart';
 import '../utils/configuration.dart';
 import 'mqtt_settings.dart';
 import 'theme.dart';
@@ -22,8 +24,11 @@ class Settings {
     if (!_initDone) {
       prefs = await SharedPreferences.getInstance();
       Configuration config = Configuration();
+      // ignore: use_build_context_synchronously
       await config.addFromAsset('assets/cfg/config.yaml', context: context);
+      // ignore: use_build_context_synchronously
       await config.addFromAsset('assets/cfg/secrets.yaml', context: context);
+      // ignore: use_build_context_synchronously
       await config.addFromAsset('assets/cfg/themes.yaml', context: context);
       Map mqtt = config.getSection('mqtt');
       for (String param in mqtt.keys) {
@@ -37,6 +42,12 @@ class Settings {
       minSetpoint = _getParamInt(config, 'minSetpoint', 7);
       maxSetpoint = _getParamInt(config, 'maxSetpoint', 30);
       thermostatResolution = _getParamDouble(config, 'thermostatResolution', 0.5);
+      String strLocale = _getParam(config, 'locale', '');
+      if (strLocale=='') {
+        locale = null;
+      } else {
+        locale = tryParseLocale(strLocale);
+      }
       themeName = _getParam(config, 'themeName', '');
       _themes = _getParam(config, 'themes', []);
       setTheme(themeName);
@@ -89,6 +100,18 @@ class Settings {
     prefs!.setDouble('thermostatResolution', thermostatResolution);
   }
 
+  // give null to go back to system locale
+  void setLocale(Locale ?newLocale) {
+    String strLocale = '';
+    locale = null;
+    if (newLocale!=null) {
+      strLocale = newLocale.toLanguageTag();
+      locale = newLocale;
+    }
+    prefs!.setString('locale', strLocale);
+  }
+
+  // ignore: non_constant_identifier_names
   MQTTSettings MQTT = MQTTSettings();
   int temperatureSetDefaultColor = 0;
   double defaultSetpoint = 0;
@@ -96,6 +119,7 @@ class Settings {
   int maxSetpoint = 0;
   double thermostatResolution = 0;
   String themeName = '';
+  Locale ?locale;
 
   bool _initDone = false;
   List _themes = [];

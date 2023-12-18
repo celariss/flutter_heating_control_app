@@ -4,6 +4,7 @@ import 'package:navbar_router/navbar_router.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
+import '../../utils/localizations.dart';
 import 'timeslot_set_editor.dart';
 
 ///////////////////////////////////////////////////////////////////////////
@@ -93,7 +94,7 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     //Map timeslotSetData = args['timeslotSetData'];
 
     return Scaffold(
-      appBar: Common.createAppBar("Edition d'une Plage hebdomadaire"),
+      appBar: Common.createAppBar(wcLocalizations().timeslotSetEditTitle),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
         child: TimeSlotSetEditor(

@@ -4,6 +4,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library mqtt_client;
 
 import 'dart:async';
 import 'dart:convert';

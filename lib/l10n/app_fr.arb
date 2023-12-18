@@ -1,0 +1,188 @@
+{
+    "no": "Non",
+    "yes": "Oui",
+    "new_": "Nouveau",
+    "unknown": "Inconnu",
+    
+    "editAction": "Editer{item, select, eqptlist{ la liste des vannes} other{}}",
+    "@editAction": {
+      "placeholders": {
+        "item": {
+          "type": "String"
+        }
+      }
+    },
+    "addAction": "Ajouter{item, select, slots{ une plage hebdomadaire} subschedule{ un sous-planning} other{}}",
+    "@addAction": {
+      "placeholders": {
+        "item": {
+          "type": "String"
+        }
+      }
+    },
+    "cloneAction": "Dupliquer",
+    "removeAction": "Supprimer",
+    "closeAction": "Fermer",
+    "cancelAction": "Annuler",
+    "validateAction": "Valider",
+    "continueAction": "Continuer",
+
+    "popupPickDeviceTitle": "Sélection des équipements",
+    "popupPickPlanningTitle": "Sélection d'un planning",
+    "popupPickColorTitle": "Sélection de la couleur",
+    "popupErrorTitle": "Erreur",
+    "popupWarningTitle": "Attention",
+
+    "removeConfirmation": "Etes-vous sûr de vouloir supprimer {item, select, eqpt{l'équipement} schedule{le planning} tempset{le jeu} subschedule{ce sous-planning} timeslots{cette plage hebdomadaire} other{}} '{name}' ?",
+    "@removeConfirmation": {
+      "placeholders": {
+          "item": {
+            "type": "String"
+          },
+          "name": {
+            "type": "String"
+          }
+      }
+    },
+
+    "errorDuplicateKey": "Le nom '{key}' existe déjà ...",
+    "@errorDuplicateKey": {
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+
+    "weekChipMonday": "Lu",
+    "weekChipTuesday": "Ma",
+    "weekChipWednesday": "Me",
+    "weekChipThurday": "Je",
+    "weekChipFriday": "Ve",
+    "weekChipSaturday": "Sa",
+    "weekChipSunday": "Di",
+
+    "navbarHome": "Accueil",
+    "@navbarHome": {
+      "description": "Title of the home navbar item"
+    },
+    "navbarTempsets": "Jeux de T°",
+    "@navbarTempsets": {
+      "description": "Title of the temperature sets navbar item"
+    },
+    "navbarPlannings": "Plannings",
+    "@navbarPlannings": {
+      "description": "Title of the plannings navbar item"
+    },
+    "snackbarBackButton": "Appuyez une 2ième fois pour sortir",
+    "@snackbarBackButton": {
+      "description": "Text shown in snackbar after back button has been hit"
+    },
+
+    "msgInfoCode_mqttServerConnected": "Connecté au serveur",
+    "msgInfoCode_mqttServerDisconnected": "Déconnecté du serveur !",
+    "msgInfoCode_mqttMessageError": "Message défectueux reçu du serveur !",
+    "msgInfoCode_controlServerAvailable": "Serveur de contrôle du chauffage disponible",
+    "msgInfoCode_controlServerUnavailable": "Serveur de contrôle du chauffage injoignable !",
+
+    "srvResponseDialogTitle": "Changement refusé",
+    "@srvResponseDialogTitle": {
+      "description": "Popup dialog title that displays error received from server"
+    },
+    "srvResponseRefused": "Changement refusé !",
+    "@srvResponseRefused": {
+      "description": "text displayed when server refused last command"
+    },
+    "srvResponseDuplicateKey": "L'identifiant '{key}' est déjà utilisé !",
+    "@srvResponseDuplicateKey": {
+      "description": "text displayed when server error is DUPLICATE_UNIQUE_KEY",
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+    "srvResponseEmptyList": "La liste ne peut pas être vide !",
+    "@srvResponseEmptyList": {
+      "description": "text displayed when server error is EMPTY_LIST"
+    },
+    "srvResponseBadValue": "La valeur '{value}' n'est pas autorisée !",
+    "@srvResponseBadValue": {
+      "description": "text displayed when server error is BAD_VALUE",
+      "placeholders": {
+          "value": {
+          "type": "String"
+          }
+      }
+    },
+    "srvResponseCircularRef": "Une dépendance circulaire a été détectée entre les jeux de température suivants : {aliases}",
+    "@srvResponseCircularRef": {
+      "description": "text displayed when server error is CIRCULAR_REF",
+      "placeholders": {
+          "aliases": {
+          "type": "List<String>"
+          }
+      }
+    },
+    "srvResponseMissingValue": "La valeur '{value}' est manquante dans la liste !",
+    "@srvResponseMissingValue": {
+      "description": "text displayed when server error is MISSING_VALUE",
+      "placeholders": {
+          "value": {
+          "type": "String"
+          }
+      }
+    },
+
+    "settingsPageTitle": "Paramètres",
+    "settingsAppVersion": "Version application : v{version}",
+    "@settingsAppVersion": {
+      "placeholders": {
+          "version": {
+          "type": "String"
+          }
+      }
+    },
+
+    "settingsErrorMandatoryValue": "Une valeur est obligatoire",
+    "settingsGroupMain": "Général",
+    "settingsLanguage": "Langue",
+    "settingsSystemLanguage": "Système",
+    "settingsTheme": "Thème",
+    "settingsThermostatRes": "Résolution thermostats",
+    "settingsGroupMqtt": "Paramètres de connexion MQTT",
+    "settingsBrokerAddress": "Adresse broker",
+    "settingsUsername": "Utilisateur",
+    "settingsPassword": "Mot de passe",
+    "settingsPortNumber": "Port (WebSocket)",
+    "settingsIsPortSecured": "SSL",
+
+    "devicesEditorTitle": "Liste des thermostats",
+    "devicesEditorEditTitle": "Propriétés de l'équipement",
+    "devicesEditorEditEntity": "Entité",
+    "devicesEditorEditName": "Nom",
+
+    "homePageTitle": "Accueil",
+    "homePageNoActiveSchedule": "Aucun planning actif",
+    "homePageActiveSchedule": "Planning actif",
+
+    "tempSetsPageTitle": "Jeux de T°",
+    "tempSetEditTitle": "Propriétés du Jeu",
+    "tempSetEditName": "Nom",
+    "tempSetEditNameHint": "Nom du jeu",
+    "tempSetEditColor": "Couleur",
+
+    "timeslotWeekA": "sA",
+    "timeslotWeekB": "sB",
+    "timeslotAddAfter": "Ajouter dessous",
+    "timeslotSetEditTitle": "Edition d'une Plage hebdomadaire",
+
+    "schedulesPageTitle": "Plannings",
+    "schedulesPageErrorMissingThermostatAndTempSet": "Il faut commencer par ajouter un thermostat et créer un jeu de températures ...",
+    "scheduleEditTitle": "Propriétés du planning",
+    "scheduleEditName": "Nom",
+    "scheduleEditNameHint": "Nom du planning",
+
+    "timeslotsFortnightSwitch": "Quinzaine on/off",
+    "timeslotsErrorNotEmpty": "Certains jours de la semaine sont encore affectés à cette plage hebdomadaire"
+}

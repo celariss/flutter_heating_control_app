@@ -6,14 +6,13 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
+library model_ctrl;
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:heating_control_app/utils/configuration.dart';
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
 
@@ -615,6 +614,10 @@ class ModelCtrl {
         ModelCtrl().onScheduleChanged(scheduleName);
       }
     }
+  }
+
+  Map getSchedulerData() {
+    return _schedulerData;
   }
 
   List getSchedules() {

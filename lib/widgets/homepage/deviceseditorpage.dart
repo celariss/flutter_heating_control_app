@@ -7,6 +7,7 @@ import 'package:navbar_router/navbar_router.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../utils/localizations.dart';
 
 class DevicesEditorPage extends StatefulWidget {
   const DevicesEditorPage({super.key});
@@ -14,16 +15,6 @@ class DevicesEditorPage extends StatefulWidget {
 
   @override
   State<DevicesEditorPage> createState() => _DevicesEditorPageState();
-
-  /*static Future<void> editDevices(BuildContext context) async {
-    await Common.showModalDialog(
-        context,
-        dlgButtons: DlgButtons.close, title: "Edition de la liste des équipements",
-        insetPadding: const EdgeInsets.all(0),
-        onValidate: () {
-      //
-    }, content: const DevicesEditorWidget());
-  }*/
 }
 
 class _DevicesEditorPageState extends State<DevicesEditorPage> {
@@ -92,7 +83,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
   Widget build(BuildContext context) {
     // SizeBox with forced width is needed to avoid Exception
     return Scaffold(
-      appBar: AppBar(title: const Text('Liste des thermostats')),
+      appBar: AppBar(title: Text(wcLocalizations().devicesEditorTitle)),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.createFloatingButton(
         size: 55,
@@ -100,7 +91,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
         onPressed: () async {
           await editDeviceProperties(
             context,
-            'Nouveau',
+            wcLocalizations().new_,
             entities.entries.first.value.serverEntity,
             false,
             (deviceName, tapedName, deviceEntity) {
@@ -136,8 +127,8 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
   }
 
   Widget deviceTileBuilder(BuildContext context, Device? device) {
-    String name = '*Unknown*';
-    String entity = '*Unknown*';
+    String name = '*${wcLocalizations().unknown}*';
+    String entity = '*${wcLocalizations().unknown}*';
     if (device != null) {
       name = device.name;
       entity = device.serverEntity;
@@ -189,7 +180,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     
     await Common.showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
-        title: "Propriétés de l'équipement",
+        title: wcLocalizations().devicesEditorEditTitle,
         insetPadding: const EdgeInsets.all(0),
         onValidate: () => onValidate(deviceName, nameCtrl.text, deviceEntity),
         content: StatefulBuilder(builder: (context, setState) {
@@ -197,7 +188,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
           List<Widget> columnChildren = [const SizedBox(height: 20,),
               Row(
                 children: [
-                  const Text('Entité : '),
+                  Text('${wcLocalizations().devicesEditorEditEntity} : '),
                   const SizedBox(width:20),
                   Flexible(flex:2, child: DropdownButton(
                     isExpanded: true,
@@ -216,12 +207,12 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
               //const SizedBox(height: 10),
               Row(
                 children: [
-                  const Text('Nom : '),
+                  Text('${wcLocalizations().devicesEditorEditName} : '),
                   const SizedBox(width:20),
                   Flexible(flex:2, child: TextFormField(
                   style: TextStyle(color: AppTheme().specialTextColor), 
                   controller: nameCtrl,
-                  decoration: const InputDecoration(hintText: 'Nom'),
+                  decoration: InputDecoration(hintText: wcLocalizations().devicesEditorEditName),
                 )),
                 ],
               ),
@@ -231,9 +222,10 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
               const SizedBox(height: 20,),
               Common.createCircleIconButton(Icons.delete, backColor:AppTheme().errorColor, onPressed: () async {
                 bool result =
-                await Common.showWarningDialog(context, "Etes-vous sûr de vouloir supprimer cet équipement ?");
+                await Common.showWarningDialog(context, wcLocalizations().removeConfirmation("eqpt", deviceName));
                 if (result) {
                   ModelCtrl().deleteDevice(deviceName);
+                  // ignore: use_build_context_synchronously
                   Navigator.of(context).pop();
                 }
               })];

@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
+import 'package:heating_control_app/main.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 import '../../common/settings.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/package.dart';
+import '../../utils/localizations.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             SETTINGS PAGE
@@ -98,7 +101,7 @@ class _SettingsPage extends State<SettingsPage> {
         }
       },
       child: Scaffold(
-      appBar: AppBar(title: const Text('Paramètres')),
+      appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
       body: SingleChildScrollView(
         child: _buildPortraitLayout()
       ),
@@ -106,7 +109,18 @@ class _SettingsPage extends State<SettingsPage> {
     );
   }
 
+  static String localeToString(Locale locale) {
+    String lang = Languages.getNameFromLocale(locale)!['nativeName'] ?? '';
+    return '$lang (${locale.toLanguageTag()})';
+  }
+
   CardSettings _buildPortraitLayout() {
+    List<String> langList = AppLocalizations.supportedLocales.map((e) => localeToString(e)).toList();
+    langList.insert(0, wcLocalizations().settingsSystemLanguage);
+    String curLangName = wcLocalizations().settingsSystemLanguage;
+    if (Settings().locale!=null) {
+      curLangName = localeToString(getCurrentLocale());
+    }
     return CardSettings.sectioned(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
       showMaterialonIOS: false,
@@ -116,57 +130,73 @@ class _SettingsPage extends State<SettingsPage> {
       children: <CardSettingsSection>[
         CardSettingsSection(
           header: CardSettingsHeader(
-            label: 'Version application : v${Package().getPackageInfo()?.version}',
+            label: wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
           ),
         ),
         CardSettingsSection(
           header: CardSettingsHeader(
-            label: 'Général',
+            label: wcLocalizations().settingsGroupMain,
           ),
           children: <CardSettingsWidget>[
-            _buildCardSettingsListPicker_Type("Thème", themesList, themeName, (value) {
+            _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
               themeName = value;
               Settings().setTheme(themeName);
               themeNotifier!.refreshAppTheme();
             }),
-            _buildCardSettingsListPicker_Type('Résolution thermostats', ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
-              Settings().setThermostatResolution(double.parse(value));
+           _buildCardSettingsListPickerType(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
+              Locale ?newLocale;
+              curLangName = value;
+              if (value != wcLocalizations().settingsSystemLanguage) {
+                for (Locale locale in AppLocalizations.supportedLocales) {
+                  if (localeToString(locale)==value) {
+                    newLocale = locale;
+                    break;
+                  }
+                }
+              }
+              MyApp.setLocale(newLocale);
+              Settings().setLocale(newLocale);
+              themeNotifier!.refreshAppTheme();
             }),
+            _buildCardSettingsListPickerType(wcLocalizations().settingsThermostatRes,
+              ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
+                Settings().setThermostatResolution(double.parse(value));
+              }),
           ],
         ),
         CardSettingsSection(
           header: CardSettingsHeader(
-            label: 'Paramètres de connexion MQTT',
+            label: wcLocalizations().settingsGroupMqtt,
           ),
-          divider: Divider(thickness: 1.0, color: AppTheme().focusColor),
+          //divider: Divider(thickness: 1.0, color: AppTheme().focusColor),
           children: <CardSettingsWidget>[
-            _buildCardSettingsText(_mqttUrlKey, 'Adresse broker', mqttUrl, (value) {
+            _buildCardSettingsText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
               mqttUrl = value;
               mqttChanged = true;
-            }, 'Une valeur est obligatoire'),
-            _buildCardSettingsText(_mqttUserKey, 'Utilisateur', mqttUser, (value) {
+            }, wcLocalizations().settingsErrorMandatoryValue),
+            _buildCardSettingsText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
               mqttUser = value;
               mqttChanged = true;
-            }, 'Une valeur est obligatoire'),
+            }, wcLocalizations().settingsErrorMandatoryValue),
             _buildCardSettingsPassword(_mqttPasswordKey, (value) {
               mqttPassword = value;
               mqttChanged = true;
             }),
-            _buildCardSettingsInt(_mqttPortKey, 'Port (WebSocket)', mqttPort, (value) {
+            _buildCardSettingsInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
               mqttPort = value;
               mqttChanged = true;
-            }, 'Une valeur est obligatoire'),
-            _buildCardSettingsBool(_mqttSecureKey, 'SSL', mqttSecure, (value) {
+            }, wcLocalizations().settingsErrorMandatoryValue),
+            _buildCardSettingsBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
               mqttSecure = value;
               mqttChanged = true;
-            }, 'Une valeur est obligatoire'),
+            }, wcLocalizations().settingsErrorMandatoryValue),
           ],
         ),
       ],
     );
   }
 
-  CardSettingsListPicker _buildCardSettingsListPicker_Type(String title, List values, dynamic initialValue, void Function(dynamic) onChanged) {
+  CardSettingsListPicker _buildCardSettingsListPickerType(String title, List values, dynamic initialValue, void Function(dynamic) onChanged) {
     List<PickerModel> list = values.map((e) => PickerModel(e as String)).toList();
     PickerModel initial = list.firstWhere((e) => e.name==initialValue as String, orElse: () => const PickerModel(""));
     return CardSettingsListPicker<PickerModel>(
@@ -233,6 +263,7 @@ CardSettingsInt _buildCardSettingsInt(Key key, String label, int initialValue, v
     );
   }
 
+// ignore: unused_element
 CardSettingsDouble _buildCardSettingsDouble(Key key, String label, double initialValue, double min_, double max_, void Function(dynamic) onChanged, String ?requiredText, String ?badValueText) {
     return CardSettingsDouble(
       key: key,
@@ -262,6 +293,8 @@ CardSettingsDouble _buildCardSettingsDouble(Key key, String label, double initia
 CardSettingsSwitch _buildCardSettingsBool(Key key, String label, bool initialValue, void Function(dynamic) onChanged, String ?requiredText) {
     return CardSettingsSwitch(
       key: key,
+      falseLabel: wcLocalizations().no,
+      trueLabel: wcLocalizations().yes,
       label: label,
       initialValue: initialValue,
       requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
@@ -287,7 +320,7 @@ CardSettingsSwitch _buildCardSettingsBool(Key key, String label, bool initialVal
       key: key,
       icon: const Icon(Icons.lock),
       labelWidth: 200,
-      label: 'Mot de passe',
+      label: wcLocalizations().settingsPassword,
       initialValue: mqttPassword,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       onChanged: (value) {

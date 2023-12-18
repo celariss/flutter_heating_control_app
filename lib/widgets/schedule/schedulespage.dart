@@ -6,6 +6,7 @@ import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
+import '../../utils/localizations.dart';
 import 'schedule.dart';
 
 ///////////////////////////////////////////////////////////////////////////
@@ -49,6 +50,10 @@ class _SchedulesPage extends State<SchedulesPage> {
   @override
   void initState() {
     super.initState();
+    schedulerData = ModelCtrl().getSchedulerData();
+    if (schedulerData!.isEmpty) {
+      schedulerData = null;
+    }
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
@@ -78,9 +83,9 @@ class _SchedulesPage extends State<SchedulesPage> {
 
   void _onNewScheduleValidate(BuildContext context, Map scheduleData, String tapedName) {
     if (ModelCtrl().getSchedule(tapedName).isNotEmpty) {
-      Common.showSnackBar(context, 'Ce planning existe déjà ...', backColor: AppTheme().errorColor, duration_ms: 4000);
+      Common.showSnackBar(context, wcLocalizations().errorDuplicateKey(tapedName), backColor: AppTheme().errorColor, durationMs: 4000);
     } else if (ModelCtrl().getDevices().isEmpty || ModelCtrl().getTemperatureSets().isEmpty) {
-      Common.showSnackBar(context, 'Il faut commencer par ajouter un thermostat et créer un jeu de températures ...', backColor: AppTheme().errorColor, duration_ms: 4000);
+      Common.showSnackBar(context, wcLocalizations().schedulesPageErrorMissingThermostatAndTempSet, backColor: AppTheme().errorColor, durationMs: 4000);
     } else {
       ModelCtrl().createSchedule(tapedName); 
     }
@@ -96,13 +101,13 @@ class _SchedulesPage extends State<SchedulesPage> {
     // We need this line with listen:true to ensure refresh of this page
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
-      appBar: Common.createAppBar('Plannings'),
+      appBar: Common.createAppBar(wcLocalizations().schedulesPageTitle),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.createFloatingButton(
         size: 55,
         icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
         onPressed: () {
-          Map scheduleData = {'alias': 'New'};
+          Map scheduleData = {'alias': wcLocalizations().new_};
           Common.editScheduleProperties(context, scheduleData, _onNewScheduleValidate);
         },
       ),
