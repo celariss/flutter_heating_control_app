@@ -231,10 +231,10 @@ packages:
     dependency: transitive
     description:
       name: flutter_multi_formatter
-      sha256: "9f41ee86d9008c850d90e711bec5060b8d69c81983a7f3d557de1f417fd7100b"
+      sha256: cda29088d2460eecd3bdfced6a4bf5533039b5ee0e239f788f91fee1824d63ab
       url: "https://pub.dev"
     source: hosted
-    version: "2.12.2"
+    version: "2.12.3"
   flutter_picker:
     dependency: "direct main"
     description:
@@ -353,10 +353,10 @@ packages:
     dependency: "direct main"
     description:
       name: navbar_router
-      sha256: e3f3e70b558231df8e99599845cb23573b16ba6e7d5275bfe874b869796f13c5
+      sha256: "47963e489d328e7b288482c8c64b14817259026a1af15ac8efaadb1d5fe03a8e"
       url: "https://pub.dev"
     source: hosted
-    version: "0.7.0"
+    version: "0.7.3"
   nested:
     dependency: transitive
     description:

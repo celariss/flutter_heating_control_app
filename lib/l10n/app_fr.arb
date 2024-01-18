@@ -32,6 +32,7 @@
     "popupPickColorTitle": "Sélection de la couleur",
     "popupErrorTitle": "Erreur",
     "popupWarningTitle": "Attention",
+    "popupWaitingConnection": "Connexion en cours ...",
 
     "removeConfirmation": "Etes-vous sûr de vouloir supprimer {item, select, eqpt{l'équipement} schedule{le planning} tempset{le jeu} subschedule{ce sous-planning} timeslots{cette plage hebdomadaire} other{}} '{name}' ?",
     "@removeConfirmation": {

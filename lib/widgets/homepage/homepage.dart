@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -101,7 +103,7 @@ class _HomePage extends State<HomePage> {
     }
   }
 
-  // We need to update the AppBafr to reflect connexion state in connexion icon
+  // We need to update the AppBar to reflect connexion state in connexion icon
   void _onMessageEvent(args) {
     setState(() {});
   }
@@ -153,7 +155,7 @@ class _HomePage extends State<HomePage> {
               Common.navBarNavigate(context, SettingsPage.route, isRootNavigator: false);
             },)
       ]),
-      body: SingleChildScrollView(
+      body: Common.cnxStateWidgetFilter(SingleChildScrollView(
         child: Column(children: [
           const SizedBox(height: 10),
           Text(
@@ -236,7 +238,7 @@ class _HomePage extends State<HomePage> {
           ),
           const SizedBox(height: 55)
         ]),
-      ),
+      )),
     );
   }
 }

@@ -32,6 +32,7 @@
     "popupPickColorTitle": "Pick a color",
     "popupErrorTitle": "Error",
     "popupWarningTitle": "Warning",
+    "popupWaitingConnection": "Waiting for server connection ...",
 
     "removeConfirmation": "Do you confirm the removing of {item, select, eqpt{equipement} schedule{schedule} tempset{temperature set} subschedule{this sub-schedule} timeslots{this daily timeslots} other{}} '{name}' ?",
     "@removeConfirmation": {

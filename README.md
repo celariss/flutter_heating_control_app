@@ -14,7 +14,7 @@ The app connects to a MQTT broker to  :
 - subscribe to all data published  by the heating control server (devices data, shedules, ...)
 - send commands (like a new setpoint) to the server
 
-> Note: The only language currently available in this app is French (see TODO section)
+> Note: French and english languages are available in the app 
 
 ## Target platforms
 This flutter app can be run on the following targets :

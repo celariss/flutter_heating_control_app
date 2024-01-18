@@ -54,6 +54,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     ModelCtrl().onDevicesEvent.subscribe(_onDevicesEvent);
     entities = ModelCtrl().getEntities();
     ModelCtrl().onEntitiesEvent.subscribe(_onEntitiesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
   void _addScrollListener() {
@@ -65,6 +66,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     _scrollController.dispose();
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
     ModelCtrl().onEntitiesEvent.unsubscribe(_onEntitiesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     super.dispose();
   }
 
@@ -79,13 +81,18 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     setState(() {});
   }
 
+  // We need to update the AppBafr to reflect connexion state in connexion icon
+  void _onMessageEvent(args) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     // SizeBox with forced width is needed to avoid Exception
     return Scaffold(
-      appBar: AppBar(title: Text(wcLocalizations().devicesEditorTitle)),
+      appBar: Common.createAppBar(wcLocalizations().devicesEditorTitle),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      floatingActionButton: Common.createFloatingButton(
+      floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
         icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
         onPressed: () async {
@@ -99,8 +106,8 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
             },
           );
         },
-      ),
-      body: SingleChildScrollView(
+      )),
+      body: Common.cnxStateWidgetFilter(SingleChildScrollView(
         child: ReorderableListView.builder(
             // The two following lines are here to avoid "viewport has unbounded height" error
             // and allows the scroll to work in nested listviews
@@ -122,7 +129,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
                 }
               });
             })
-      ),
+      )),
     );
   }
 

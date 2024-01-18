@@ -94,17 +94,17 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().tempSetsPageTitle),
-      body: TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: ''),
+      body: Common.cnxStateWidgetFilter(TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: '')),
       key: UniqueKey(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      floatingActionButton: Common.createFloatingButton(
+      floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
         icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
         onPressed: () {
           Map tempSetData = {'alias': wcLocalizations().new_};
           Common.editTemperatureSetProperties(context, tempSetData, '', _onNewTemperatureSetValidate);
         },
-      ),
+      )),
     );
   }
 

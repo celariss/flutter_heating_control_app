@@ -110,7 +110,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     }
     List filtredDevices =
         (tempSet['devices'] as List).where((element) => scheduleItemDevs.contains(element['device_name'])).toList();
-    filtredDevices.sort((a, b) => Common.compareDevices(a['device_name'], b['device_name']));
+    filtredDevices.sort((a, b) => Common.compareDevicesOrder(a['device_name'], b['device_name']));
 
     return IntrinsicHeight(
         //padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 0),

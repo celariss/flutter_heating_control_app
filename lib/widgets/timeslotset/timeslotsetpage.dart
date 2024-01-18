@@ -97,9 +97,9 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
       appBar: Common.createAppBar(wcLocalizations().timeslotSetEditTitle),
       body: Padding(
         padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-        child: TimeSlotSetEditor(
+        child: Common.cnxStateWidgetFilter(TimeSlotSetEditor(
             scheduleName: scheduleName, scheduleItemIdx: scheduleItemIdx, tsKey: tsKey, timeslotSetIdx: timeslotSetIdx),
-      ),
+      )),
     );
   }
 }

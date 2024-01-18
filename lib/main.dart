@@ -185,7 +185,7 @@ class RootPage extends StatefulWidget {
   State<RootPage> createState() => _RootPageState();
 }
 
-class _RootPageState extends State<RootPage> {
+class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   Map<int, Map<String, Widget>> routes = {
     0: {
       '/': const HomePage(),
@@ -255,21 +255,27 @@ class _RootPageState extends State<RootPage> {
     Color textColor = Common.contrastColor(backColor);
     switch (message.code) {
       case EMsgInfoCode.mqttServerConnected:
-        msgText = wcLocalizations().msgInfoCode_mqttServerConnected;
+        //msgText = wcLocalizations().msgInfoCode_mqttServerConnected;
+        msgText = "";
         refresh = true;
         break;
       case EMsgInfoCode.mqttServerDisconnected:
-        msgText = wcLocalizations().msgInfoCode_mqttServerDisconnected;
+        //msgText = wcLocalizations().msgInfoCode_mqttServerDisconnected;
+        msgText = "";
         refresh = true;
         break;
       case EMsgInfoCode.mqttMessageError:
         msgText = wcLocalizations().msgInfoCode_mqttMessageError;
         break;
       case EMsgInfoCode.controlServerAvailable:
-        msgText = wcLocalizations().msgInfoCode_controlServerAvailable;
+        //msgText = wcLocalizations().msgInfoCode_controlServerAvailable;
+        msgText = "";
+        refresh = true;
         break;
       case EMsgInfoCode.controlServerUnavailable:
-        msgText = wcLocalizations().msgInfoCode_controlServerUnavailable;
+        //msgText = wcLocalizations().msgInfoCode_controlServerUnavailable;
+        msgText = "";
+        refresh = true;
         break;
       default:
         break;
@@ -277,13 +283,16 @@ class _RootPageState extends State<RootPage> {
     if (refresh) {
       setState(() {});
     }
-    Common.hideSnackBar(context);
-    Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, durationMs: duration);
+    if (msgText.isNotEmpty) {
+      Common.hideSnackBar(context);
+      Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, durationMs: duration);
+    }
   }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     ModelCtrl().onServerResponseEvent.subscribe(_onServerResponseEvent);
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
@@ -293,6 +302,20 @@ class _RootPageState extends State<RootPage> {
     ModelCtrl().onServerResponseEvent.unsubscribe(_onServerResponseEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if (state==AppLifecycleState.inactive ||
+        state==AppLifecycleState.hidden ||
+        state==AppLifecycleState.paused) {
+      ModelCtrl().onAppInactive();
+    }
+    else if (state==AppLifecycleState.resumed) {
+      ModelCtrl().onAppActive();
+    }
   }
 
   @override

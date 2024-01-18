@@ -109,6 +109,8 @@ class ModelCtrl {
 
   bool _isConnectedToCtrlServer = false;
   bool _isConnectedToMQTT = false;
+  // true if app is currently in foreground and having input focus
+  bool _isAppActive = true;
 
   static final ModelCtrl _instance = ModelCtrl._internal();
   ModelCtrl._internal();
@@ -688,6 +690,28 @@ class ModelCtrl {
     return {};
   }
 
+  bool getAppActive() {
+    return _isAppActive;
+  }
+
+  void onAppInactive() {
+    if (_isAppActive) {
+      _isAppActive = false;
+      // stopIsAliveWaitTimer();
+      // stopServerResponseWaitTimer();
+      // stopSetSetpointTimer();
+    }
+  }
+
+  void onAppActive() {
+    if (!_isAppActive) {
+      _isAppActive = true;
+      if (_isConnectedToCtrlServer) {
+        //startIsAliveWaitTimer();
+      }
+    }
+  }
+
   ///////////////////////////////////////////////////////////////////
   /////                STATIC METHODS                          //////
   //////////////////////////////////////////////////////////////////////
@@ -917,12 +941,14 @@ class ModelCtrl {
   }
 
   void startIsAliveWaitTimer() {
-    if (isAliveWaitTimer != null) {
-      stopIsAliveWaitTimer();
-    }
-    if (Settings().MQTT.isAliveTimeout>0) {
-      isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
-    }
+   // if (_isAppActive) {
+      if (isAliveWaitTimer != null) {
+        stopIsAliveWaitTimer();
+      }
+      if (Settings().MQTT.isAliveTimeout>0) {
+        isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
+      }
+    //}
   }
 
   void stopIsAliveWaitTimer() {

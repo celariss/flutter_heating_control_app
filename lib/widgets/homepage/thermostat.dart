@@ -31,7 +31,7 @@ class Thermostat {
         line.add(const Spacer());
       } else {
         line.add(manualMode
-            ? Icon(Common.getManualModeIcon(), color: manualColor)
+            ? Icon(Common.getManualModeIconData(), color: manualColor)
             : autoMode
                 ? Icon(Icons.brightness_auto_rounded, color: autoColor)
                 : const Spacer());

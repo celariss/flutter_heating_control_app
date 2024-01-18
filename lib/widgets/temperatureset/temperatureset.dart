@@ -11,7 +11,7 @@ class TemperatureSet {
   static Widget temperatureSetTileBuilder(BuildContext context, Map tempSetData, String scheduleName,
       {bool dense = false, Color? titleColor}) {
     List<Map> devicesList = (tempSetData['devices'] as List).map((e) => e as Map).toList();
-    devicesList.sort((a, b) => Common.compareDevices(a['device_name'], b['device_name']));
+    devicesList.sort((a, b) => Common.compareDevicesOrder(a['device_name'], b['device_name']));
 
     Color tempSetColor = Color(ModelCtrl.getGUIParamHex(tempSetData, 'iconColor', 0xFF000000));
     double fontSize = dense ? Common.getRadioListTextSize() : Common.getListViewTextSize();
