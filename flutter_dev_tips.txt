@@ -3,12 +3,16 @@ Flutter documentation :
 	  https://docs.flutter.dev/deployment/android
 	- How to build on Windows :
 	  https://docs.flutter.dev/deployment/windows
-	
+
+To get and prepare source code for :
+	git clone <git-path>
+	flutter pub get
+	flutter pub run flutter_launcher_icons
+
 To build on Android :
 	flutter build apk --split-per-abi
 	flutter install --use-application-binary=build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
-    (resulting binary in .\build\app\outputs\flutter-apk\à
-
+    (resulting binary in .\build\app\outputs\flutter-apk\)
 
 To build on Windows :
 	flutter build windows
@@ -30,6 +34,23 @@ To add a dependency :
 	   
 To upgrade dependencies to latest versions :
     flutter pub upgrade --major-versions
+
+To Update flutter :
+	flutter upgrade
+
+To downgrade flutter :
+	cd <flutter_path>
+	git checkout <version>
+	flutter doctor -v
+	cd <project>
+	flutter pub get
+
+To get back to latest flutter version :
+	flutter channel stable
+	flutter upgrade
+
+To create new project :
+	flutter create . --org com.yourdomain --project-name your_app_name
 	
 About the navbar_router lib :
     - url :

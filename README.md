@@ -72,13 +72,28 @@ And it depends on following flutter plugins :
 > Note: connexion parameters can also be set in running app, using the settings page 
 
 #### 2- Setup your Flutter dev environment
-- Heating control App requires [Flutter] v3.3+ to build.
+- Heating control App requires [Flutter] to build.
 - Go to https://docs.flutter.dev/get-started/install and follow instructions.
+- Use the following tool chain :
+  - Android Studio : Android Studio Ladybug | 2024.2.1 Patch 3
+  - Flutter : 3.16.4 (very important, do not use a more recent version)
+To use the correct flutter version, do the following :
+    ```sh
+    cd <flutter_git_dir>
+    git checkout <flutter_version>
+    flutter doctor -v
+    ```
+  - Java JDK : 18.0
+To make flutter use the correct version of the JDK, do the following :
+    ```sh
+    flutter config --jdk-dir <jdk_install_dir>
+    ```
 
 #### 3- Build the app
 - On android (complete instructions in https://docs.flutter.dev/deployment/android to build the apk)
 From the repo root folder, type :
     ```sh
+    flutter pub get
     flutter build apk --split-per-abi
     flutter install --use-application-binary=build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
     ```

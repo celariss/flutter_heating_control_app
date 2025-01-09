@@ -4,6 +4,7 @@ V0.8.0 (08/01/2025) :
 	- Compatibility with server v1.1.0 :
       . "Manual setpoint reset mode" parameter added in settings page
 	- Added logging in source code
+	- Android application project has been re-generated to get new flutter template
 	
 V0.7.1 (18/01/2024) :
 	- bug fix : weeks A / B calculation was wrong
