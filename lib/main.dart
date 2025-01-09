@@ -5,6 +5,10 @@
 /// License: BSD 3-Clause
 library main;
 
+import 'dart:developer';
+import 'dart:ffi';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -308,13 +312,11 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state==AppLifecycleState.inactive ||
-        state==AppLifecycleState.hidden ||
-        state==AppLifecycleState.paused) {
-      ModelCtrl().onAppInactive();
-    }
-    else if (state==AppLifecycleState.resumed) {
+    if (state==AppLifecycleState.resumed) {
       ModelCtrl().onAppActive();
+    }
+    else {
+      ModelCtrl().onAppInactive();
     }
   }
 

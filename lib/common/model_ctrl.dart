@@ -12,10 +12,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
 
+import '../utils/logging.dart';
 import 'common.dart';
 import 'settings.dart';
 import 'timetool.dart';
@@ -90,9 +90,9 @@ class Timeslot {
 }
 
 class ModelCtrl {
+  final _logger = Logging.getLogger("ModelCtrl", Level.info);
   // OK pour Web et io
   MQTTClient? _mqttClient;
-
   Timer? isAliveWaitTimer;
   Timer? serverResponseWaitTimer;
   Timer? setSetpointTimer;
@@ -395,6 +395,13 @@ class ModelCtrl {
     return name;
   }
 
+  void setManualResetMode(dynamic mode) {
+    Map message = {};
+    message['command'] = 'set_scheduler_settings';
+    message['params'] = {'manual_mode_reset_event': mode};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
+  }
+
   Map getActiveSchedule() {
     if (_schedulerData.containsKey('active_schedule')) {
       String? activeScheduleName = _schedulerData['active_schedule'];
@@ -584,9 +591,7 @@ class ModelCtrl {
   void swapTemperatureSets(int index1, int index2, [String scheduleName = '']) {
     List tempSets = getTemperatureSets(scheduleName);
     if (tempSets.length > (max(index1, index2))) {
-      if (kDebugMode) {
-        print("moved tempSet '${tempSets[index1]['alias']}' from index $index1 to index $index2");
-      }
+      _logger.debug("moved tempSet '${tempSets[index1]['alias']}' from index $index1 to index $index2");
       Map item = tempSets.removeAt(index1);
       tempSets.insert(index2, item);
       onTemperatureSetsChanged(scheduleName);
@@ -596,9 +601,7 @@ class ModelCtrl {
   void swapSchedules(int index1, int index2) {
     List schedules = getSchedules();
     if (schedules.length > (max(index1, index2))) {
-      if (kDebugMode) {
-        print("moved schedule '${schedules[index1]['alias']}' from index $index1 to index $index2");
-      }
+      _logger.debug("moved schedule '${schedules[index1]['alias']}' from index $index1 to index $index2");
       Map item = schedules.removeAt(index1);
       schedules.insert(index2, item);
       onSchedulesReorder();
@@ -696,18 +699,18 @@ class ModelCtrl {
 
   void onAppInactive() {
     if (_isAppActive) {
+      _logger.debug('onAppInactive()');
       _isAppActive = false;
-      // stopIsAliveWaitTimer();
-      // stopServerResponseWaitTimer();
-      // stopSetSetpointTimer();
+      stopIsAliveWaitTimer();
     }
   }
 
   void onAppActive() {
     if (!_isAppActive) {
       _isAppActive = true;
+      _logger.debug('onAppActive()');
       if (_isConnectedToCtrlServer) {
-        //startIsAliveWaitTimer();
+        startIsAliveWaitTimer();
       }
     }
   }
@@ -755,7 +758,13 @@ class ModelCtrl {
   void cloneSchedule(String scheduleName) {
     Map schedule = getSchedule(scheduleName);
     if (schedule.isNotEmpty) {
-      createSchedule(scheduleName, cloneMap(schedule));
+      String name = scheduleName;
+      int count = 0;
+      while (getSchedule(name).isNotEmpty) {
+        count++;
+        name = '${scheduleName}_$count';
+      }
+      createSchedule(name, cloneMap(schedule));
     }
   }
 
@@ -800,9 +809,7 @@ class ModelCtrl {
   }
 
   void _onMqttConnectedCallback() {
-    if (kDebugMode) {
-      print('ModelCtrl: MQTT CONNECTED');
-    }
+    _logger.debug(' MQTT CONNECTED');
     if (_isConnectedToMQTT == false) {
       _isConnectedToMQTT = true;
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.warning, code: EMsgInfoCode.mqttServerConnected)));
@@ -816,19 +823,18 @@ class ModelCtrl {
   }
 
   void _onMqttDisconnectedCallback(bool unexpected) {
+    _logger.debug("ModelCtrl._onMqttDisconnectedCallback()");
     _onMQTTDisconnected(unexpected);
   }
 
   void _onMqttMessageStringCallback(String topic, String payload) {
-    if (kDebugMode) {
-      print('ModelCtrl: MQTT Message notification:: topic is <$topic}>, payload is <-- $payload -->');
-    }
+    _logger.debug(' MQTT Message notification:: topic is <$topic}>, payload is <-- $payload -->');
     //try {
     if (topic == Settings().MQTT.onIsAliveTopic) {
       stopIsAliveWaitTimer();
       DateTime? isaliveDate = DateTime.tryParse(payload);
       bool isalive = payload != '' && isaliveDate!=null && DateTime.now().difference(isaliveDate).inSeconds<Settings().MQTT.isAliveTimeout;
-      if (isalive) {
+      if (isalive && _isAppActive) {
         startIsAliveWaitTimer();
       }
       if (isalive != _isConnectedToCtrlServer) {
@@ -882,7 +888,7 @@ class ModelCtrl {
       _onDeviceChange(topic, data);
     }
     /*} catch (e) {
-      print('ModelCtrl: Error in MQTT message format : $e');
+      _logger.error(' Error in MQTT message format : $e');
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttMessageError)));
     }*/
   }
@@ -941,14 +947,12 @@ class ModelCtrl {
   }
 
   void startIsAliveWaitTimer() {
-   // if (_isAppActive) {
-      if (isAliveWaitTimer != null) {
-        stopIsAliveWaitTimer();
-      }
-      if (Settings().MQTT.isAliveTimeout>0) {
-        isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
-      }
-    //}
+    if (isAliveWaitTimer != null) {
+      stopIsAliveWaitTimer();
+    }
+    if (Settings().MQTT.isAliveTimeout>0) {
+      isAliveWaitTimer = Timer(Duration(seconds: Settings().MQTT.isAliveTimeout), _onIsAliveTimeOut);
+    }
   }
 
   void stopIsAliveWaitTimer() {
@@ -998,15 +1002,11 @@ class ModelCtrl {
   }
 
   void _onSetSetpointTimeOut() {
-    if (kDebugMode) {
-      print('ModelCtrl::_onSetSetpointTimeOut');
-    }
+    _logger.debug(':_onSetSetpointTimeOut');
     setSetpointTimer = null;
     for (Device device in _devices.values) {
       if (device.pendingSetpointSent == false && device.pendingSetpoint != null) {
-        if (kDebugMode) {
-          print('ModelCtrl::_onSetSetpointTimeOut -> Send setpoint for device ${device.name}');
-        }
+        _logger.debug(':_onSetSetpointTimeOut -> Send setpoint for device ${device.name}');
         Map message = {};
         message['command'] = 'set_setpoint';
         message['params'] = {"device_name": device.name, "setpoint": device.pendingSetpoint};
@@ -1034,6 +1034,7 @@ class ModelCtrl {
   }
 
   void _onServerResponseTimeOut() {
+    _logger.info("ModelCtrl._onServerResponseTimeOut()");
     serverResponseWaitTimer = null;
     // Error on previous command => we rollback last changes
     _schedulerData = cloneMap(_savedSchedulerData);
@@ -1042,6 +1043,7 @@ class ModelCtrl {
   }
 
   void _onCtrlServerDisconnected() {
+    _logger.info("ModelCtrl._onCtrlServerDisconnected()");
     if (_isConnectedToCtrlServer) {
       _isConnectedToCtrlServer = false;
       stopIsAliveWaitTimer();
@@ -1053,6 +1055,7 @@ class ModelCtrl {
   }
 
   void _onCtrlServerConnected() {
+    _logger.info("ModelCtrl._onCtrlServerConnected()");
     if (!_isConnectedToCtrlServer) {
       _isConnectedToCtrlServer = true;
       onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.info, code: EMsgInfoCode.controlServerAvailable)));
@@ -1061,6 +1064,7 @@ class ModelCtrl {
   }
 
   void _onMQTTDisconnected(bool reconnect) {
+    _logger.info("ModelCtrl._onMQTTDisconnected()");
     if (_isConnectedToCtrlServer || _isConnectedToMQTT) {
       stopIsAliveWaitTimer();
       stopServerResponseWaitTimer();
@@ -1072,9 +1076,7 @@ class ModelCtrl {
       if (_isConnectedToMQTT == true) {
         _isConnectedToMQTT = false;
         _isConnectedToCtrlServer = false;
-        if (kDebugMode) {
-          print('ModelCtrl: MQTT DISCONNECTED');
-        }
+        _logger.debug(' MQTT DISCONNECTED');
         onMessageEvent.broadcast(Value(MessageInfo(EMsgInfoType.error, code: EMsgInfoCode.mqttServerDisconnected)));
         _onDevicesNotAvailable();
 

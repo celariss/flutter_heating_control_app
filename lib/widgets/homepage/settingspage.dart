@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
 import 'package:heating_control_app/main.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -43,6 +44,41 @@ class _SettingsPage extends State<SettingsPage> {
   bool mqttSecure = Settings().MQTT.secure;
   String themeName = Settings().themeName;
   List<String> themesList = Settings().getThemesList();
+  String manualResetMode = '';
+  int manualResetDuration = 4;
+
+  List<String> getManualResetModesList() {
+    return [
+      wcLocalizations().settingsManualResetMode_Duration,
+      wcLocalizations().settingsManualResetMode_TimeslotChange,
+      wcLocalizations().settingsManualResetMode_SetPointChange,
+    ];
+  }
+
+  String manualResetMode2Str() {
+    switch (manualResetMode) {
+      case '':
+        return wcLocalizations().settingsManualResetMode_Duration;
+      case 'timeslot_change':
+        return wcLocalizations().settingsManualResetMode_TimeslotChange;
+      case 'setpoint_change':
+        return wcLocalizations().settingsManualResetMode_SetPointChange;
+      default:
+        return wcLocalizations().settingsManualResetMode_TimeslotChange;
+    }
+  }
+
+  dynamic str2ManualResetMode(String value) {
+    if (value == wcLocalizations().settingsManualResetMode_Duration) {
+      return manualResetDuration;
+    }
+    else if (value == wcLocalizations().settingsManualResetMode_TimeslotChange) {
+        return 'timeslot_change';
+    }
+    else if (value == wcLocalizations().settingsManualResetMode_SetPointChange) {
+        return 'setpoint_change';
+    }
+  }
 
   @override
   void didChangeDependencies() {
@@ -70,16 +106,42 @@ class _SettingsPage extends State<SettingsPage> {
   void initState() {
     super.initState();
     //selectedScheduleName = getActiveSchedule();
-    //ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
+    ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
+    scheduler(ModelCtrl().getSchedulerData());
+  }
+
+  void scheduler(Map schedulerData) {
+    if (schedulerData.containsKey('settings') &&
+        schedulerData['settings'].containsKey('manual_mode_reset_event')) {
+          dynamic manualModeResetEvent = schedulerData['settings']['manual_mode_reset_event'];
+        if (manualModeResetEvent is int) {
+          manualResetMode = '';
+          manualResetDuration = manualModeResetEvent;
+        }
+        else {
+          manualResetMode = manualModeResetEvent;
+        }
+    }
+    else {
+      manualResetMode = 'timeslot_change';
+    }
   }
 
   void _addScrollListener() {
     _scrollController.addListener(handleScroll);
   }
 
+  void _onSchedulesEvent(args) {
+    if (args != null) {
+      Map? schedulerData = args!.value as Map;
+      scheduler(schedulerData);
+      setState(() {});
+    }
+  }
+
   @override
   void dispose() {
-    //ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
+    ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     _scrollController.dispose();
     super.dispose();
   }
@@ -163,6 +225,21 @@ class _SettingsPage extends State<SettingsPage> {
                 Settings().setThermostatResolution(double.parse(value));
               }),
           ],
+        ),
+        CardSettingsSection(
+          header: CardSettingsHeader(
+            label: wcLocalizations().settingsGroupManualReset,
+          ),
+          children: <CardSettingsWidget>[
+            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
+              ModelCtrl().setManualResetMode(str2ManualResetMode(value));
+            }),
+          ] + ((manualResetMode!='')?[]:[
+            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
+              ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
+                ModelCtrl().setManualResetMode(str2Int(value));
+              }),
+          ])
         ),
         CardSettingsSection(
           header: CardSettingsHeader(

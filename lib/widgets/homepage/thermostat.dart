@@ -79,7 +79,7 @@ class Thermostat {
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.keyboard_double_arrow_left, color: AppTheme().focusColor),
                           onPressed: () {
-                            double newValue = floor(value - Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
+                            double newValue = round(value - Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
                               onSetpoint(device.name, newValue);
                             }
@@ -92,7 +92,7 @@ class Thermostat {
                           padding: EdgeInsets.zero,
                           icon: Icon(Icons.keyboard_double_arrow_right, color: AppTheme().focusColor),
                           onPressed: () {
-                            double newValue = floor(value + Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
+                            double newValue = round(value + Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
                               onSetpoint(device.name, newValue);
                             }

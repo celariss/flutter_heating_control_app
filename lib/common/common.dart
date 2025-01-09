@@ -24,8 +24,17 @@ double? str2Double(String str) {
   return null;
 }
 
-double floor(double value, double precision, {double? minValue, double? maxValue}) {
-  value = (value / precision).floor() * precision;
+int? str2Int(String str) {
+  try {
+    return int.parse(str);
+  } catch (formatException) {
+    //
+  }
+  return null;
+}
+
+double round(double value, double precision, {double? minValue, double? maxValue}) {
+  value = (value / precision).round() * precision;
   if (minValue != null) {
     value = max(minValue, value);
   }

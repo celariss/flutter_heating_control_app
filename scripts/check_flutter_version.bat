@@ -1,0 +1,1 @@
+flutter upgrade --verify-only 
