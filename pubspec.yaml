@@ -49,7 +49,7 @@ dependencies:
   sleek_circular_slider: ^2.0.1
   card_settings: # (Jan 11 2025) : latest official v3.5.0 is not compatible with flutter 3.19+
     git:
-      url: a:\git\card_settings #https://github.com/aaronjudd/card_settings
+      url: https://github.com/celariss/card_settings
       #ref: dependencies-updated # branch name or commit hash
   provider: ^6.1.2
   shared_preferences: ^2.3.5
