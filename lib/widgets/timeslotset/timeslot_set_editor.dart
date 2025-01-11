@@ -39,6 +39,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     pullData = true;
     ScheduleDataPosition pos = ScheduleDataPosition(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx);
     return SingleChildScrollView(
+        padding: Common.getNavbarHeightPadding(),
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,

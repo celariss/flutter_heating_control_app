@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import 'temperatureset.dart';
 
@@ -19,7 +20,7 @@ class _TemperatureSetsState extends State<TemperatureSets> {
   Widget build(BuildContext context) {
     return ReorderableListView.builder(
         // Padding to avoid content being hidden by navbar
-        padding: const EdgeInsets.only(bottom: 55),
+        padding: Common.getNavbarHeightPadding(),
         itemCount: widget.temperatureSetsData.length,
         itemBuilder: (BuildContext context, int index) =>
             TemperatureSet.temperatureSetTileBuilder(context, widget.temperatureSetsData[index], widget.scheduleName),

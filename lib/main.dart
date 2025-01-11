@@ -3,12 +3,8 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library main;
+library;
 
-import 'dart:developer';
-import 'dart:ffi';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -116,8 +112,8 @@ class MyApp extends StatelessWidget {
             color: AppTheme().background2Color, // Background for settings page widgets
           ),
           scrollbarTheme: ScrollbarThemeData(
-            trackColor: MaterialStateProperty.all(AppTheme().normalTextColor),
-            thumbColor: MaterialStateProperty.all(AppTheme().focusColor)
+            trackColor: WidgetStateProperty.all(AppTheme().normalTextColor),
+            thumbColor: WidgetStateProperty.all(AppTheme().focusColor)
           ),
           chipTheme: const ChipThemeData(
             shape: StadiumBorder(),
@@ -125,8 +121,8 @@ class MyApp extends StatelessWidget {
           ),
 
           switchTheme: SwitchThemeData(
-            trackColor:  MaterialStateProperty.resolveWith((states) =>
-            states.contains(MaterialState.selected) ? AppTheme().focusColor : null)
+            trackColor:  WidgetStateProperty.resolveWith((states) =>
+            states.contains(WidgetState.selected) ? AppTheme().focusColor : null)
           ),
           
           appBarTheme: AppBarTheme(
@@ -144,8 +140,8 @@ class MyApp extends StatelessWidget {
           textButtonTheme: TextButtonThemeData(
             // Buttons shown in popups of Settings page
             style: ButtonStyle(
-              backgroundColor:MaterialStatePropertyAll(AppTheme().buttonBackColor),
-              textStyle: MaterialStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
+              backgroundColor:WidgetStatePropertyAll(AppTheme().buttonBackColor),
+              textStyle: WidgetStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
             ),
           ),
           
@@ -333,7 +329,7 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      /*floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: Common.createFloatingButton(
         size: 30,
         icon: Icon(NavbarNotifier.isNavbarHidden ? Icons.toggle_off : Icons.toggle_on),
@@ -346,7 +342,7 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
           }
           setState(() {});
         },
-      ),
+      ),*/
       body: NavbarRouter(
         type: NavbarType.standard,
         errorBuilder: (context) {

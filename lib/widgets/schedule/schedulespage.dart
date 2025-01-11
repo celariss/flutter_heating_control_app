@@ -112,12 +112,11 @@ class _SchedulesPage extends State<SchedulesPage> {
         },
       )),
       body: Common.cnxStateWidgetFilter(ReorderableListView.builder(
+          padding: Common.getNavbarHeightPadding(),
           // The two following lines are here to avoid "viewport has unbounded height" error
           // and allows the scroll to work in nested listviews
           physics: const ClampingScrollPhysics(),
           shrinkWrap: true,
-          // Padding to avoid content being hidden by navbar
-          padding: const EdgeInsets.only(bottom: 55),
           itemCount: schedulerData != null ? schedulerData!['schedules'].length : 0,
           itemBuilder: (context, index) {
             return Schedule.scheduleTileBuilder(context, schedulerData!['schedules'][index]);

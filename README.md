@@ -74,9 +74,9 @@ And it depends on following flutter plugins :
 #### 2- Setup your Flutter dev environment
 - Heating control App requires [Flutter] to build.
 - Go to https://docs.flutter.dev/get-started/install and follow instructions.
-- Use the following tool chain :
+- I use the following tool chain :
   - Android Studio : Android Studio Ladybug | 2024.2.1 Patch 3
-  - Flutter : 3.16.4 (very important, do not use a more recent version)
+  - Flutter : 3.27.1 (very important, do not use a more recent version)
 To use the correct flutter version, do the following :
     ```sh
     cd <flutter_git_dir>

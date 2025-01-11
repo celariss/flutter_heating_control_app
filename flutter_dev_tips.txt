@@ -24,7 +24,7 @@ To update project version :
 
 To update project icons :
 	- Run following command after any change in 'assets/images/' :
-      flutter pub run flutter_launcher_icons
+      dart run flutter_launcher_icons
 	
 To add a dependency :
     1- Add the dependency in file pubspec.yaml :
@@ -43,6 +43,7 @@ To downgrade flutter :
 	git checkout <version>
 	flutter doctor -v
 	cd <project>
+	flutter pub clean
 	flutter pub get
 
 To get back to latest flutter version :

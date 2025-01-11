@@ -109,6 +109,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
       )),
       body: Common.cnxStateWidgetFilter(SingleChildScrollView(
         child: ReorderableListView.builder(
+            padding: Common.getNavbarHeightPadding(),
             // The two following lines are here to avoid "viewport has unbounded height" error
             // and allows the scroll to work in nested listviews
             //physics: const BouncingScrollPhysics(),

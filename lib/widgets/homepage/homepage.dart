@@ -156,6 +156,7 @@ class _HomePage extends State<HomePage> {
             },)
       ]),
       body: Common.cnxStateWidgetFilter(SingleChildScrollView(
+        padding: Common.getNavbarHeightPadding(),
         child: Column(children: [
           const SizedBox(height: 10),
           Text(
@@ -236,7 +237,6 @@ class _HomePage extends State<HomePage> {
                     ))
                 .toList(),
           ),
-          const SizedBox(height: 55)
         ]),
       )),
     );

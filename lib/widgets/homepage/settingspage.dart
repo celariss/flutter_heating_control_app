@@ -163,11 +163,12 @@ class _SettingsPage extends State<SettingsPage> {
         }
       },
       child: Scaffold(
-      appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
-      body: SingleChildScrollView(
-        child: _buildPortraitLayout()
+        appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
+        body: SingleChildScrollView(
+          padding: Common.getNavbarHeightPadding(),
+          child: _buildPortraitLayout()
+        ),
       ),
-    ),
     );
   }
 

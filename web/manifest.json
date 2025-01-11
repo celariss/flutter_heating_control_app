@@ -1,11 +1,11 @@
 {
-    "name": "heating_control_app",
-    "short_name": "heating_control_app",
+    "name": "flutter_heating_control_app",
+    "short_name": "flutter_heating_control_app",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#hexcode",
-    "theme_color": "#hexcode",
-    "description": "An app that connects to the server for heating control",
+    "background_color": "#0175C2",
+    "theme_color": "#0175C2",
+    "description": "A new Flutter project.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

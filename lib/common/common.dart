@@ -2,12 +2,13 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library common_helpers;
+library;
 
 import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
+import 'package:navbar_router/navbar_router.dart';
 import '../utils/platform.dart';
 import '../utils/localizations.dart';
 
@@ -109,6 +110,19 @@ class Common {
   }
 
   static final Map _savedStates = {};
+
+  /// Padding to avoid the bottom of a page to be hidden by Navbar
+  static EdgeInsets getNavbarHeightPadding() {
+    if (!NavbarNotifier.isNavbarHidden) {
+      if (PlatformDetails().isMobile) {
+        return EdgeInsets.only(bottom: 100);
+      }
+      else {
+        return EdgeInsets.only(bottom: 50);
+      }
+    }
+    return EdgeInsets.only(bottom: 0);
+  }
 
   /// Saves given [value] to internal data map with identifier [key] 
   static void setSavedState(String key, dynamic value) {
@@ -279,8 +293,8 @@ class Common {
   static Widget createTextButton(String text, {required void Function()? onPressed}) {
     return ElevatedButton(
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(AppTheme().buttonBackColor),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          backgroundColor: WidgetStateProperty.all(AppTheme().buttonBackColor),
+          shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
             ),
@@ -416,7 +430,7 @@ class Common {
       backgroundColor: AppTheme().notSelectedColor,
       avatar: Icon(
         Common.getDeviceIconData(),
-        //color: Colors.black,
+        color: filters.contains(deviceName) ? AppTheme().background1Color : AppTheme().normalTextColor,
       ),
       showCheckmark: false,
       elevation: 12,
@@ -665,7 +679,7 @@ class Common {
             shape: const CircleBorder(side: BorderSide.none),
             label: Text(day[1]),
             selected: weekDayFilters.contains(day[0]),
-            selectedColor: AppTheme().selectedColor,
+            selectedColor: AppTheme().normalTextColor,
             onSelected: (bool selected) {
               if (selected && !passiveMode) {
                 // the ModelCtrl will remove this day from an other timeSlotSet
