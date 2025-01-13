@@ -6,11 +6,14 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library model_ctrl;
+library;
 
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui';
+
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 import '../mqtt/mqtt_client.dart';
 import 'package:event/event.dart';
@@ -321,12 +324,12 @@ class ModelCtrl {
     _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
-  void createTemperatureSet(int colorValue, String tempSetName, {String scheduleName = '', Map? newTempSetData}) {
+  void createTemperatureSet(Color color, String tempSetName, {String scheduleName = '', Map? newTempSetData}) {
     Map tempSetData = {'alias': tempSetName, 'devices': []};
     if (newTempSetData != null) {
       tempSetData = newTempSetData;
     }
-    ModelCtrl.setGUIParamHex(tempSetData, 'iconColor', colorValue);
+    ModelCtrl.setGUIColorParam(tempSetData, 'iconColor', color);
     getTemperatureSets(scheduleName).add(tempSetData);
     onTemperatureSetsChanged(scheduleName);
   }
@@ -741,11 +744,11 @@ class ModelCtrl {
     return defaultValue;
   }
 
-  static int getGUIParamHex(Map dico, String paramName, int defaultValue) {
+  static Color getGUIColorParam(Map dico, String paramName, Color defaultValue) {
     String strValue = getGUIParam(dico, paramName, '');
     if (strValue != '') {
       try {
-        return int.parse(strValue.split('0x')[1], radix: 16);
+        return Color(int.parse(strValue.split('0x')[1], radix: 16));
       } on FormatException {
         //
       } catch (e) {
@@ -753,6 +756,16 @@ class ModelCtrl {
       }
     }
     return defaultValue;
+  }
+
+  static void setGUIColorParam(Map dico, String paramName, Color value) {
+    if (dico.containsKey('GUI') == false) {
+      Map m = {};
+      m[paramName] = '0x${value.toHexString()}';
+      dico['GUI'] = m;
+    } else {
+      dico['GUI'][paramName] = '0x${value.toHexString()}';
+    }
   }
 
   void cloneSchedule(String scheduleName) {
@@ -773,16 +786,6 @@ class ModelCtrl {
     Map targetSchedule = getSchedule(targetScheduleName);
     if (schedule.isNotEmpty && targetSchedule.isNotEmpty && schedule['schedule_items'].length > scheduleItemIdx) {
       createScheduleItem(targetScheduleName, cloneMap(schedule['schedule_items'][scheduleItemIdx]));
-    }
-  }
-
-  static void setGUIParamHex(Map dico, String paramName, int value) {
-    if (dico.containsKey('GUI') == false) {
-      Map m = {};
-      m[paramName] = '0x${value.toRadixString(16)}';
-      dico['GUI'] = m;
-    } else {
-      dico['GUI'][paramName] = '0x${value.toRadixString(16)}';
     }
   }
 

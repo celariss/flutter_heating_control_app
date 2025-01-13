@@ -2,7 +2,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library timeslotsset_widget;
+library;
 
 import 'package:flutter/material.dart';
 import 'package:navbar_router/navbar_router.dart';

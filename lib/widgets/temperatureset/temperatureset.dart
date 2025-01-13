@@ -13,7 +13,7 @@ class TemperatureSet {
     List<Map> devicesList = (tempSetData['devices'] as List).map((e) => e as Map).toList();
     devicesList.sort((a, b) => Common.compareDevicesOrder(a['device_name'], b['device_name']));
 
-    Color tempSetColor = Color(ModelCtrl.getGUIParamHex(tempSetData, 'iconColor', 0xFF000000));
+    Color tempSetColor = ModelCtrl.getGUIColorParam(tempSetData, 'iconColor', Color(0xFF000000));
     double fontSize = dense ? Common.getRadioListTextSize() : Common.getListViewTextSize();
 
     Widget leading = Container(
@@ -135,7 +135,7 @@ class TemperatureSet {
               '',
               (data, scheduleName, pickedColor, tapedName) {
                 tempSetData_['alias'] = ModelCtrl().createAvailableTempSetName(tapedName);
-                ModelCtrl().createTemperatureSet(pickedColor.value, tapedName,
+                ModelCtrl().createTemperatureSet(pickedColor, tapedName,
                     scheduleName: scheduleName, newTempSetData: tempSetData_);
               },
             );
@@ -227,9 +227,9 @@ class TemperatureSet {
   }
 
   static _onTemperatureSetPropertiesValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
-    int oldColor = ModelCtrl.getGUIParamHex(data, 'iconColor', Settings().temperatureSetDefaultColor);
-    if (oldColor != pickedColor.value) {
-      ModelCtrl.setGUIParamHex(data, 'iconColor', pickedColor.value);
+    Color oldColor = ModelCtrl.getGUIColorParam(data, 'iconColor', Color(Settings().temperatureSetDefaultColor));
+    if (oldColor != pickedColor) {
+      ModelCtrl.setGUIColorParam(data, 'iconColor', pickedColor);
       ModelCtrl().onTemperatureSetsChanged(scheduleName);
     }
     if (data['alias'] != tapedName) {

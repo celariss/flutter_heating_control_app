@@ -151,7 +151,7 @@ class _SettingsPage extends State<SettingsPage> {
     themeNotifier = Provider.of<ThemeNotifier>(context);
     return PopScope(
       // Called when user click on back button of the navigation bar
-      onPopInvoked: (bool didPop) {
+      onPopInvokedWithResult: (bool didPop, dynamic) {
         if (mqttChanged) {
           Settings().setMqttPassword(mqttPassword);
           Settings().setMqttUser(mqttUser);

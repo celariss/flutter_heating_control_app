@@ -3,7 +3,7 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library settings;
+library;
 
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/utils/localizations.dart';

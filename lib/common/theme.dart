@@ -2,9 +2,10 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library theme_helpers;
+library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 class AppTheme {
   static final AppTheme _instance = AppTheme._internal();
@@ -37,7 +38,7 @@ class AppTheme {
   }
 
   static String color2String(Color color) {
-    return '0x${color.value.toRadixString(16).toUpperCase()}';
+    return '0x${color.toHexString()}';
   }
 
   static Color string2Color(String colorStr, [Color defaultValue = Colors.black]) {

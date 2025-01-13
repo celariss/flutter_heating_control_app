@@ -2,7 +2,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library mqtt_stub;
+library;
 
 import 'package:mqtt_client/mqtt_client.dart';
 

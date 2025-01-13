@@ -46,7 +46,7 @@ class Timeslots {
   static Widget buildTimeslotCompact(
       List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive) {
     double timeslotsHeight = 20.0;
-    Color color = Color(ModelCtrl.getGUIParamHex(tempSet, 'iconColor', 0xFF000000));
+    Color color = ModelCtrl.getGUIColorParam(tempSet, 'iconColor', Color(0xFF000000));
     int flexValue = endTime[0] * 12 + (endTime[1] ~/ 5) - (startTime[0] * 12 + (startTime[1] ~/ 5));
 
     BoxDecoration deco = BoxDecoration(

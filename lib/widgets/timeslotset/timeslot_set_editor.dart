@@ -102,7 +102,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive) {
     double minHeight = 120;
     double bottomPadding = 12;
-    Color color = Color(ModelCtrl.getGUIParamHex(tempSet, 'iconColor', 0xFF000000));
+    Color color = ModelCtrl.getGUIColorParam(tempSet, 'iconColor', Color(0xFF000000));
 
     Map? scheduleItem = ModelCtrl().getScheduleItem(widget.scheduleName, widget.scheduleItemIdx);
     List<String> scheduleItemDevs = [];

@@ -2,7 +2,7 @@
 /// 
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library localizations_helpers;
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';

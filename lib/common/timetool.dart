@@ -3,11 +3,11 @@
 ///
 /// Authors: Jérôme Cuq
 /// License: BSD 3-Clause
-library timetool;
+library;
 
 import 'dart:math';
 
-/// TBD : to be used to replace List<int> in time manipulations
+/// TBD : to be used to replace `List<int>` in time manipulations
 class HSTime {
   final List<int> _time;
   HSTime(int hour, int min, int sec) : _time = [hour, min, sec];

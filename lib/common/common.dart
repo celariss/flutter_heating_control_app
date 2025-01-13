@@ -228,7 +228,7 @@ class Common {
             sigmaY: 3.0,
           ),
           child: Container(
-            color: Colors.black.withOpacity(0),
+            color: Colors.black.withValues(alpha:0),
           ),
         ),
         Center(child:
@@ -598,7 +598,7 @@ class Common {
   static Future<void> editTemperatureSetProperties(BuildContext context, Map data, String scheduleName,
       void Function(Map data, String scheduleName, Color pickedColor, String tapedName) onValidate) async {
     var nameCtrl = TextEditingController(text: data['alias']);
-    Color color = Color(ModelCtrl.getGUIParamHex(data, 'iconColor', Settings().temperatureSetDefaultColor));
+    Color color = ModelCtrl.getGUIColorParam(data, 'iconColor', Color(Settings().temperatureSetDefaultColor));
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
         title: wcLocalizations().tempSetEditTitle,

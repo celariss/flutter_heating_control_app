@@ -109,6 +109,6 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
   }
 
   static _onNewTemperatureSetValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
-    ModelCtrl().createTemperatureSet(pickedColor.value, tapedName, scheduleName: scheduleName);
+    ModelCtrl().createTemperatureSet(pickedColor, tapedName, scheduleName: scheduleName);
   }
 }
