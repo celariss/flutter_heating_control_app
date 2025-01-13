@@ -33,6 +33,8 @@
     "popupErrorTitle": "Error",
     "popupWarningTitle": "Warning",
     "popupWaitingConnection": "Waiting for server connection ...",
+    "popupNoMQTTParameters": "Please set server connexion parameters in settings page",
+    "popupNoDevices": "Please add some devices in settings page",
 
     "removeConfirmation": "Do you confirm the removing of {item, select, eqpt{equipement} schedule{schedule} tempset{temperature set} subschedule{this sub-schedule} timeslots{this daily timeslots} other{}} '{name}' ?",
     "@removeConfirmation": {

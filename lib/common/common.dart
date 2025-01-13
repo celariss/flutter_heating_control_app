@@ -210,12 +210,30 @@ class Common {
   }
 
   /// Returns a filtered widget of given [scaffoldBody] to reflect the current 
-  /// state of the server connexion.
-  /// If the server is connected, [scaffoldBody] is returned
-  /// If the server is not connected, a blur filter is applied to [scaffoldBody]
+  /// state of the application
+  /// If mqtt parameters are empty, a info message is returned 
+  /// If the connection is not established with the server, a connexion message is returned
+  /// If the list of devices is empty, another info message is returned
+  /// Else, the given [scaffoldBody] is returned
   static Widget cnxStateWidgetFilter(Widget scaffoldBody) {
+    String text ='';
     if (ModelCtrl().isConnectedToCtrlServer()) {
-      return scaffoldBody;
+      if (ModelCtrl().getDevices().isEmpty) {
+        text = wcLocalizations().popupNoDevices;
+      }
+      else {
+        return scaffoldBody;
+      }
+    }
+    else {
+      if (Settings().MQTT.brokerAddress.isEmpty || 
+          Settings().MQTT.port==0 ||
+          Settings().MQTT.user.isEmpty) {
+        text = wcLocalizations().popupNoMQTTParameters;
+      }
+      else {
+        text = wcLocalizations().popupWaitingConnection;
+      }
     }
 
     return Stack(
@@ -236,7 +254,10 @@ class Common {
             padding: const EdgeInsets.all(10),
             backgroundColor: AppTheme().background2Color,
             side: BorderSide(color: AppTheme().warningColor),
-            label: Text(wcLocalizations().popupWaitingConnection,
+            label: Text(text,
+              textAlign: TextAlign.center,
+              softWrap: true,
+              maxLines: 3,
               style: TextStyle(
                 color: AppTheme().warningColor),
               ),

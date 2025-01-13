@@ -71,12 +71,12 @@ class Settings {
   }
 
   void setMqttUrl(String value) {
-    MQTT.brokerAddress = value;
+    MQTT.brokerAddress = value.trim();
     MQTT.saveToSharedPrefs();
   }
 
   void setMqttUser(String value) {
-    MQTT.user = value;
+    MQTT.user = value.trim();
     MQTT.saveToSharedPrefs();
   }
 

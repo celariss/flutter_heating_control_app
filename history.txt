@@ -1,7 +1,8 @@
 V0.8.1 (13/01/2025) :
 	- Moved edit devices list button to settings page
-	- Fixed deprecated calls
+	- Fixed deprecated API use
 	- Fixed build warnings
+	- Added info message when mqtt parameters are not set and when devices list is empty
 
 V0.8.0 (11/01/2025) :
 	- Upgraded to flutter 3.27.1
