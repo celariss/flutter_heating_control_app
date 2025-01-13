@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -167,59 +169,50 @@ class _HomePage extends State<HomePage> {
           ),
           Padding(
               padding: const EdgeInsets.fromLTRB(10, 7, 10, 15),
-              child: SelectableList<String, String?>(
-                key: UniqueKey(),
-                items: schedulesList,
-                itemBuilder: (context, schedule, selected, onTap) => Column(children: [
-                  ListTile(
-                      visualDensity: VisualDensity.compact,
-                      tileColor: AppTheme().background2Color,
-                      selectedTileColor: AppTheme().background2Color,
-                      /*trailing: internalSelectedScheduleName!=null ? Common.createCircleIconButton(Icons.remove_red_eye_outlined, onPressed: () {
-                      },) : null,*/
-                      title: (schedule == selectedScheduleName)
-                          ? Text(schedule,
-                              style:
-                                  TextStyle(fontWeight: FontWeight.bold, color: AppTheme().normalTextColor, fontSize: 16))
-                          : Text(schedule, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
-                      shape: (schedule == selectedScheduleName)
-                          ? RoundedRectangleBorder(
-                              side: BorderSide(color: AppTheme().focusColor, width: 2),
-                              borderRadius: BorderRadius.circular(8),
-                            )
-                          : RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                      selected: selected,
-                      onTap: onTap),
-                  const SizedBox(height: 10),
-                ]),
-                valueSelector: (schedule) => schedule,
-                selectedValue: internalSelectedScheduleName,
-                onItemSelected: (schedule) {
-                  setState(() {
-                    selectedScheduleName = schedule;
-                    internalSelectedScheduleName = schedule;
-                    setActiveSchedule(schedule);
-                  });
-                },
-                onItemDeselected: (schedule) {
-                  internalSelectedScheduleName = null;
-                  setState(() {});
-                },
-              )),
-          Wrap(
-            spacing: 10.0,
-            runSpacing: 0.0,
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            children: [Container(), Common.createCircleIconButton(Icons.edit_note, iconSize: 50, onPressed: () {
-              //DevicesEditorWidget.editDevices(context);
-              NavbarNotifier.hideBottomNavBar = false;
-              Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
-            })]
-          ),
-          const SizedBox(height: 15),
+              child: MediaQuery.removePadding(
+                context: context,
+                removeTop: true,
+                removeBottom: true,
+                child: SelectableList<String, String?>(
+                  key: UniqueKey(),
+                  items: schedulesList,
+                  itemBuilder: (context, schedule, selected, onTap) => Column(children: [
+                    ListTile(
+                        visualDensity: VisualDensity.compact,
+                        tileColor: AppTheme().background2Color,
+                        selectedTileColor: AppTheme().background2Color,
+                        title: (schedule == selectedScheduleName)
+                            ? Text(schedule,
+                                style:
+                                    TextStyle(fontWeight: FontWeight.bold, color: AppTheme().normalTextColor, fontSize: 16))
+                            : Text(schedule, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
+                        shape: (schedule == selectedScheduleName)
+                            ? RoundedRectangleBorder(
+                                side: BorderSide(color: AppTheme().focusColor, width: 2),
+                                borderRadius: BorderRadius.circular(8),
+                              )
+                            : RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                        selected: selected,
+                        onTap: onTap),
+                    //const SizedBox(height: 10),
+                  ]),
+                  valueSelector: (schedule) => schedule,
+                  selectedValue: internalSelectedScheduleName,
+                  onItemSelected: (schedule) {
+                    setState(() {
+                      selectedScheduleName = schedule;
+                      internalSelectedScheduleName = schedule;
+                      setActiveSchedule(schedule);
+                    });
+                  },
+                  onItemDeselected: (schedule) {
+                    internalSelectedScheduleName = null;
+                    setState(() {});
+                  },
+              ))),
+          const SizedBox(height: 10),
           Wrap(
             spacing: 20.0,
             runSpacing: 0.0,

@@ -13,6 +13,7 @@ import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/package.dart';
 import '../../utils/localizations.dart';
+import 'deviceseditorpage.dart';
 
 ///////////////////////////////////////////////////////////////////////////
 //             SETTINGS PAGE
@@ -201,6 +202,27 @@ class _SettingsPage extends State<SettingsPage> {
             label: wcLocalizations().settingsGroupMain,
           ),
           children: <CardSettingsWidget>[
+            CardSettingsField(
+              label: wcLocalizations().settingsEditDevicesList,
+              labelAlign:TextAlign.left,
+              requiredIndicator: null,
+              fieldPadding: EdgeInsets.fromLTRB(15, 10, 20, 0),
+              content:  Wrap(
+                spacing: 0.0,
+                runSpacing: 0.0,
+                alignment: WrapAlignment.end,
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: [
+                  Container(),
+                  Common.createCircleIconButton(Icons.edit_note, iconSize: 50,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                    onPressed: () {
+                  //DevicesEditorWidget.editDevices(context);
+                  NavbarNotifier.hideBottomNavBar = false;
+                  Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+                })]
+              ),
+            ),
             _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
               themeName = value;
               Settings().setTheme(themeName);

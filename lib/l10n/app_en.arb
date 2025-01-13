@@ -149,6 +149,7 @@
     "settingsGroupMain": "Main",
     "settingsLanguage": "Language",
     "settingsSystemLanguage": "System",
+    "settingsEditDevicesList": "Edit devices list",
     "settingsTheme": "Theme",
     "settingsThermostatRes": "thermostats resolution",
     "settingsGroupManualReset": "Manual valve setpoint handling",

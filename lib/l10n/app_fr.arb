@@ -149,6 +149,7 @@
     "settingsGroupMain": "Général",
     "settingsLanguage": "Langue",
     "settingsSystemLanguage": "Système",
+    "settingsEditDevicesList": "Editer la liste des vannes",
     "settingsTheme": "Thème",
     "settingsThermostatRes": "Résolution thermostats",
     "settingsGroupManualReset": "Gestion Consigne Manuelle (Vanne)",
