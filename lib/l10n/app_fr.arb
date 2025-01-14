@@ -47,6 +47,7 @@
           }
       }
     },
+    "removeFortnightConfirmation": "Etes-vous sûr de vouloir arrêter le mode quinzaine ? la semaine 'B' sera supprimée.",
 
     "errorDuplicateKey": "Le nom '{key}' existe déjà ...",
     "@errorDuplicateKey": {

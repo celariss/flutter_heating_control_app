@@ -47,6 +47,7 @@
         }
       }
     },
+    "removeFortnightConfirmation": "Do you confirm to turn off fortnight mode ? The 'B' week will be lost.",
 
     "errorDuplicateKey": "The key '{key}' already exists ...",
     "@errorDuplicateKey": {

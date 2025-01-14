@@ -331,9 +331,9 @@ class Common {
   }
 
   static createCircleIconButton(IconData iconData,
-      {required void Function() onPressed, Color? iconColor, Color? backColor, double? iconSize, OutlinedBorder? shape}) {
+      {required void Function() onPressed, Color? iconColor, Color? backColor, double? iconSize, OutlinedBorder? shape, bool? enabled}) {
     return ElevatedButton(
-      onPressed: onPressed,
+      onPressed: (enabled??true) ? onPressed : null,
       style: ElevatedButton.styleFrom(
         shape: shape ?? const CircleBorder(),
         elevation: AppTheme().defaultElevation,

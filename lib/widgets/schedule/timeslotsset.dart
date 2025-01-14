@@ -97,18 +97,26 @@ class TimeslotsSet extends StatelessWidget {
       onSelected: (itemValue) async {
         switch (itemValue) {
           case 'switch_mode':
+          bool changed = false;
           Map timeslotSetData_ = ModelCtrl.cloneMap(timeslotSetData);
           if (timeslotSetData_.containsKey('timeslots')) {
             timeslotSetData_['timeslots_A'] = timeslotSetData_['timeslots'];
             timeslotSetData_['timeslots_B'] = timeslotSetData_['timeslots'];
             timeslotSetData_.remove('timeslots');
+            changed = true;
           }
           else {
-            timeslotSetData_['timeslots'] = timeslotSetData_['timeslots_A'];
-            timeslotSetData_.remove('timeslots_A');
-            timeslotSetData_.remove('timeslots_B');
+            bool result = await Common.showWarningDialog(context, wcLocalizations().removeFortnightConfirmation);
+            if (result) {
+              timeslotSetData_['timeslots'] = timeslotSetData_['timeslots_A'];
+              timeslotSetData_.remove('timeslots_A');
+              timeslotSetData_.remove('timeslots_B');
+              changed = true;
+            }
           }
-          ModelCtrl().setTimeslotSet(pos.scheduleName, pos.scheduleItemIdx, pos.timeslotSetIdx, timeslotSetData_);
+          if (changed) {
+            ModelCtrl().setTimeslotSet(pos.scheduleName, pos.scheduleItemIdx, pos.timeslotSetIdx, timeslotSetData_);
+          }
           break;
 
           case 'clone':

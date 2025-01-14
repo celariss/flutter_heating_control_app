@@ -108,6 +108,7 @@ class _SettingsPage extends State<SettingsPage> {
     super.initState();
     //selectedScheduleName = getActiveSchedule();
     ModelCtrl().onSchedulesEvent.subscribe(_onSchedulesEvent);
+    ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
     scheduler(ModelCtrl().getSchedulerData());
   }
 
@@ -140,9 +141,14 @@ class _SettingsPage extends State<SettingsPage> {
     }
   }
 
+  void _onMessageEvent(args) {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
+    ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
     _scrollController.dispose();
     super.dispose();
   }
@@ -185,6 +191,7 @@ class _SettingsPage extends State<SettingsPage> {
     if (Settings().locale!=null) {
       curLangName = localeToString(getCurrentLocale());
     }
+    bool enabled = ModelCtrl().isConnectedToCtrlServer();
     return CardSettings.sectioned(
       margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
       showMaterialonIOS: false,
@@ -207,6 +214,7 @@ class _SettingsPage extends State<SettingsPage> {
               labelAlign:TextAlign.left,
               requiredIndicator: null,
               fieldPadding: EdgeInsets.fromLTRB(15, 10, 20, 0),
+              enabled: enabled,
               content:  Wrap(
                 spacing: 0.0,
                 runSpacing: 0.0,
@@ -214,12 +222,11 @@ class _SettingsPage extends State<SettingsPage> {
                 crossAxisAlignment: WrapCrossAlignment.start,
                 children: [
                   Container(),
-                  Common.createCircleIconButton(Icons.edit_note, iconSize: 50,
+                  Common.createCircleIconButton(Icons.edit_note, iconSize: 50, enabled: enabled,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
                     onPressed: () {
-                  //DevicesEditorWidget.editDevices(context);
-                  NavbarNotifier.hideBottomNavBar = false;
-                  Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+                    NavbarNotifier.hideBottomNavBar = false;
+                    Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
                 })]
               ),
             ),
