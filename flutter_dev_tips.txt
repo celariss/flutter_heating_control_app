@@ -4,10 +4,10 @@ Flutter documentation :
 	- How to build on Windows :
 	  https://docs.flutter.dev/deployment/windows
 
-To get and prepare source code for :
+To get and prepare source code before building :
 	git clone <git-path>
 	flutter pub get
-	flutter pub run flutter_launcher_icons
+	dart run flutter_launcher_icons
 
 To build on Android :
 	flutter build apk --split-per-abi
