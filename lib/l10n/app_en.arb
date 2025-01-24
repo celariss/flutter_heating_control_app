@@ -149,6 +149,7 @@
     },
 
     "settingsErrorMandatoryValue": "value is mandatory",
+    "settingsGroupServer": "Server side settings",
     "settingsGroupMain": "Main",
     "settingsLanguage": "Language",
     "settingsSystemLanguage": "System",

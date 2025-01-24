@@ -49,7 +49,7 @@ class MQTTClient {
   Future<MqttClientConnectionStatus> _connect({bool startClean = true}) async {
     client.setProtocolV311();
     MqttUtil.configureClient(client);
-    client.keepAlivePeriod = 20;
+    client.keepAlivePeriod = 10;
     client.connectTimeoutPeriod = 2000; // milliseconds
     client.autoReconnect = true;
     if (onConnected != null) {

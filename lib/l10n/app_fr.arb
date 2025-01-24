@@ -149,6 +149,7 @@
     },
 
     "settingsErrorMandatoryValue": "Une valeur est obligatoire",
+    "settingsGroupServer": "Paramètres du serveur",
     "settingsGroupMain": "Général",
     "settingsLanguage": "Langue",
     "settingsSystemLanguage": "Système",

@@ -13,7 +13,7 @@ mqtt:
   onDevicesTopic: 'heatingcontrol/serverdata/on_devices'
   onEntitiesTopic: 'heatingcontrol/serverdata/on_entities'
   onDeviceChangeTopic: 'heatingcontrol/serverdata/devices/#'
-  isAliveTimeout: 10
+  isAliveTimeout: 8
   # normal: 1883, secure: 8883
   # websocket: 1884, secure: 8884
   port: 8884

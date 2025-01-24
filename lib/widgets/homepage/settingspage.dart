@@ -206,7 +206,7 @@ class _SettingsPage extends State<SettingsPage> {
         ),
         CardSettingsSection(
           header: CardSettingsHeader(
-            label: wcLocalizations().settingsGroupMain,
+            label: wcLocalizations().settingsGroupServer,
           ),
           children: <CardSettingsWidget>[
             CardSettingsField(
@@ -230,6 +230,47 @@ class _SettingsPage extends State<SettingsPage> {
                 })]
               ),
             ),
+            CardSettingsHeader(
+              label: wcLocalizations().settingsGroupManualReset,
+              child: Container(
+                margin: EdgeInsets.all(0.0),
+                decoration: BoxDecoration(
+                  color: AppTheme().background3Color,
+                ),
+                height: 30,
+                padding: EdgeInsets.only(left: 14.0),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        wcLocalizations().settingsGroupManualReset,
+                        style: TextStyle(
+                          fontWeight:FontWeight.normal,
+                          fontSize: 18,
+                          color: enabled ? null : AppTheme().notSelectedColor,
+                          ),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            ),
+            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
+              ModelCtrl().setManualResetMode(str2ManualResetMode(value));
+            }, enabled=enabled),
+          ] + ((manualResetMode!='')?[]:[
+            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
+              ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
+                ModelCtrl().setManualResetMode(str2Int(value));
+              }, enabled=enabled),
+          ]),
+        ),
+        CardSettingsSection(
+          header: CardSettingsHeader(
+            label: wcLocalizations().settingsGroupMain,
+          ),
+          children: <CardSettingsWidget>[
             _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
               themeName = value;
               Settings().setTheme(themeName);
@@ -255,21 +296,6 @@ class _SettingsPage extends State<SettingsPage> {
                 Settings().setThermostatResolution(double.parse(value));
               }),
           ],
-        ),
-        CardSettingsSection(
-          header: CardSettingsHeader(
-            label: wcLocalizations().settingsGroupManualReset,
-          ),
-          children: <CardSettingsWidget>[
-            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
-              ModelCtrl().setManualResetMode(str2ManualResetMode(value));
-            }),
-          ] + ((manualResetMode!='')?[]:[
-            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
-              ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
-                ModelCtrl().setManualResetMode(str2Int(value));
-              }),
-          ])
         ),
         CardSettingsSection(
           header: CardSettingsHeader(
@@ -303,12 +329,13 @@ class _SettingsPage extends State<SettingsPage> {
     );
   }
 
-  CardSettingsListPicker _buildCardSettingsListPickerType(String title, List values, dynamic initialValue, void Function(dynamic) onChanged) {
+  CardSettingsListPicker _buildCardSettingsListPickerType(String title, List values, dynamic initialValue, void Function(dynamic) onChanged, [bool enabled= true]) {
     List<PickerModel> list = values.map((e) => PickerModel(e as String)).toList();
     PickerModel initial = list.firstWhere((e) => e.name==initialValue as String, orElse: () => const PickerModel(""));
     return CardSettingsListPicker<PickerModel>(
       key: UniqueKey(),
       label: title,
+      enabled: enabled,
       initialItem: initial,
       hintText: initialValue as String,
       autovalidateMode: AutovalidateMode.onUserInteraction,
