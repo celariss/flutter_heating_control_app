@@ -268,11 +268,11 @@ class Common {
   }
 
   /// Creates a widget that can be used to tag an active schedule element
-  /// It is currently a little red circle with contrasted border
-  static Widget createActiveScheduleTag() {
+  /// It is actually a little red circle with contrasted border
+  static Widget createActiveScheduleTag([bool parentTag = false]) {
     //return const Icon(Icons.circle, color: Colors.red, size:10);
     Decoration deco = BoxDecoration(
-        color: Colors.red, shape: BoxShape.circle, border: Border.all(width: 2, color: AppTheme().background1Color));
+        color: parentTag ? AppTheme().focusColor : Colors.red, shape: BoxShape.circle, border: Border.all(width: 2, color: AppTheme().background1Color));
     return Container(
       decoration: deco,
       width: 12,
@@ -534,17 +534,26 @@ class Common {
   /// Given [onValidate] will be called on "Ok" button press,
   /// 'tapedName' parameter containing the new 'alias' value taped by the user. 
   static Future<void> editScheduleProperties(BuildContext context, Map data,
-      void Function(BuildContext context, Map data, String tapedName) onValidate) async {
+      void Function(BuildContext context, Map data, String tapedName, String chosenParent) onValidate) async {
+    
     var nameCtrl = TextEditingController(text: data['alias']);
+    String parentName = data.containsKey('parent_schedule') ? data['parent_schedule'] : '';
+    
+    List<DropdownMenuEntry> entries = ModelCtrl().getSchedules().map( (schedule) {
+        return DropdownMenuEntry(value: schedule['alias'], label: schedule['alias']);
+      }).toList();
+    entries.insert(0, DropdownMenuEntry(value: "", label: "---"));
+
     await showModalDialog(context,
         dlgButtons: DlgButtons.okCancel,
         title: wcLocalizations().scheduleEditTitle,
-        onValidate: () => onValidate(context, data, nameCtrl.text),
+        onValidate: () => onValidate(context, data, nameCtrl.text, parentName),
         content: Column(
           children: [
+            // Name
             Row(
               children: [
-                Text('${wcLocalizations().scheduleEditName} : '),
+                Text('${wcLocalizations().scheduleEditName} :'),
                 const SizedBox(width: 20),
                 Flexible(
                     flex: 2,
@@ -552,6 +561,25 @@ class Common {
                       style: TextStyle(color: AppTheme().specialTextColor),
                       controller: nameCtrl,
                       decoration: InputDecoration(hintText: wcLocalizations().scheduleEditNameHint),
+                    )),
+              ],
+            ),
+          SizedBox(height: 15),
+          // Parent schedule
+          Row(
+              children: [
+                Text('${wcLocalizations().scheduleEditParent} :'),
+                const SizedBox(width: 10),
+                Flexible(
+                    flex: 10,
+                    child: DropdownMenu(
+                      textStyle: TextStyle(color: AppTheme().specialTextColor),
+                      //menuStyle: MenuStyle(),
+                      enableSearch: false,
+                      keyboardType: TextInputType.none,
+                      initialSelection: parentName,
+                      dropdownMenuEntries: entries,
+                      onSelected: (value) => parentName = value,
                     )),
               ],
             ),
@@ -702,9 +730,14 @@ class Common {
             selected: weekDayFilters.contains(day[0]),
             selectedColor: AppTheme().normalTextColor,
             onSelected: (bool selected) {
-              if (selected && !passiveMode) {
-                // the ModelCtrl will remove this day from an other timeSlotSet
-                ModelCtrl().assignWeekDay(scheduleName, scheduleItemIdx, timeslotSetIdx, day[0]);
+              if (!passiveMode) {
+                if (selected) {
+                  // the ModelCtrl will remove this day from an other timeSlotSet
+                  ModelCtrl().assignWeekDay(scheduleName, scheduleItemIdx, timeslotSetIdx, day[0]);
+                }
+                else {
+                  ModelCtrl().unassignWeekDay(scheduleName, scheduleItemIdx, day[0]);
+                }
               }
             })),
       ));

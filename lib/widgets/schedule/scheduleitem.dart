@@ -17,24 +17,7 @@ class ScheduleItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     List timeslotsSets = scheduleItemData['timeslots_sets'];
-    List<Widget> moveBtns = [];
-    Widget upBtn = InkWell(
-        child: Icon(Icons.keyboard_arrow_up_rounded, size: 35, color: AppTheme().focusColor),
-        onTap: () {
-          ModelCtrl().swapScheduleItems(scheduleName, scheduleItemIdx, scheduleItemIdx - 1);
-        });
-    Widget downBtn = InkWell(
-        child: Icon(Icons.keyboard_arrow_down, size: 35, color: AppTheme().focusColor),
-        onTap: () {
-          ModelCtrl().swapScheduleItems(scheduleName, scheduleItemIdx, scheduleItemIdx + 1);
-        });
-    if (scheduleItemIdx > 0) {
-      moveBtns.add(upBtn);
-    }
-    if (scheduleItemIdx < ModelCtrl().getSchedule(scheduleName)['schedule_items'].length - 1) {
-      moveBtns.add(downBtn);
-    }
-
+    
     double rightPadding = 0;
     switch (Theme.of(context).platform) {
         case TargetPlatform.linux:
@@ -47,82 +30,86 @@ class ScheduleItem extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 0, 10, 10),
-      child: Column(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: <Widget>[
-        const SizedBox(
-          height: 8,
-        ),
-        Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-                color: AppTheme().background3Color,
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0))),
-            child: Row(children: [
-              _scheduleItemMenuBuilder(context, scheduleItemData, scheduleName, scheduleItemIdx),
-              const SizedBox(
-                width: 10,
-              ),
-              Flexible(
-                fit: FlexFit.tight,
-                child: Wrap(
-                  spacing: 6.0,
-                  runSpacing: 0.0,
-                  alignment: WrapAlignment.start,
-                  children: buildDeviceList(),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const SizedBox(
+            height: 8,
+          ),
+          // First line : contains list of devices
+          Container(
+              padding: const EdgeInsets.only(right: 10),
+              decoration: BoxDecoration(
+                  color: AppTheme().background3Color,
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(10.0))),
+              child: Row(children: [
+                _scheduleItemMenuBuilder(context, scheduleItemData, scheduleName, scheduleItemIdx),
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: Wrap(
+                    spacing: 6.0,
+                    runSpacing: 0.0,
+                    alignment: WrapAlignment.start,
+                    children: buildDeviceList(),
+                  ),
                 ),
-              ),
-              Flexible(
-                flex: 0,
-                fit: FlexFit.tight,
-                child: Wrap(alignment: WrapAlignment.end, children: [Column(children: moveBtns)]),
-              )
-            ])),
-        Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
-            decoration: BoxDecoration(
-                color: AppTheme().background2Color,
-                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10.0))),
-            child: ReorderableListView.builder(
-                // The two following lines are here to avoid "viewport has unbounded height" error
-                // and allows the scroll to work in nested listviews
-                physics: const ClampingScrollPhysics(),
-                shrinkWrap: true,
-                //controller: _scrollController,
-                itemCount: timeslotsSets.length,
-                itemBuilder: (context, index) {
-                  return Padding(
-                    key: Key(index.toString()), 
-                    padding: EdgeInsets.fromLTRB(0, 0, rightPadding, 0),
-                    child:Column(children: [
-                    const SizedBox(height: 3),
-                    TimeslotsSet(
-                        timeslotSetData: timeslotsSets[index],
-                        scheduleName: scheduleName,
-                        scheduleItemIdx: scheduleItemIdx,
-                        timeslotSetIdx: index),
-                    const SizedBox(height: 8),
-                  ]));
-                },
-                onReorder: (oldIndex, newIndex) {
-                  if (oldIndex < newIndex) {
-                    newIndex -= 1;
-                  }
-                  Map item = timeslotsSets.removeAt(oldIndex);
-                  timeslotsSets.insert(newIndex, item);
-                  ModelCtrl().onScheduleChanged(scheduleName);
-                }))
-      ]),
+              ])),
+          // Second line : contains the timeslots
+          Container(
+              padding: const EdgeInsets.only(right: 10),
+              decoration: BoxDecoration(
+                  color: AppTheme().background2Color,
+                  borderRadius: const BorderRadius.vertical(bottom: Radius.circular(10.0))),
+              child: ReorderableListView.builder(
+                  // The two following lines are here to avoid "viewport has unbounded height" error
+                  // and allows the scroll to work in nested listviews
+                  physics: const ClampingScrollPhysics(),
+                  shrinkWrap: true,
+                  //controller: _scrollController,
+                  itemCount: timeslotsSets.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      key: Key(index.toString()), 
+                      padding: EdgeInsets.fromLTRB(0, 0, rightPadding, 0),
+                      child:Column(children: [
+                      const SizedBox(height: 3),
+                      TimeslotsSet(
+                          timeslotSetData: timeslotsSets[index],
+                          scheduleName: scheduleName,
+                          scheduleItemIdx: scheduleItemIdx,
+                          timeslotSetIdx: index),
+                      const SizedBox(height: 8),
+                    ]));
+                  },
+                  onReorder: (oldIndex, newIndex) {
+                    if (oldIndex < newIndex) {
+                      newIndex -= 1;
+                    }
+                    Map item = timeslotsSets.removeAt(oldIndex);
+                    timeslotsSets.insert(newIndex, item);
+                    ModelCtrl().onScheduleChanged(scheduleName);
+                  }))
+        ]),
     );
   }
 
   static Widget _scheduleItemMenuBuilder(
       BuildContext context, Map scheduleItemData, String scheduleName, int scheduleItemIdx) {
-    return Common.createPopupMenu(
-      [
+    List<MyMenuItem> menuItemList = [
         MyMenuItem(Common.getDeviceIconData(), wcLocalizations().editAction('eqptlist'), 'edit_devices'),
         MyMenuItem(Icons.add, wcLocalizations().addAction('slots'), 'add_timeslotset'),
         MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone_scheduleitem'),
         MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete_scheduleitem'),
-      ],
+      ];
+    if (scheduleItemIdx > 0) {
+      menuItemList.add( MyMenuItem(Icons.keyboard_arrow_up_rounded, wcLocalizations().moveUpAction, 'move_up') );
+    }
+    if (scheduleItemIdx < ModelCtrl().getSchedule(scheduleName)['schedule_items'].length - 1) {
+      menuItemList.add( MyMenuItem(Icons.keyboard_arrow_down, wcLocalizations().moveDownAction, 'move_down') );
+    }
+
+    return Common.createPopupMenu(menuItemList,
       onSelected: (itemValue) async {
         switch (itemValue) {
           case 'edit_devices':
@@ -132,8 +119,11 @@ class ScheduleItem extends StatelessWidget {
                 context,
                 devices,
                 onValidate: () {
-                  scheduleItemData['devices'] = devices;
-                  ModelCtrl().onScheduleChanged(scheduleName);
+                  String device = ModelCtrl().setDevicesInScheduleItem(scheduleName, scheduleItemIdx, devices);
+                  if (device.isNotEmpty) {
+                    Common.showSnackBar(context, wcLocalizations().errorDuplicateDevice(device),
+                      backColor: AppTheme().errorColor, durationMs: 4000);
+                  }
                 },
               );
             }
@@ -152,6 +142,12 @@ class ScheduleItem extends StatelessWidget {
             break;
           case 'add_timeslotset':
             ModelCtrl().createTimeSlotSet(scheduleName, scheduleItemIdx);
+            break;
+          case 'move_up':
+            ModelCtrl().swapScheduleItems(scheduleName, scheduleItemIdx, scheduleItemIdx - 1);
+            break;
+          case 'move_down':
+            ModelCtrl().swapScheduleItems(scheduleName, scheduleItemIdx, scheduleItemIdx + 1);
             break;
         }
       },

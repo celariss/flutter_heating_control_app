@@ -81,13 +81,15 @@ class _SchedulesPage extends State<SchedulesPage> {
     setState(() {});
   }
 
-  void _onNewScheduleValidate(BuildContext context, Map scheduleData, String tapedName) {
+  void _onNewScheduleValidate(BuildContext context, Map scheduleData, String tapedName, String chosenParent) {
     if (ModelCtrl().getSchedule(tapedName).isNotEmpty) {
       Common.showSnackBar(context, wcLocalizations().errorDuplicateKey(tapedName), backColor: AppTheme().errorColor, durationMs: 4000);
     } else if (ModelCtrl().getDevices().isEmpty || ModelCtrl().getTemperatureSets().isEmpty) {
       Common.showSnackBar(context, wcLocalizations().schedulesPageErrorMissingThermostatAndTempSet, backColor: AppTheme().errorColor, durationMs: 4000);
+    } else if (chosenParent!="" && ModelCtrl().getSchedule(chosenParent).isEmpty) {
+      Common.showSnackBar(context, wcLocalizations().schedulePageErrorBadParent, backColor: AppTheme().errorColor, durationMs: 4000);
     } else {
-      ModelCtrl().createSchedule(tapedName); 
+      ModelCtrl().createSchedule(tapedName, null, chosenParent); 
     }
   }
 

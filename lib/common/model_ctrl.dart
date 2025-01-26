@@ -171,50 +171,68 @@ class ModelCtrl {
   List<Timeslot> getScheduleSetpoints(DateTime date, [Map? schedule]) {
     schedule ??= getActiveSchedule();
     List<Timeslot> result = [];
+    List<String> devicesInResult = [];
     if (schedule.isNotEmpty) {
-      for (Map item in schedule['schedule_items']) {
-        Map? tss = getTimeslotSetForDate(item, date);
-        if (tss != null) {
-          List devices = item['devices'];
-          List<Timeslot> timeslots = [];
-          List<int> startTime = [0, 0, 0];
-          List tsList = [];
-          if (tss.containsKey('timeslots')) {
-            tsList = tss['timeslots'];
-          }
-          else {
-            String weekKind = '';
-            if (weekNumber(date)%2==0) {
-              weekKind = 'A';
-            } else {
-              weekKind = 'B';
+      // Following inheritance
+      List<Map> schedules = [schedule];
+      while (schedule!.containsKey('parent_schedule') && schedule['parent_schedule']!=null) {
+        schedule = getSchedule(schedule['parent_schedule']);
+        if (schedule.isNotEmpty) {
+          schedules.add(schedule);
+        }
+      }
+
+      List<String> devicesInCurrentSchedule = [];
+      for (schedule in schedules) {
+        devicesInResult.addAll(devicesInCurrentSchedule);
+        devicesInCurrentSchedule = [];
+        for (Map item in schedule['schedule_items']) {
+          Map? tss = getTimeslotSetForDate(item, date);
+          if (tss != null) {
+            List devices = item['devices'];
+            List<Timeslot> timeslots = [];
+            List<int> startTime = [0, 0, 0];
+            List tsList = [];
+            if (tss.containsKey('timeslots')) {
+              tsList = tss['timeslots'];
             }
-            tsList = tss['timeslots_$weekKind'];
-          }
-          for (Map ts in tsList) {
-            startTime = TimeTool.parseTimeStr(ts['start_time']) ?? startTime;
-            if (timeslots.isNotEmpty) {
-              timeslots[timeslots.length - 1].endTime = startTime;
+            else {
+              String weekKind = '';
+              if (weekNumber(date)%2==0) {
+                weekKind = 'A';
+              } else {
+                weekKind = 'B';
+              }
+              tsList = tss['timeslots_$weekKind'];
             }
-            // Get the timeslot color from the temperature set name
-            String tempSetName = ts['temperature_set'];
-            Map tempSet = ModelCtrl().buildTemperatureSet(tempSetName, schedule['alias']);
-            if (tempSet.isNotEmpty) {
-              Timeslot timeslot = Timeslot(startTime, startTime);
-              for (Map devSetpoint in tempSet['devices']) {
-                if (devices.contains(devSetpoint['device_name'])) {
-                  timeslot.setPoints.add(DeviceSetpoint(devSetpoint['device_name'], devSetpoint['setpoint']));
+            for (Map ts in tsList) {
+              startTime = TimeTool.parseTimeStr(ts['start_time']) ?? startTime;
+              if (timeslots.isNotEmpty) {
+                timeslots[timeslots.length - 1].endTime = startTime;
+              }
+              // Get the timeslot color from the temperature set name
+              String tempSetName = ts['temperature_set'];
+              Map tempSet = ModelCtrl().buildTemperatureSet(tempSetName, schedule['alias']);
+              if (tempSet.isNotEmpty) {
+                Timeslot timeslot = Timeslot(startTime, startTime);
+                for (Map devSetpoint in tempSet['devices']) {
+                  String devname = devSetpoint['device_name'];
+                  if (!devicesInResult.contains(devname) && devices.contains(devname)) {
+                    timeslot.setPoints.add(DeviceSetpoint(devname, devSetpoint['setpoint']));
+                    devicesInCurrentSchedule.add(devname);
+                  }
+                }
+                if (timeslot.setPoints.isNotEmpty) {
+                  timeslots.add(timeslot);
                 }
               }
-              //timeslot.setPoints
-              timeslots.add(timeslot);
             }
+            if (timeslots.isNotEmpty) {
+              timeslots[timeslots.length - 1].endTime = [24, 0, 0];
+            }
+            // Now let's merge the timeslots for these devices with global result
+            result = mergeTimeslots(timeslots, result);
           }
-          if (timeslots.isNotEmpty) {
-            timeslots[timeslots.length - 1].endTime = [24, 0, 0];
-          }
-          // Now let's merge the timeslots for these devices with global result
-          result = mergeTimeslots(timeslots, result);
         }
       }
     }
@@ -334,7 +352,8 @@ class ModelCtrl {
     onTemperatureSetsChanged(scheduleName);
   }
 
-  void createSchedule(String scheduleName, [Map? scheduleContent]) {
+  // If parent is empty, the schedule will not have a parent
+  void createSchedule(String scheduleName, [Map? scheduleContent, String ?parent]) {
     if (getSchedule(scheduleName).isNotEmpty) {
       // The server would replace an existing schedule
       return;
@@ -371,7 +390,10 @@ class ModelCtrl {
       };
       scheduleData = {
             'schedule_items': [scheduleItem]
-          };     
+          };
+      if (parent!=null && parent.isNotEmpty) {
+        scheduleData['parent_schedule'] = parent;
+      }
     }
 
     scheduleData['alias'] = createAvailableScheduleName(scheduleName);
@@ -413,6 +435,19 @@ class ModelCtrl {
       }
     }
     return {};
+  }
+
+  List<String> getActiveScheduleInheritanceNames() {
+    List<String> result = [];
+    if (_schedulerData.containsKey('active_schedule')) {
+      String? scheduleName = _schedulerData['active_schedule'];
+      while (scheduleName != null) {
+        result.add(scheduleName);
+        Map schedule = getSchedule(scheduleName);
+        scheduleName = schedule['parent_schedule'];
+      }
+    }
+    return result;
   }
 
   void setActiveSchedule(String scheduleName) {
@@ -493,7 +528,14 @@ class ModelCtrl {
     }
   }
 
-  /// This method ensures that all weekdays are assigned to one and only one timeslot set
+  void unassignWeekDay(String scheduleName, int scheduleItemIdx, String weekDay) {
+    if (_unassignWeekDay(scheduleName, scheduleItemIdx, weekDay)) {
+      Map schedule = getSchedule(scheduleName);
+      _onScheduleChanged(schedule);
+    }
+  }
+
+  /// This method ensures that each weekday is assigned to only one timeslot set
   void assignWeekDay(String scheduleName, int scheduleItemIdx, int timeslotSetIdx, String weekDay) {
     _unassignWeekDay(scheduleName, scheduleItemIdx, weekDay);
     Map schedule = getSchedule(scheduleName);
@@ -516,6 +558,13 @@ class ModelCtrl {
       message['params'] = {'old_name': scheduleName, 'new_name': newName};
       _mqttPublishMap(Settings().MQTT.sendTopic, message);
     }
+  }
+
+  void onSchedulePropertiesChanged(String scheduleName, String newName, String newParent) {
+    Map message = {};
+    message['command'] = 'set_schedule_properties';
+    message['params'] = {'name': scheduleName, 'new_name': newName, 'parent': newParent};
+    _mqttPublishMap(Settings().MQTT.sendTopic, message);
   }
 
   void setDeviceName(String deviceName, String newName) {
@@ -716,6 +765,25 @@ class ModelCtrl {
         startIsAliveWaitTimer();
       }
     }
+  }
+
+  //
+  String setDevicesInScheduleItem(String scheduleName, int scheduleItemIdx, List<String> devices) {
+    Map schedule = getSchedule(scheduleName);
+    if (schedule.isNotEmpty && schedule['schedule_items'].length > scheduleItemIdx) {
+      for (int i=0; i<schedule['schedule_items'].length; i++) {
+        if (i!=scheduleItemIdx) {
+          for (String device in schedule['schedule_items'][i]['devices']) {
+            if (devices.contains(device)) {
+              return device;
+            }
+          }
+        }
+      }
+      schedule['schedule_items'][scheduleItemIdx]['devices'] = devices;
+      onScheduleChanged(scheduleName);
+    }
+    return "";
   }
 
   ///////////////////////////////////////////////////////////////////

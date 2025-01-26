@@ -1,3 +1,11 @@
+V0.9.0 (xx/01/2025) :
+	- Compatibility with server v1.2.0 (schedules inheritance handling)
+	- Schedule widget :
+		. parent schedule is shown
+		. Edit button allows parent schedule change
+		. Week days can now be unselected
+		. Move up / Move Down button moved to schedule item menu
+
 V0.8.1 (13/01/2025) :
 	- Moved edit devices list button to settings page
 	- Fixed deprecated API use

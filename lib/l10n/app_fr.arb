@@ -26,6 +26,8 @@
     "cancelAction": "Annuler",
     "validateAction": "Valider",
     "continueAction": "Continuer",
+    "moveUpAction": "Monter d'un cran",
+    "moveDownAction": "Descendre d'un cran",
 
     "popupPickDeviceTitle": "Sélection des équipements",
     "popupPickPlanningTitle": "Sélection d'un planning",
@@ -51,6 +53,15 @@
 
     "errorDuplicateKey": "Le nom '{key}' existe déjà ...",
     "@errorDuplicateKey": {
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+    
+    "errorDuplicateDevice": "La vanne '{key}' est déjà présente dans un autre groupe de ce planning",
+    "@errorDuplicateDevice": {
       "placeholders": {
           "key": {
           "type": "String"
@@ -184,16 +195,19 @@
     "tempSetEditNameHint": "Nom du jeu",
     "tempSetEditColor": "Couleur",
 
-    "timeslotWeekA": "sA",
-    "timeslotWeekB": "sB",
+    "timeslotWeekA": "A",
+    "timeslotWeekB": "B",
     "timeslotAddAfter": "Ajouter dessous",
     "timeslotSetEditTitle": "Edition d'une Plage hebdomadaire",
 
     "schedulesPageTitle": "Plannings",
     "schedulesPageErrorMissingThermostatAndTempSet": "Il faut commencer par ajouter un thermostat et créer un jeu de températures ...",
+    "schedulePageErrorBadParent": "Le planning parent indiqué n'existe pas !",
     "scheduleEditTitle": "Propriétés du planning",
     "scheduleEditName": "Nom",
+    "scheduleEditParent": "Parent",
     "scheduleEditNameHint": "Nom du planning",
+    "scheduleParentPrefix": "Hérite de",
 
     "timeslotsFortnightSwitch": "Quinzaine on/off",
     "timeslotsErrorNotEmpty": "Certains jours de la semaine sont encore affectés à cette plage hebdomadaire"

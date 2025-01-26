@@ -26,6 +26,8 @@
     "cancelAction": "Cancel",
     "validateAction": "Validate",
     "continueAction": "Continue",
+    "moveUpAction": "Move Up",
+    "moveDownAction": "Move Down",
 
     "popupPickDeviceTitle": "Devices selection",
     "popupPickPlanningTitle": "Pick a planning",
@@ -51,6 +53,15 @@
 
     "errorDuplicateKey": "The key '{key}' already exists ...",
     "@errorDuplicateKey": {
+      "placeholders": {
+          "key": {
+          "type": "String"
+          }
+      }
+    },
+
+    "errorDuplicateDevice": "The device '{key}' is already in another schedule item",
+    "@errorDuplicateDevice": {
       "placeholders": {
           "key": {
           "type": "String"
@@ -184,16 +195,19 @@
     "tempSetEditNameHint": "Set name",
     "tempSetEditColor": "Color",
 
-    "timeslotWeekA": "wA",
-    "timeslotWeekB": "wB",
+    "timeslotWeekA": "A",
+    "timeslotWeekB": "B",
     "timeslotAddAfter": "Add after",
     "timeslotSetEditTitle": "Edition of a daily schedule",
 
     "schedulesPageTitle": "Schedules",
     "schedulesPageErrorMissingThermostatAndTempSet": "Please first add a thermostat and create a temperature set ...",
+    "schedulePageErrorBadParent": "Given parent schedule does not exist !",
     "scheduleEditTitle": "Planning properties",
     "scheduleEditName": "Name",
+    "scheduleEditParent": "Parent",
     "scheduleEditNameHint": "Planning name",
+    "scheduleParentPrefix": "Inherits from",
 
     "timeslotsFortnightSwitch": "Fortnight mode on/off",
     "timeslotsErrorNotEmpty": "Some weekdays are still active on this daily timeslots"

@@ -12,6 +12,5 @@ class MqttUtil {
   }
 
   static configureClient(MqttClient client) {
-
   }
 }

@@ -6,9 +6,9 @@ import '../../common/timetool.dart';
 
 class Timeslots {
   static List<Widget> timeslotsBuilder(BuildContext context, ScheduleDataPosition schedulePos, Map timeslotSetData, String key,
-      bool isActive,
+      bool isActive, bool isFirstActive,
       {required Widget Function(
-              List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive)
+              List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive, bool isFirstActive)
           timeSlotBuilder}) {
     List<Widget> timeslots = [];
 
@@ -36,7 +36,7 @@ class Timeslots {
           }
         }
       }
-      timeslots.add(timeSlotBuilder(startTime, endTime, schedulePos, timeslotsData, tempSet, isActiveTimeslot));
+      timeslots.add(timeSlotBuilder(startTime, endTime, schedulePos, timeslotsData, tempSet, isActiveTimeslot, isFirstActive));
       startTime = endTime;
     }
 
@@ -44,7 +44,7 @@ class Timeslots {
   }
 
   static Widget buildTimeslotCompact(
-      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive) {
+      List<int> startTime, List<int> endTime, ScheduleDataPosition schedulePos, List timeslotsData, Map tempSet, bool isActive, bool isFirstActive) {
     double timeslotsHeight = 20.0;
     Color color = ModelCtrl.getGUIColorParam(tempSet, 'iconColor', Color(0xFF000000));
     int flexValue = endTime[0] * 12 + (endTime[1] ~/ 5) - (startTime[0] * 12 + (startTime[1] ~/ 5));
@@ -68,7 +68,7 @@ class Timeslots {
       )
     ];
     if (isActive) {
-      children.add(Common.createActiveScheduleTag());
+      children.add(Common.createActiveScheduleTag(!isFirstActive));
     }
 
     return 

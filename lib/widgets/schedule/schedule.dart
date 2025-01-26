@@ -7,67 +7,12 @@ import '../../utils/localizations.dart';
 import 'scheduleitem.dart';
 
 class Schedule {
-  static Widget scheduleBuilder(BuildContext context, Map scheduleData) {
-    String name = scheduleData['alias'];
-    Widget title = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-        const SizedBox(width: 20),
-        Text(name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
-      ]),
-      Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-        _scheduleMenuBuilder(context, scheduleData, iconColor: Colors.white),
-        const SizedBox(width: 10),
-      ]),
-    ]);
-
-    List<Widget> itemWidgets = [title];
-    int idx = 0;
-    scheduleData['schedule_items'].forEach((scheduleItemData) {
-      itemWidgets.add(const SizedBox(height: 5));
-      itemWidgets.add(ScheduleItem(scheduleItemData: scheduleItemData, scheduleName: name, scheduleItemIdx: idx));
-      idx += 1;
-    });
-
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 2),
-      decoration: BoxDecoration(
-          color: Colors.grey.shade700,
-          //border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(10.0)),
-      child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: itemWidgets)),
-    );
-  }
-
-  static Widget scheduleTileBuilder(BuildContext context, Map scheduleData, {bool dense = false}) {
+  // If dense is true, returns a widget that contains only a schedule title
+  static Widget scheduleTileBuilder(BuildContext context, Map scheduleData) {
     Widget leading = Icon(Icons.schedule, color: AppTheme().focusColor);
     String name = scheduleData['alias'];
-    double fontSize = dense ? Common.getRadioListTextSize() : Common.getListViewTextSize();
-    List<Widget> titleChildren = [];
-    titleChildren.add(Text(name, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)));
-    Map activeSchedule = ModelCtrl().getActiveSchedule();
-    if (activeSchedule.containsKey('alias') && activeSchedule['alias'] == scheduleData['alias']) {
-      titleChildren.add(Common.createActiveScheduleTag());
-    }
-    Widget title = Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-              Row(mainAxisAlignment: MainAxisAlignment.start, children: titleChildren),
-            ] +
-            ((dense == true)
-                ? []
-                : [
-                    Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-                      _scheduleMenuBuilder(context, scheduleData),
-                    ]),
-                  ]));
 
-    if (dense) {
-      return Row(
-        children: [leading, const SizedBox(width: 10), title],
-      );
-    }
+    Widget title = _createTitleWidget(context, scheduleData);
 
     int idx = 0;
     List<Widget> children = (scheduleData['schedule_items'] as List).map((scheduleItemData) {
@@ -113,13 +58,75 @@ class Schedule {
     );
   }
 
-  static void _onEditPlanningValidate(BuildContext context, Map scheduleData, String tapedName) {
-    if (scheduleData['alias'] != tapedName) {
-      if (ModelCtrl().getSchedule(tapedName).isNotEmpty) {
+  static Widget _createTitleWidget(BuildContext context, Map scheduleData) {
+    double fontSize = Common.getListViewTextSize();
+    String name = scheduleData['alias'];
+
+    // Creating title widget with schedule name and the active tag
+    List<Widget> titleChildren = [];
+    titleChildren.add(Text(name, style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)));
+    Map activeSchedule = ModelCtrl().getActiveSchedule();
+    if (activeSchedule.isNotEmpty) {
+      // If the current schedule is the first active, we create a tag
+      if (activeSchedule['alias'] == scheduleData['alias']) {
+        titleChildren.add(Common.createActiveScheduleTag());
+      // If the current schedule is the first is in the active list, we create a 'parent' tag with a different color
+      } else if (ModelCtrl().getActiveScheduleInheritanceNames().contains(name)) {
+          titleChildren.add(Common.createActiveScheduleTag(true));
+      }
+    }
+    Widget title = Row(mainAxisAlignment: MainAxisAlignment.start, children: titleChildren);
+
+    // Adding parent schedule name to the title widget
+    if (scheduleData.containsKey('parent_schedule')) {
+      Widget subTitle = Container(
+            padding: const EdgeInsets.symmetric(horizontal: 5),
+            decoration: BoxDecoration(
+                color: AppTheme().background2Color,
+                borderRadius: const BorderRadius.all(Radius.circular(7.0))),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                //SizedBox(width: 10),
+                Text(
+                  wcLocalizations().scheduleParentPrefix,
+                  style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.normal)),
+                Text(
+                  " < ${scheduleData['parent_schedule']} >",
+                  style: TextStyle(fontSize: fontSize, fontWeight: FontWeight.bold)),
+                SizedBox(),
+              ],
+            ),
+          );
+      title = Expanded(child:Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [title, subTitle]
+      ));
+    }
+
+    // Adding schedule menu to the title widget
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        title,
+        Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          _scheduleMenuBuilder(context, scheduleData),
+        ]),
+      ]);
+  }
+
+  static void _onEditPlanningValidate(BuildContext context, Map scheduleData, String tapedName, String chosenParent) {
+    String alias = scheduleData['alias'];
+    String parent = scheduleData.containsKey('parent_schedule') ? scheduleData['parent_schedule'] : '';
+    if (alias != tapedName || parent != chosenParent) {
+      if ((alias != tapedName) && ModelCtrl().getSchedule(tapedName).isNotEmpty) {
         Common.showSnackBar(context, wcLocalizations().errorDuplicateKey(tapedName),
             backColor: AppTheme().errorColor, durationMs: 4000);
+      } else if ((parent != chosenParent) && (chosenParent.isNotEmpty) && ModelCtrl().getSchedule(chosenParent).isEmpty) {
+        Common.showSnackBar(context, wcLocalizations().schedulePageErrorBadParent,
+            backColor: AppTheme().errorColor, durationMs: 4000);
       } else {
-        ModelCtrl().onScheduleNameChanged(scheduleData['alias'], tapedName);
+        ModelCtrl().onSchedulePropertiesChanged(scheduleData['alias'], tapedName, chosenParent);
       }
     }
   }
@@ -128,7 +135,7 @@ class Schedule {
     String name = scheduleData['alias'];
     return Common.createPopupMenu(
       [
-        MyMenuItem(Icons.edit, wcLocalizations().editAction(''), 'edit_name'),
+        MyMenuItem(Icons.edit, wcLocalizations().editAction(''), 'edit'),
         MyMenuItem(Icons.add, wcLocalizations().addAction('subschedule'), 'add_scheduleitem'),
         MyMenuItem(Icons.copy, wcLocalizations().cloneAction, 'clone_schedule'),
         MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')
@@ -136,7 +143,7 @@ class Schedule {
       iconColor: iconColor,
       onSelected: (itemValue) async {
         switch (itemValue) {
-          case 'edit_name':
+          case 'edit':
             Common.editScheduleProperties(context, scheduleData, _onEditPlanningValidate);
             break;
           case 'add_scheduleitem':

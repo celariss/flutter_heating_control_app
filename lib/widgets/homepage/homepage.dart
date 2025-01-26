@@ -168,19 +168,23 @@ class _HomePage extends State<HomePage> {
             ),
           ),
           Padding(
-              padding: const EdgeInsets.fromLTRB(10, 7, 10, 15),
-              child: MediaQuery.removePadding(
-                context: context,
-                removeTop: true,
-                removeBottom: true,
-                child: SelectableList<String, String?>(
+            padding: const EdgeInsets.fromLTRB(10, 7, 10, 15),
+            child: MediaQuery.removePadding(
+              context: context,
+              removeTop: true,
+              removeBottom: true,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: AppTheme().background2Color,
+                  backgroundBlendMode: BlendMode.difference,
+                  border: Border.all(),
+                  borderRadius: const BorderRadius.all(Radius.circular(8.0))),
+                child:SelectableList<String, String?>(
                   key: UniqueKey(),
                   items: schedulesList,
                   itemBuilder: (context, schedule, selected, onTap) => Column(children: [
                     ListTile(
                         visualDensity: VisualDensity.compact,
-                        tileColor: AppTheme().background2Color,
-                        selectedTileColor: AppTheme().background2Color,
                         title: (schedule == selectedScheduleName)
                             ? Text(schedule,
                                 style:
@@ -188,15 +192,12 @@ class _HomePage extends State<HomePage> {
                             : Text(schedule, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
                         shape: (schedule == selectedScheduleName)
                             ? RoundedRectangleBorder(
-                                side: BorderSide(color: AppTheme().focusColor, width: 2),
+                                side: BorderSide(color: AppTheme().focusColor, width: 3),
                                 borderRadius: BorderRadius.circular(8),
                               )
-                            : RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8),
-                              ),
+                            : null,
                         selected: selected,
                         onTap: onTap),
-                    //const SizedBox(height: 10),
                   ]),
                   valueSelector: (schedule) => schedule,
                   selectedValue: internalSelectedScheduleName,
@@ -211,7 +212,8 @@ class _HomePage extends State<HomePage> {
                     internalSelectedScheduleName = null;
                     setState(() {});
                   },
-              ))),
+              )))
+          ),
           const SizedBox(height: 10),
           Wrap(
             spacing: 20.0,
