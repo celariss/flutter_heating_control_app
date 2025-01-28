@@ -173,7 +173,23 @@ class _SettingsPage extends State<SettingsPage> {
         appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
         body: SingleChildScrollView(
           padding: Common.getNavbarHeightPadding(),
-          child: _buildPortraitLayout()
+          child: CardSettings.sectioned(
+            margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+            showMaterialonIOS: false,
+            labelWidth: 150,
+            contentAlign: TextAlign.right,
+            cardless: false,
+            children: <CardSettingsSection>[
+              // Section showing versions (App & server)
+              _buildInformationSection(),
+              // Section for server settings
+              _buildServerSection(),
+              // Section for the main settings
+              _buildMainSection(),
+              // Section for MQTT settings
+              _buildMQTTSection(),
+            ],
+          )
         ),
       ),
     );
@@ -184,147 +200,160 @@ class _SettingsPage extends State<SettingsPage> {
     return '$lang (${locale.toLanguageTag()})';
   }
 
-  CardSettings _buildPortraitLayout() {
+  CardSettingsSection _buildInformationSection() {
+    return CardSettingsSection(
+        header: CardSettingsHeader(
+        label: wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
+      ),
+      children: <CardSettingsWidget>[
+        CardSettingsHeader(
+          label: wcLocalizations().settingsServerVersion(ModelCtrl().serverVersion),
+        ),
+      ]
+    );
+  }
+
+  CardSettingsSection _buildServerSection() {
+    bool enabled = ModelCtrl().isConnectedToCtrlServer();
+    return CardSettingsSection(
+      header: CardSettingsHeader(
+        label: wcLocalizations().settingsGroupServer,
+      ),
+      children: <CardSettingsWidget>[
+        // This line calls the devices list editor
+        CardSettingsField(
+          label: wcLocalizations().settingsEditDevicesList,
+          labelAlign:TextAlign.left,
+          requiredIndicator: null,
+          fieldPadding: EdgeInsets.fromLTRB(15, 10, 20, 0),
+          enabled: enabled,
+          content:  Wrap(
+            spacing: 0.0,
+            runSpacing: 0.0,
+            alignment: WrapAlignment.end,
+            crossAxisAlignment: WrapCrossAlignment.start,
+            children: [
+              Container(),
+              Common.createCircleIconButton(Icons.edit_note, iconSize: 50, enabled: enabled,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+                onPressed: () {
+                NavbarNotifier.hideBottomNavBar = false;
+                Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+            })]
+          ),
+        ),
+        // This sub-section allows edition of manual reset fields
+        CardSettingsHeader(
+          label: wcLocalizations().settingsGroupManualReset,
+          child: Container(
+            margin: EdgeInsets.all(0.0),
+            decoration: BoxDecoration(
+              color: AppTheme().background3Color,
+            ),
+            height: 30,
+            padding: EdgeInsets.only(left: 14.0),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Text(
+                    wcLocalizations().settingsGroupManualReset,
+                    style: TextStyle(
+                      fontWeight:FontWeight.normal,
+                      fontSize: 18,
+                      color: enabled ? null : AppTheme().notSelectedColor,
+                      ),
+                    textAlign: TextAlign.left,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ),
+        // This line is for the type of manual reset
+        _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
+          ModelCtrl().setManualResetMode(str2ManualResetMode(value));
+        }, enabled=enabled),
+      ] + ((manualResetMode!='')?[]:[
+        // This line is for the number of hours (manual reset)
+        _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
+          ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
+            ModelCtrl().setManualResetMode(str2Int(value));
+          }, enabled=enabled),
+      ]),
+    );
+  }
+
+  CardSettingsSection _buildMainSection() {
     List<String> langList = AppLocalizations.supportedLocales.map((e) => localeToString(e)).toList();
     langList.insert(0, wcLocalizations().settingsSystemLanguage);
     String curLangName = wcLocalizations().settingsSystemLanguage;
     if (Settings().locale!=null) {
       curLangName = localeToString(getCurrentLocale());
     }
-    bool enabled = ModelCtrl().isConnectedToCtrlServer();
-    return CardSettings.sectioned(
-      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      showMaterialonIOS: false,
-      labelWidth: 150,
-      contentAlign: TextAlign.right,
-      cardless: false,
-      children: <CardSettingsSection>[
-        CardSettingsSection(
-          header: CardSettingsHeader(
-            label: wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
-          ),
-        ),
-        CardSettingsSection(
-          header: CardSettingsHeader(
-            label: wcLocalizations().settingsGroupServer,
-          ),
-          children: <CardSettingsWidget>[
-            CardSettingsField(
-              label: wcLocalizations().settingsEditDevicesList,
-              labelAlign:TextAlign.left,
-              requiredIndicator: null,
-              fieldPadding: EdgeInsets.fromLTRB(15, 10, 20, 0),
-              enabled: enabled,
-              content:  Wrap(
-                spacing: 0.0,
-                runSpacing: 0.0,
-                alignment: WrapAlignment.end,
-                crossAxisAlignment: WrapCrossAlignment.start,
-                children: [
-                  Container(),
-                  Common.createCircleIconButton(Icons.edit_note, iconSize: 50, enabled: enabled,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                    onPressed: () {
-                    NavbarNotifier.hideBottomNavBar = false;
-                    Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
-                })]
-              ),
-            ),
-            CardSettingsHeader(
-              label: wcLocalizations().settingsGroupManualReset,
-              child: Container(
-                margin: EdgeInsets.all(0.0),
-                decoration: BoxDecoration(
-                  color: AppTheme().background3Color,
-                ),
-                height: 30,
-                padding: EdgeInsets.only(left: 14.0),
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Text(
-                        wcLocalizations().settingsGroupManualReset,
-                        style: TextStyle(
-                          fontWeight:FontWeight.normal,
-                          fontSize: 18,
-                          color: enabled ? null : AppTheme().notSelectedColor,
-                          ),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                  ],
-                ),
-              )
-            ),
-            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
-              ModelCtrl().setManualResetMode(str2ManualResetMode(value));
-            }, enabled=enabled),
-          ] + ((manualResetMode!='')?[]:[
-            _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
-              ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
-                ModelCtrl().setManualResetMode(str2Int(value));
-              }, enabled=enabled),
-          ]),
-        ),
-        CardSettingsSection(
-          header: CardSettingsHeader(
-            label: wcLocalizations().settingsGroupMain,
-          ),
-          children: <CardSettingsWidget>[
-            _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
-              themeName = value;
-              Settings().setTheme(themeName);
-              themeNotifier!.refreshAppTheme();
-            }),
-           _buildCardSettingsListPickerType(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
-              Locale ?newLocale;
-              curLangName = value;
-              if (value != wcLocalizations().settingsSystemLanguage) {
-                for (Locale locale in AppLocalizations.supportedLocales) {
-                  if (localeToString(locale)==value) {
-                    newLocale = locale;
-                    break;
-                  }
-                }
+
+    return CardSettingsSection(
+      header: CardSettingsHeader(
+        label: wcLocalizations().settingsGroupMain,
+      ),
+      children: <CardSettingsWidget>[
+        // Line for choosing color theme
+        _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
+          themeName = value;
+          Settings().setTheme(themeName);
+          themeNotifier!.refreshAppTheme();
+        }),
+        // Line for choosing language
+        _buildCardSettingsListPickerType(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
+          Locale ?newLocale;
+          curLangName = value;
+          if (value != wcLocalizations().settingsSystemLanguage) {
+            for (Locale locale in AppLocalizations.supportedLocales) {
+              if (localeToString(locale)==value) {
+                newLocale = locale;
+                break;
               }
-              MyApp.setLocale(newLocale);
-              Settings().setLocale(newLocale);
-              themeNotifier!.refreshAppTheme();
-            }),
-            _buildCardSettingsListPickerType(wcLocalizations().settingsThermostatRes,
-              ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
-                Settings().setThermostatResolution(double.parse(value));
-              }),
-          ],
-        ),
-        CardSettingsSection(
-          header: CardSettingsHeader(
-            label: wcLocalizations().settingsGroupMqtt,
-          ),
-          //divider: Divider(thickness: 1.0, color: AppTheme().focusColor),
-          children: <CardSettingsWidget>[
-            _buildCardSettingsText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
-              mqttUrl = value;
-              mqttChanged = true;
-            }, wcLocalizations().settingsErrorMandatoryValue),
-            _buildCardSettingsText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
-              mqttUser = value;
-              mqttChanged = true;
-            }, wcLocalizations().settingsErrorMandatoryValue),
-            _buildCardSettingsPassword(_mqttPasswordKey, (value) {
-              mqttPassword = value;
-              mqttChanged = true;
-            }),
-            _buildCardSettingsInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
-              mqttPort = value;
-              mqttChanged = true;
-            }, wcLocalizations().settingsErrorMandatoryValue),
-            _buildCardSettingsBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
-              mqttSecure = value;
-              mqttChanged = true;
-            }, wcLocalizations().settingsErrorMandatoryValue),
-          ],
-        ),
+            }
+          }
+          MyApp.setLocale(newLocale);
+          Settings().setLocale(newLocale);
+          themeNotifier!.refreshAppTheme();
+        }),
+        // Line for choosing thermostats resolution
+        _buildCardSettingsListPickerType(wcLocalizations().settingsThermostatRes,
+          ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
+            Settings().setThermostatResolution(double.parse(value));
+          }),
+      ],
+    );
+  }
+
+  CardSettingsSection _buildMQTTSection() {
+    return CardSettingsSection(
+      header: CardSettingsHeader(
+        label: wcLocalizations().settingsGroupMqtt,
+      ),
+      //divider: Divider(thickness: 1.0, color: AppTheme().focusColor),
+      children: <CardSettingsWidget>[
+        _buildCardSettingsText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
+          mqttUrl = value;
+          mqttChanged = true;
+        }, wcLocalizations().settingsErrorMandatoryValue),
+        _buildCardSettingsText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
+          mqttUser = value;
+          mqttChanged = true;
+        }, wcLocalizations().settingsErrorMandatoryValue),
+        _buildCardSettingsPassword(_mqttPasswordKey, (value) {
+          mqttPassword = value;
+          mqttChanged = true;
+        }),
+        _buildCardSettingsInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
+          mqttPort = value;
+          mqttChanged = true;
+        }, wcLocalizations().settingsErrorMandatoryValue),
+        _buildCardSettingsBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
+          mqttSecure = value;
+          mqttChanged = true;
+        }, wcLocalizations().settingsErrorMandatoryValue),
       ],
     );
   }

@@ -150,8 +150,16 @@
     },
 
     "settingsPageTitle": "Settings",
-    "settingsAppVersion": "Application version : v{version}",
+    "settingsAppVersion": "Application version : {version}",
     "@settingsAppVersion": {
+      "placeholders": {
+          "version": {
+          "type": "String"
+          }
+      }
+    },
+    "settingsServerVersion": "Server version : {version}",
+    "@settingsServerVersion": {
       "placeholders": {
           "version": {
           "type": "String"

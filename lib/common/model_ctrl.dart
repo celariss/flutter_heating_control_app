@@ -114,6 +114,7 @@ class ModelCtrl {
   bool _isConnectedToMQTT = false;
   // true if app is currently in foreground and having input focus
   bool _isAppActive = true;
+  String serverVersion = '-';
 
   static final ModelCtrl _instance = ModelCtrl._internal();
   ModelCtrl._internal();
@@ -903,7 +904,19 @@ class ModelCtrl {
     //try {
     if (topic == Settings().MQTT.onIsAliveTopic) {
       stopIsAliveWaitTimer();
+      serverVersion = '-';
+      // 1) We try to read the old format (server version < v1.2.0)
       DateTime? isaliveDate = DateTime.tryParse(payload);
+      if (payload != '' && isaliveDate==null) {
+        // 2) Now we try the new format
+        Map isAliveData = jsonDecode(payload);
+        if (isAliveData.containsKey('date')) {
+          isaliveDate = DateTime.tryParse(isAliveData['date']);
+        }
+        if (isAliveData.containsKey('ver')) {
+          serverVersion = isAliveData['ver'];
+        }
+      }
       bool isalive = payload != '' && isaliveDate!=null && DateTime.now().difference(isaliveDate).inSeconds<Settings().MQTT.isAliveTimeout;
       if (isalive && _isAppActive) {
         startIsAliveWaitTimer();
