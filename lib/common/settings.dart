@@ -30,13 +30,12 @@ class Settings {
       await config.addFromAsset('assets/cfg/secrets.yaml', context: context);
       // ignore: use_build_context_synchronously
       await config.addFromAsset('assets/cfg/themes.yaml', context: context);
+
       Map mqtt = config.getSection('mqtt');
-      for (String param in mqtt.keys) {
-        if (prefs!.containsKey(param)) {
-          mqtt[param] = prefs!.get(param) ?? mqtt[param];
-        }
-      }
       MQTT = MQTTSettings.fromMap(mqtt);
+      await MQTT.readFromSharedPrefs();
+      MQTT.saveToSharedPrefs();
+      
       temperatureSetDefaultColor = _getParamInt(config, 'temperatureSetDefaultColor', 0xFF000000);
       defaultSetpoint = _getParamDouble(config, 'defaultSetpoint', 19.0);
       minSetpoint = _getParamInt(config, 'minSetpoint', 7);

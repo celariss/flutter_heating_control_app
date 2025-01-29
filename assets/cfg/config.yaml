@@ -19,7 +19,10 @@ mqtt:
   port: 8884
   secure: true
 
-  # PUT THE FOLLOWING KEYS IN secrets.yaml
+  # For the following parameters, you can :
+  # 1) Set them in secrets.yaml (under mqtt tag)
+  # 2) Set them in the settingz page of the running application
+  # => Prefer #2 to insure secured storage of these values since secrets.yaml will be accessible in the target storage !
   brokerAddress: ''
   user: ''
   password: ''
