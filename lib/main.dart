@@ -5,11 +5,12 @@
 /// License: BSD 3-Clause
 library;
 
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'l10n/app_localizations.dart';
 
 import 'common/common.dart';
 import 'common/theme.dart';
@@ -78,7 +79,6 @@ class MyApp extends StatelessWidget {
           unselectedWidgetColor: AppTheme().specialTextColor,
           // Color visible during transition between pages
           canvasColor: AppTheme().background1Color,
-          dialogBackgroundColor: AppTheme().background2Color,
           iconTheme: IconThemeData(color: AppTheme().specialTextColor),
           navigationRailTheme: NavigationRailThemeData(
             unselectedLabelTextStyle: TextStyle(
@@ -110,7 +110,7 @@ class MyApp extends StatelessWidget {
           ),
           cardTheme: CardTheme(
             color: AppTheme().background2Color, // Background for settings page widgets
-          ),
+          ).data,
           scrollbarTheme: ScrollbarThemeData(
             trackColor: WidgetStateProperty.all(AppTheme().normalTextColor),
             thumbColor: WidgetStateProperty.all(AppTheme().focusColor)
@@ -126,13 +126,13 @@ class MyApp extends StatelessWidget {
           ),
           
           appBarTheme: AppBarTheme(
-            color: AppTheme().appBarColor,
+            backgroundColor: AppTheme().appBarColor,
             foregroundColor: AppTheme().normalTextColor,
           ),
 
           dialogTheme: DialogTheme(
             backgroundColor: AppTheme().background2Color,
-          ),
+          ).data,
 
           buttonTheme: ButtonThemeData(
             buttonColor: AppTheme().buttonBackColor,
@@ -205,8 +205,8 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   DateTime oldTime = DateTime.now();
   DateTime newTime = DateTime.now();
 
-  void _onServerResponseEvent(args) {
-    ServerResponse response = args!.value;
+  void _onServerResponseEvent(Value<ServerResponse> args) {
+    ServerResponse response = args.value;
     if (!response.status) {
       if (response.errorCode.isEmpty) {
         Common.showSnackBar(context, wcLocalizations().srvResponseRefused, backColor: AppTheme().errorColor, durationMs: 4000);
@@ -234,8 +234,8 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
     }
   }
 
-  void _onMessageEvent(args) {
-    MessageInfo message = args!.value;
+  void _onMessageEvent(Value<MessageInfo> args) {
+    MessageInfo message = args.value;
     Color backColor = AppTheme().errorColor;
     String msgText = message.text;
     bool refresh = false;

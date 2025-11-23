@@ -1,3 +1,4 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:heating_control_app/common/common.dart';
@@ -6,7 +7,7 @@ import 'package:heating_control_app/main.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:card_settings/card_settings.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import '../../l10n/app_localizations.dart';
 
 import '../../common/settings.dart';
 import '../../common/theme.dart';
@@ -133,15 +134,13 @@ class _SettingsPage extends State<SettingsPage> {
     _scrollController.addListener(handleScroll);
   }
 
-  void _onSchedulesEvent(args) {
-    if (args != null) {
-      Map? schedulerData = args!.value as Map;
-      scheduler(schedulerData);
-      setState(() {});
-    }
+  void _onSchedulesEvent(Value<Map> args) {
+    Map? schedulerData = args.value;
+    scheduler(schedulerData);
+    setState(() {});
   }
 
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class ThemeNotifier with ChangeNotifier {
   ThemeNotifier();
 
-  refreshAppTheme() async {
+  Future<void> refreshAppTheme() async {
     notifyListeners(); // to update the theme of the app
   }
 }

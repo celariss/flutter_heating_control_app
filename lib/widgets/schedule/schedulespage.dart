@@ -1,3 +1,4 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -72,12 +73,12 @@ class _SchedulesPage extends State<SchedulesPage> {
     super.dispose();
   }
 
-  void _onDevicesEvent(args) {
+  void _onDevicesEvent(Value<Map<String,Device>> args) {
     setState(() {});
   }
 
-  void _onSchedulesEvent(args) {
-    schedulerData = args!.value;
+  void _onSchedulesEvent(Value<Map> args) {
+    schedulerData = args.value;
     setState(() {});
   }
 
@@ -94,7 +95,7 @@ class _SchedulesPage extends State<SchedulesPage> {
   }
 
   // We need to update the AppBafr to reflect connexion state in connexion icon
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 

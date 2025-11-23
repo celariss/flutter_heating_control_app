@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -11,7 +12,7 @@ import '../../utils/localizations.dart';
 
 class DevicesEditorPage extends StatefulWidget {
   const DevicesEditorPage({super.key});
-  static const String route = '/devices';
+  static const String route = '/devices'; 
 
   @override
   State<DevicesEditorPage> createState() => _DevicesEditorPageState();
@@ -70,19 +71,19 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     super.dispose();
   }
 
-  void _onDevicesEvent(args) {
+  void _onDevicesEvent(Value<Map<String, Device>> args) {
     devices = ModelCtrl().getDevices();
     orderedDevices = devices.keys.toList();
     setState(() {});
   }
 
-  void _onEntitiesEvent(args) {
+  void _onEntitiesEvent(Value<Map<String, Entity>> args) {
     entities = ModelCtrl().getEntities();
     setState(() {});
   }
 
   // We need to update the AppBafr to reflect connexion state in connexion icon
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 

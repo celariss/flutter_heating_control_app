@@ -330,7 +330,7 @@ class Common {
     );
   }
 
-  static createCircleIconButton(IconData iconData,
+  static ElevatedButton createCircleIconButton(IconData iconData,
       {required void Function() onPressed, Color? iconColor, Color? backColor, double? iconSize, OutlinedBorder? shape, bool? enabled}) {
     return ElevatedButton(
       onPressed: (enabled??true) ? onPressed : null,
@@ -610,30 +610,33 @@ class Common {
         title: wcLocalizations().popupPickPlanningTitle,
         onValidate: () => onValidate!(selectedAlias),
         content: StatefulBuilder(builder: (context, setState) {
-          List itemList = ModelCtrl().getSchedules();
-          return Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: itemList.map((scheduleData) {
+          List<Widget> itemList = ModelCtrl().getSchedules().map((scheduleData) {
               return RadioListTile(
-                visualDensity: VisualDensity.compact,
-                contentPadding: const EdgeInsets.all(0),
-                value: scheduleData['alias'],
-                dense: true,
-                groupValue: selectedAlias,
-                title: Text(scheduleData['alias'],
-                    style: TextStyle(
-                        fontSize: Common.getRadioListTextSize(),
-                        fontWeight: FontWeight.bold,
-                        color: selectedAlias == scheduleData['alias']
-                            ? AppTheme().normalTextColor
-                            : AppTheme().specialTextColor)),
-                onChanged: (selected) {
-                  setState(() => selectedAlias = selected);
-                },
-                selected: scheduleData['alias'] == selectedAlias,
-                activeColor: AppTheme().normalTextColor,
-              );
-            }).toList(),
+              visualDensity: VisualDensity.compact,
+              contentPadding: const EdgeInsets.all(0),
+              value: scheduleData['alias'].toString(),
+              dense: true,
+              title: Text(scheduleData['alias'],
+                  style: TextStyle(
+                      fontSize: Common.getRadioListTextSize(),
+                      fontWeight: FontWeight.bold,
+                      color: selectedAlias == scheduleData['alias']
+                          ? AppTheme().normalTextColor
+                          : AppTheme().specialTextColor)),
+              //selected: scheduleData['alias'] == selectedAlias,
+              activeColor: AppTheme().normalTextColor,
+            );
+          }).toList();
+
+          return RadioGroup(
+            groupValue: selectedAlias,
+            onChanged: (String? selected) {
+              setState(() => selectedAlias = (selected ?? ""));
+            },
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: itemList,
+            )
           );
         }));
   }

@@ -1,3 +1,4 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -70,8 +71,8 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
     setState(() {});
   }*/
 
-  void _onSchedulesEvent(args) {
-    Map schedulerData = args!.value;
+  void _onSchedulesEvent(Value<Map> args) {
+    Map schedulerData = args.value;
     globalTemperatureSetsData = [];
     if (schedulerData.containsKey('temperature_sets')) {
       globalTemperatureSetsData = List<Map>.from(schedulerData['temperature_sets'] as List);
@@ -80,7 +81,7 @@ class _TimeSlotSetPage extends State<TimeSlotSetPage> {
   }
 
   // We need to update the AppBafr to reflect connexion state in connexion icon
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 

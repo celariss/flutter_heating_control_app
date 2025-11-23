@@ -1,3 +1,4 @@
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -68,12 +69,12 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     super.dispose();
   }
 
-  void _onDevicesEvent(args) {
+  void _onDevicesEvent(Value<Map<String,Device>> args) {
     setState(() {});
   }
 
-  void _onSchedulesEvent(args) {
-    Map schedulerData = args!.value;
+  void _onSchedulesEvent(Value<Map> args) {
+    Map schedulerData = args.value;
     _onUpdateTempsetsData(schedulerData);
     setState(() {});
   }
@@ -86,7 +87,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
   }
 
   // We need to update the AppBar to reflect connexion state in connexion icon
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 
@@ -108,7 +109,7 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     );
   }
 
-  static _onNewTemperatureSetValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
+  static void _onNewTemperatureSetValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
     ModelCtrl().createTemperatureSet(pickedColor, tapedName, scheduleName: scheduleName);
   }
 }

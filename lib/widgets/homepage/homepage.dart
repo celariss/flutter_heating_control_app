@@ -1,5 +1,4 @@
-import 'dart:math';
-
+import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -11,7 +10,6 @@ import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/localizations.dart';
-import 'deviceseditorpage.dart';
 import 'settingspage.dart';
 import 'thermostat.dart';
 
@@ -91,20 +89,18 @@ class _HomePage extends State<HomePage> {
     super.dispose();
   }
 
-  void _onDevicesEvent(args) {
+  void _onDevicesEvent(Value<Map<String, Device>> args) {
     setState(() {});
   }
 
-  void _onSchedulesEvent(args) {
-    if (args != null) {
-      schedulerData = args!.value as Map;
-      updateSchedulesList();
-      setState(() {});
-    }
+  void _onSchedulesEvent(Value<Map> args) {
+    schedulerData = args.value;
+    updateSchedulesList();
+    setState(() {});
   }
 
   // We need to update the AppBar to reflect connexion state in connexion icon
-  void _onMessageEvent(args) {
+  void _onMessageEvent(Value<MessageInfo> args) {
     setState(() {});
   }
 

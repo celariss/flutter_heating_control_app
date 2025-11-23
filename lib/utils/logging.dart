@@ -81,7 +81,7 @@ class Logger {
 class Formatter {
   /// See DateFormat class for more info about format
   /// (https://pub.dev/documentation/intl/latest/intl/DateFormat-class.html)
-  Formatter({dateFormat = 'yyyy-MM-dd HH:mm:ss'}) :
+  Formatter({String dateFormat = 'yyyy-MM-dd HH:mm:ss'}) :
     _formatter = DateFormat(dateFormat);
 
   String format(String loggerName, Level level, String text, DateTime date) {

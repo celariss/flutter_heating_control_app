@@ -226,7 +226,7 @@ class TemperatureSet {
     return result;
   }
 
-  static _onTemperatureSetPropertiesValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
+  static void _onTemperatureSetPropertiesValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {
     Color oldColor = ModelCtrl.getGUIColorParam(data, 'iconColor', Color(Settings().temperatureSetDefaultColor));
     if (oldColor != pickedColor) {
       ModelCtrl.setGUIColorParam(data, 'iconColor', pickedColor);
