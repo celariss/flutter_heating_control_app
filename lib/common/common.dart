@@ -113,15 +113,19 @@ class Common {
 
   /// Padding to avoid the bottom of a page to be hidden by Navbar
   static EdgeInsets getNavbarHeightPadding() {
+    return EdgeInsets.only(bottom: getNavbarHeight());
+  }
+
+  static double getNavbarHeight() {
     if (!NavbarNotifier.isNavbarHidden) {
       if (PlatformDetails().isMobile) {
-        return EdgeInsets.only(bottom: 100);
+        return 100;
       }
       else {
-        return EdgeInsets.only(bottom: 50);
+        return 50;
       }
     }
-    return EdgeInsets.only(bottom: 0);
+    return 0;
   }
 
   /// Saves given [value] to internal data map with identifier [key] 
@@ -346,9 +350,10 @@ class Common {
 
   /// Builds and returns a [PopupMenuButton] that contains all items given in [menuItems].
   static Widget createPopupMenu(List<MyMenuItem> menuItems,
-      {required void Function(dynamic) onSelected, Color? iconColor}) {
+      {required void Function(dynamic) onSelected, void Function()? onOpened, Color? iconColor}) {
     return PopupMenuButton(
       color: AppTheme().background2Color,
+      onOpened: onOpened,
       onSelected: onSelected,
       icon: Icon(Icons.more_vert, color: iconColor ?? AppTheme().focusColor),
       itemBuilder: (BuildContext bc) {

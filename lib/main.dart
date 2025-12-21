@@ -56,6 +56,91 @@ class MyApp extends StatelessWidget {
     _locale = locale;
   }
 
+  static ThemeData getAppThemeData() {
+    return ThemeData(
+      dividerColor: AppTheme().focusColor, // Settings page dividers
+      dividerTheme: const DividerThemeData(
+        color: Colors.transparent, // ugly divider that cuts off the selection in scroll picker (settings page)
+      ),
+      colorScheme: ColorScheme.dark(secondary: AppTheme().focusColor,  // Settings page selected item in list picker
+        ),
+      primaryColor: AppTheme().background3Color,
+      secondaryHeaderColor: AppTheme().background3Color, // Settings page headers background
+      cardColor: AppTheme().background2Color,
+      scaffoldBackgroundColor: AppTheme().background1Color,
+      unselectedWidgetColor: AppTheme().specialTextColor,
+      // Color visible during transition between pages
+      canvasColor: AppTheme().background1Color,
+      iconTheme: IconThemeData(color: AppTheme().specialTextColor),
+      navigationRailTheme: NavigationRailThemeData(
+        unselectedLabelTextStyle: TextStyle(
+          color: AppTheme().normalTextColor
+          ),
+        unselectedIconTheme: IconThemeData(
+          color: AppTheme().normalTextColor
+        )
+      ),
+      listTileTheme: ListTileThemeData(
+        textColor: AppTheme().specialTextColor,
+      ),
+      cardTheme: CardTheme(
+        color: AppTheme().background2Color, // Background for settings page widgets
+      ).data,
+      scrollbarTheme: ScrollbarThemeData(
+        trackColor: WidgetStateProperty.all(AppTheme().normalTextColor),
+        thumbColor: WidgetStateProperty.all(AppTheme().focusColor)
+      ),
+      chipTheme: const ChipThemeData(
+        shape: StadiumBorder(),
+        padding: EdgeInsets.all(0)
+      ),
+
+      switchTheme: SwitchThemeData(
+        trackColor:  WidgetStateProperty.resolveWith((states) =>
+        states.contains(WidgetState.selected) ? AppTheme().focusColor : null)
+      ),
+      
+      appBarTheme: AppBarTheme(
+        backgroundColor: AppTheme().appBarColor,
+        foregroundColor: AppTheme().normalTextColor,
+      ),
+
+      dialogTheme: DialogTheme(
+        backgroundColor: AppTheme().background2Color,
+      ).data,
+
+      buttonTheme: ButtonThemeData(
+        buttonColor: AppTheme().buttonBackColor,
+      ),
+      textButtonTheme: TextButtonThemeData(
+        // Buttons shown in popups of Settings page
+        style: ButtonStyle(
+          backgroundColor:WidgetStatePropertyAll(AppTheme().buttonBackColor),
+          textStyle: WidgetStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
+        ),
+      ),
+      
+      textTheme: TextTheme(
+            bodyMedium: TextStyle(color: AppTheme().normalTextColor), // thermostat setpoint
+            labelLarge: TextStyle(color: AppTheme().buttonTextColor), // button text
+            titleMedium: TextStyle(color: AppTheme().normalTextColor), // input text
+            titleLarge: TextStyle(color: AppTheme().normalTextColor), // card header text
+          ).apply(
+            bodyColor: AppTheme().normalTextColor,
+            displayColor: AppTheme().normalTextColor,
+            decorationColor: AppTheme().normalTextColor,
+          ),
+        
+      primaryTextTheme: TextTheme(
+        titleLarge: TextStyle(color: AppTheme().normalTextColor), // app header text
+      ),
+
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ModelCtrl().connect();
@@ -64,113 +149,15 @@ class MyApp extends StatelessWidget {
     return Consumer<ThemeNotifier>(
       builder: (context, appState, child) {
         return MaterialApp(
-        title: 'Heating Control App',
-        theme: ThemeData(
-          dividerColor: AppTheme().focusColor, // Settings page dividers
-          dividerTheme: const DividerThemeData(
-            color: Colors.transparent, // ugly divider that cuts off the selection in scroll picker (settings page)
-          ),
-          colorScheme: ColorScheme.dark(secondary: AppTheme().focusColor,  // Settings page selected item in list picker
-            ),
-          primaryColor: AppTheme().background3Color,
-          secondaryHeaderColor: AppTheme().background3Color, // Settings page headers background
-          cardColor: AppTheme().background2Color,
-          scaffoldBackgroundColor: AppTheme().background1Color,
-          unselectedWidgetColor: AppTheme().specialTextColor,
-          // Color visible during transition between pages
-          canvasColor: AppTheme().background1Color,
-          iconTheme: IconThemeData(color: AppTheme().specialTextColor),
-          navigationRailTheme: NavigationRailThemeData(
-            unselectedLabelTextStyle: TextStyle(
-              color: AppTheme().normalTextColor
-              ),
-            unselectedIconTheme: IconThemeData(
-              color: AppTheme().normalTextColor
-            )
-          ),
-          /*bottomNavigationBarTheme: BottomNavigationBarThemeData(
-            unselectedItemColor: AppTheme().normalTextColor,
-            unselectedLabelStyle: TextStyle(
-              color: AppTheme().normalTextColor)
-          ),
-          navigationBarTheme: NavigationBarThemeData(
-            labelTextStyle: MaterialStateProperty.resolveWith((states) {
-            if (states.contains(MaterialState.selected)) {
-              return TextStyle(
-                color: AppTheme().focusColor,
-              );
-            }
-            return TextStyle(
-                color: AppTheme().normalTextColor,
-            );
-          }),
-          ),*/
-          listTileTheme: ListTileThemeData(
-            textColor: AppTheme().specialTextColor,
-          ),
-          cardTheme: CardTheme(
-            color: AppTheme().background2Color, // Background for settings page widgets
-          ).data,
-          scrollbarTheme: ScrollbarThemeData(
-            trackColor: WidgetStateProperty.all(AppTheme().normalTextColor),
-            thumbColor: WidgetStateProperty.all(AppTheme().focusColor)
-          ),
-          chipTheme: const ChipThemeData(
-            shape: StadiumBorder(),
-            padding: EdgeInsets.all(0)
-          ),
-
-          switchTheme: SwitchThemeData(
-            trackColor:  WidgetStateProperty.resolveWith((states) =>
-            states.contains(WidgetState.selected) ? AppTheme().focusColor : null)
-          ),
-          
-          appBarTheme: AppBarTheme(
-            backgroundColor: AppTheme().appBarColor,
-            foregroundColor: AppTheme().normalTextColor,
-          ),
-
-          dialogTheme: DialogTheme(
-            backgroundColor: AppTheme().background2Color,
-          ).data,
-
-          buttonTheme: ButtonThemeData(
-            buttonColor: AppTheme().buttonBackColor,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            // Buttons shown in popups of Settings page
-            style: ButtonStyle(
-              backgroundColor:WidgetStatePropertyAll(AppTheme().buttonBackColor),
-              textStyle: WidgetStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
-            ),
-          ),
-          
-          textTheme: TextTheme(
-                bodyMedium: TextStyle(color: AppTheme().normalTextColor), // thermostat setpoint
-                labelLarge: TextStyle(color: AppTheme().buttonTextColor), // button text
-                titleMedium: TextStyle(color: AppTheme().normalTextColor), // input text
-                titleLarge: TextStyle(color: AppTheme().normalTextColor), // card header text
-              ).apply(
-                bodyColor: AppTheme().normalTextColor,
-                displayColor: AppTheme().normalTextColor,
-                decorationColor: AppTheme().normalTextColor,
-              ),
-            
-          primaryTextTheme: TextTheme(
-            titleLarge: TextStyle(color: AppTheme().normalTextColor), // app header text
-          ),
-
-          inputDecorationTheme: InputDecorationTheme(
-            labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
-          ),
-        ),
-
-        localizationsDelegates: AppLocalizations.localizationsDelegates,
-        supportedLocales: AppLocalizations.supportedLocales,
-        locale: _locale,
-        navigatorKey: getNavigatorKey(),
-        home: const RootPage());
-      }
+          title: 'Heating Control App',
+          theme: getAppThemeData(),
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: _locale,
+          navigatorKey: getNavigatorKey(),
+          home: const RootPage(),
+        );
+      },
     );
   }
 }
@@ -329,20 +316,6 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
 
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      /*floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-      floatingActionButton: Common.createFloatingButton(
-        size: 30,
-        icon: Icon(NavbarNotifier.isNavbarHidden ? Icons.toggle_off : Icons.toggle_on),
-        onPressed: () {
-          // Programmatically toggle the Navbar visibility
-          if (NavbarNotifier.isNavbarHidden) {
-            NavbarNotifier.hideBottomNavBar = false;
-          } else {
-            NavbarNotifier.hideBottomNavBar = true;
-          }
-          setState(() {});
-        },
-      ),*/
       body: NavbarRouter(
         type: NavbarType.standard,
         errorBuilder: (context) {
