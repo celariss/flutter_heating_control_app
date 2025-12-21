@@ -44,6 +44,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
+          // Create global button that adds a new timeslot
           Common.createFloatingButton(
               size: 55,
               icon: const Icon(Icons.add, color: Colors.white),
@@ -70,6 +71,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
                 });
               }),
           const SizedBox(width: 30),
+          // Create global button that saves the timeslot set and exit the editor
           Common.createFloatingButton(
             size: 55,
             icon: const Icon(Icons.check, color: Colors.white),
@@ -85,10 +87,12 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
       const SizedBox(height: 10),
       Common.createWeekChips(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx, timeslotSetData, passiveMode: true),
       const SizedBox(height: 10),
+      // Show the timeslot set on a single line
       Row(
           children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, widget.tsKey, false, false,
               timeSlotBuilder: Timeslots.buildTimeslotCompact)),
       const SizedBox(height: 20),
+      // Create the timeslots widgets stack
       Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, widget.tsKey, false, false, timeSlotBuilder: buildTimeslotEditor),
@@ -198,7 +202,10 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
         MyMenuItem(Icons.edit, wcLocalizations().timeslotAddAfter, 'add'),
         MyMenuItem(Icons.cancel_outlined, wcLocalizations().removeAction, 'delete')
       ],
-      //iconColor: Colors.white,
+      onOpened: () {
+        // Just after onOpened, the PopMenu is going to do a setState, so we must prevent local data to be replaced by global data
+        pullData = false;
+      },
       onSelected: (itemValue) async {
         switch (itemValue) {
           case 'add':
