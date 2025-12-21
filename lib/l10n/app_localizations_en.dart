@@ -337,6 +337,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Given parent schedule does not exist !';
 
   @override
+  String get schedulePageErrorNoUnaffectedDevices =>
+      'Can not create schedule item : no device left !';
+
+  @override
   String get scheduleEditTitle => 'Planning properties';
 
   @override

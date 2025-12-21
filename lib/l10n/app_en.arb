@@ -211,6 +211,7 @@
     "schedulesPageTitle": "Schedules",
     "schedulesPageErrorMissingThermostatAndTempSet": "Please first add a thermostat and create a temperature set ...",
     "schedulePageErrorBadParent": "Given parent schedule does not exist !",
+    "schedulePageErrorNoUnaffectedDevices": "Can not create schedule item : no device left !",
     "scheduleEditTitle": "Planning properties",
     "scheduleEditName": "Name",
     "scheduleEditParent": "Parent",

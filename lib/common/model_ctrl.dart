@@ -174,8 +174,9 @@ class ModelCtrl {
     List<Timeslot> result = [];
     List<String> devicesInResult = [];
     if (schedule.isNotEmpty) {
-      // Following inheritance
+      // "schedules" : will contain schedules inheritance tree from given "schedule" to its latest parent
       List<Map> schedules = [schedule];
+      // Following inheritance
       while (schedule!.containsKey('parent_schedule') && schedule['parent_schedule']!=null) {
         schedule = getSchedule(schedule['parent_schedule']);
         if (schedule.isNotEmpty) {
@@ -484,30 +485,54 @@ class ModelCtrl {
     }
   }
 
-  void createScheduleItem(String scheduleName, [Map? scheduleItemData]) {
+  bool createScheduleItem(String scheduleName, [Map? scheduleItemData]) {
+    List<String> unaffectedDevices = getUnaffectedDevices(scheduleName);
+    if (unaffectedDevices.isEmpty) {
+      // No unaffected device, cannot create a new schedule item
+      return false;
+    }
+
     Map schedule = getSchedule(scheduleName);
     if (_devices.isNotEmpty &&
         schedule.isNotEmpty &&
         _schedulerData.containsKey('temperature_sets') &&
         (_schedulerData['temperature_sets'].length > 0)) {
-      String deviceName = _devices.keys.first;
-      String tempSetName = _schedulerData['temperature_sets'][0]['alias'];
-      Map scheduleItem = scheduleItemData ??
-          {
-            'devices': [deviceName],
-            'timeslots_sets': [
+          String tempSetName = _schedulerData['temperature_sets'][0]['alias'];
+          Map scheduleItem = scheduleItemData ??
               {
-                'dates': ['1', '2', '3', '4', '5', '6', '7'],
-                'timeslots': [
-                  {'start_time': '00:00:00', 'temperature_set': tempSetName}
+                'devices': [unaffectedDevices.first],
+                'timeslots_sets': [
+                  {
+                    'dates': ['1', '2', '3', '4', '5', '6', '7'],
+                    'timeslots': [
+                      {'start_time': '00:00:00', 'temperature_set': tempSetName}
+                    ]
+                  }
                 ]
-              }
-            ]
-          };
-      Map scheduleClone = {...schedule};
-      scheduleClone['schedule_items'].add(scheduleItem);
-      _onScheduleChanged(scheduleClone);
+              };
+          Map scheduleClone = {...schedule};
+          scheduleClone['schedule_items'].add(scheduleItem);
+          _onScheduleChanged(scheduleClone);
     }
+
+    return true;
+  }
+
+  List<String> getUnaffectedDevices(String scheduleName) {
+    List<String> result = [];
+    Map schedule = getSchedule(scheduleName);
+    if (schedule.isNotEmpty) {
+      List affectedDevices = [];
+      for (Map item in schedule['schedule_items']) {
+        affectedDevices.addAll(item['devices']);
+      }
+      for (String devName in _devices.keys) {
+        if (!affectedDevices.contains(devName)) {
+          result.add(devName);
+        }
+      }
+    }
+    return result;
   }
 
   void createTimeSlotSet(String scheduleName, int scheduleItemIdx, {Map? data}) {

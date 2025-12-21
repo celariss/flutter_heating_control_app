@@ -338,6 +338,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le planning parent indiqué n\'existe pas !';
 
   @override
+  String get schedulePageErrorNoUnaffectedDevices =>
+      'Impossible de créer un sous-planning: il ne reste plus de vanne libre';
+
+  @override
   String get scheduleEditTitle => 'Propriétés du planning';
 
   @override

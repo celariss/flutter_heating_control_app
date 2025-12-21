@@ -147,7 +147,10 @@ class Schedule {
             Common.editScheduleProperties(context, scheduleData, _onEditPlanningValidate);
             break;
           case 'add_scheduleitem':
-            ModelCtrl().createScheduleItem(name);
+            if (!ModelCtrl().createScheduleItem(name)) {
+              Common.showSnackBar(context, wcLocalizations().schedulePageErrorNoUnaffectedDevices,
+                  backColor: AppTheme().errorColor, durationMs: 4000);
+            }
             break;
           case 'clone_schedule':
             ModelCtrl().cloneSchedule(name);

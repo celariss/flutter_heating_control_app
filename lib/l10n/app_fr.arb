@@ -211,6 +211,7 @@
     "schedulesPageTitle": "Plannings",
     "schedulesPageErrorMissingThermostatAndTempSet": "Il faut commencer par ajouter un thermostat et créer un jeu de températures ...",
     "schedulePageErrorBadParent": "Le planning parent indiqué n'existe pas !",
+    "schedulePageErrorNoUnaffectedDevices": "Impossible de créer un sous-planning: il ne reste plus de vanne libre",
     "scheduleEditTitle": "Propriétés du planning",
     "scheduleEditName": "Nom",
     "scheduleEditParent": "Parent",

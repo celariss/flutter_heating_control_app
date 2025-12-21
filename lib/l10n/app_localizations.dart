@@ -644,6 +644,12 @@ abstract class AppLocalizations {
   /// **'Given parent schedule does not exist !'**
   String get schedulePageErrorBadParent;
 
+  /// No description provided for @schedulePageErrorNoUnaffectedDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Can not create schedule item : no device left !'**
+  String get schedulePageErrorNoUnaffectedDevices;
+
   /// No description provided for @scheduleEditTitle.
   ///
   /// In en, this message translates to:
