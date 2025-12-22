@@ -1,3 +1,10 @@
+## V1.0.1 (2025-12-22) :
+- bug fix : add time slot button in time slots set editor menu does not work
+- Bug fix in schedules page : create new schedule item fails
+
+## V1.0.0 (2025-11-23) :
+- Updated for flutter 3.38.3 compatibility
+
 ## V0.9.0 (2025-01-29) :
 - Compatibility with server v1.2.0 :
 	- schedules inheritance handling
