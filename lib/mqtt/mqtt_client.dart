@@ -10,15 +10,20 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'mqtt_stub.dart' if (dart.library.js) 'mqtt_web.dart' if (dart.library.io) 'mqtt_io.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 
+import 'mqtt_stub.dart' if (dart.library.js) 'mqtt_web.dart' if (dart.library.io) 'mqtt_io.dart';
+import 'package:mqtt_client/mqtt_server_client.dart';
+
 class MQTTClient {
-  final MqttClient client;
+  MqttClient client;
   String broker;
   int port;
   String user;
   String password;
+  bool ssl;
+  bool websocket;
+  String clientID;
 
   /// Client disconnect callback, called on unsolicited disconnect.
   void Function(bool unexpected)? onDisconnected;
@@ -28,11 +33,11 @@ class MQTTClient {
 
   void Function(String topic, String payload)? onMessageString;
 
-  MQTTClient(this.broker, this.port, {bool ssl = true, this.user = '', this.password = ''})
-      : client = MqttUtil.createClient(broker, '', port, ssl);
+  MQTTClient(this.broker, this.port, {this.ssl = true, this.user = '', this.password = '', this.websocket = true, this.clientID = 'mqtt_client_flutter'}) :
+    client = MqttUtil.createClient(broker, clientID);
 
-  void logging({required bool on}) {
-    client.logging(on: on);
+  void logging({required bool enable}) {
+    client.logging(on: enable);
   }
 
   Future<MqttClientConnectionStatus> connect({bool startClean = true}) async {
@@ -47,8 +52,22 @@ class MQTTClient {
   }
 
   Future<MqttClientConnectionStatus> _connect({bool startClean = true}) async {
+    if (websocket) {
+      if (ssl) {
+        client = MqttUtil.createClient('wss://$broker', clientID);
+      } else {
+        client = MqttUtil.createClient('ws://$broker', clientID);
+      }
+      client.websocketProtocols = MqttClientConstants.protocolsSingleDefault;
+    }
+    else {
+      client = MqttUtil.createClient(broker, clientID);
+    }
+
+    MqttUtil.configureClient(client, ssl, websocket);
+    
     client.setProtocolV311();
-    MqttUtil.configureClient(client);
+    client.port = port;
     client.keepAlivePeriod = 10;
     client.connectTimeoutPeriod = 2000; // milliseconds
     client.autoReconnect = true;
@@ -68,16 +87,22 @@ class MQTTClient {
       client.connectionMessage?.startClean();
     }
 
+    //client.logging(on:true);
+
     try {
       await client.connect();
-    } on NoConnectionException {
+    } on NoConnectionException catch (e) {
       // Raised by the client when connection fails.
-    } on SocketException {
+      print('Socket exception: $e');
+    } on SocketException catch (e) {
       // Raised by the socket layer
-    } on ArgumentError {
+      print('Socket exception: $e');
+    } on ArgumentError catch (e) {
       // Raised when the url has an invalid format
-    } on Exception {
+      print('Socket exception: $e');
+    } on Exception catch (e) {
       // Other Exception
+      print('Socket exception: $e');
     }
 
     /// Check we are connected

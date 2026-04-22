@@ -9,11 +9,11 @@ import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_browser_client.dart';
 
 class MqttUtil {
-  static MqttBrowserClient createClient(String broker, String clientId, int port, bool ssl) {
-    return MqttBrowserClient.withPort((ssl ? 'wss://' : 'ws://') + broker, clientId, port);
+  static MqttBrowserClient createClient(String broker, String clientId) {
+    return MqttBrowserClient(broker, clientId);
   }
 
-  static void configureClient(MqttClient client) {
+  static void configureClient(MqttClient client, bool ssl, bool websocket) {
     //client.websocketProtocols = ['mqtt'];
   }
 }

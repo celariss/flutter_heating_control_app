@@ -1,3 +1,7 @@
+## V1.0.2 (2026-04-22) :
+- updated to flutter 3.41.7
+- bug fix : updated mqtt_client class to adress compatibility issue with lastest version of mosquitto broker
+
 ## V1.0.1 (2025-12-22) :
 - bug fix : add time slot button in time slots set editor menu does not work
 - Bug fix in schedules page : create new schedule item fails

@@ -7,10 +7,11 @@ library;
 import 'package:mqtt_client/mqtt_client.dart';
 
 class MqttUtil {
-  static MqttClient createClient(String broker, String clientId, int port, bool ssl) {
+  static MqttClient createClient(String broker, String clientId) {
     throw UnsupportedError('Cannot create untyped mqtt client');
   }
 
-  static void configureClient(MqttClient client) {
+  static void configureClient(MqttClient client, bool ssl, bool websocket) {
+    throw UnsupportedError('Cannot configure untyped mqtt client');
   }
 }
