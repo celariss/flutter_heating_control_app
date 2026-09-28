@@ -5,12 +5,10 @@ import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
 import 'package:heating_control_app/main.dart';
 import 'package:navbar_router/navbar_router.dart';
-import 'package:card_settings/card_settings.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
 import '../../common/settings.dart';
-import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/package.dart';
 import '../../utils/localizations.dart';
@@ -44,6 +42,7 @@ class _SettingsPage extends State<SettingsPage> {
   String mqttPassword = Settings().MQTT.password;
   int mqttPort = Settings().MQTT.port;
   bool mqttSecure = Settings().MQTT.secure;
+  bool _obscureMqttPassword = true;
   String themeName = Settings().themeName;
   List<String> themesList = Settings().getThemesList();
   String manualResetMode = '';
@@ -172,20 +171,11 @@ class _SettingsPage extends State<SettingsPage> {
         appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
         body: SingleChildScrollView(
           padding: Common.getNavbarHeightPadding(),
-          child: CardSettings.sectioned(
-            margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-            showMaterialonIOS: false,
-            labelWidth: 150,
-            contentAlign: TextAlign.right,
-            cardless: false,
-            children: <CardSettingsSection>[
-              // Section showing versions (App & server)
+          child: Column(
+            children: <Widget>[
               _buildInformationSection(),
-              // Section for server settings
               _buildServerSection(),
-              // Section for the main settings
               _buildMainSection(),
-              // Section for MQTT settings
               _buildMQTTSection(),
             ],
           )
@@ -199,115 +189,104 @@ class _SettingsPage extends State<SettingsPage> {
     return '$lang (${locale.toLanguageTag()})';
   }
 
-  CardSettingsSection _buildInformationSection() {
-    return CardSettingsSection(
-        header: CardSettingsHeader(
-        label: wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
-      ),
-      children: <CardSettingsWidget>[
-        CardSettingsHeader(
-          label: wcLocalizations().settingsServerVersion(ModelCtrl().serverVersion),
+  Widget _settingsSection(String title, List<Widget> children) {
+    return Card(
+      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Text(title, style: Theme.of(context).textTheme.titleMedium),
+            ),
+            ...children,
+          ],
         ),
-      ]
+      ),
     );
   }
 
-  CardSettingsSection _buildServerSection() {
-    bool enabled = ModelCtrl().isConnectedToCtrlServer();
-    return CardSettingsSection(
-      header: CardSettingsHeader(
-        label: wcLocalizations().settingsGroupServer,
-      ),
-      children: <CardSettingsWidget>[
-        // This line calls the devices list editor
-        CardSettingsField(
-          label: wcLocalizations().settingsEditDevicesList,
-          labelAlign:TextAlign.left,
-          requiredIndicator: null,
-          fieldPadding: EdgeInsets.fromLTRB(15, 10, 20, 0),
-          enabled: enabled,
-          content:  Wrap(
-            spacing: 0.0,
-            runSpacing: 0.0,
-            alignment: WrapAlignment.end,
-            crossAxisAlignment: WrapCrossAlignment.start,
-            children: [
-              Container(),
-              Common.createCircleIconButton(Icons.edit_note, iconSize: 50, enabled: enabled,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                onPressed: () {
-                NavbarNotifier.hideBottomNavBar = false;
-                Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
-            })]
+  Widget _buildInformationSection() {
+    return _settingsSection(
+      wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
+      <Widget>[
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(wcLocalizations().settingsServerVersion(ModelCtrl().serverVersion)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildServerSection() {
+    final bool enabled = ModelCtrl().isConnectedToCtrlServer();
+    return _settingsSection(
+      wcLocalizations().settingsGroupServer,
+      <Widget>[
+        ListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text(wcLocalizations().settingsEditDevicesList),
+          trailing: Common.createCircleIconButton(
+            Icons.edit_note,
+            iconSize: 50,
+            enabled: enabled,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+            onPressed: () {
+              NavbarNotifier.hideBottomNavBar = false;
+              Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+            },
           ),
         ),
-        // This sub-section allows edition of manual reset fields
-        CardSettingsHeader(
-          label: wcLocalizations().settingsGroupManualReset,
-          child: Container(
-            margin: EdgeInsets.all(0.0),
-            decoration: BoxDecoration(
-              color: AppTheme().background3Color,
-            ),
-            height: 30,
-            padding: EdgeInsets.only(left: 14.0),
-            child: Row(
-              children: <Widget>[
-                Expanded(
-                  child: Text(
-                    wcLocalizations().settingsGroupManualReset,
-                    style: TextStyle(
-                      fontWeight:FontWeight.normal,
-                      fontSize: 18,
-                      color: enabled ? null : AppTheme().notSelectedColor,
-                      ),
-                    textAlign: TextAlign.left,
-                  ),
-                ),
-              ],
-            ),
-          )
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(wcLocalizations().settingsGroupManualReset,
+              style: Theme.of(context).textTheme.titleSmall),
         ),
-        // This line is for the type of manual reset
-        _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetMode, getManualResetModesList(), manualResetMode2Str(), (value) {
-          ModelCtrl().setManualResetMode(str2ManualResetMode(value));
-        }, enabled=enabled),
-      ] + ((manualResetMode!='')?[]:[
-        // This line is for the number of hours (manual reset)
-        _buildCardSettingsListPickerType(wcLocalizations().settingsManualResetDuration,
-          ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24'], manualResetDuration.toString(), (value) {
-            ModelCtrl().setManualResetMode(str2Int(value));
-          }, enabled=enabled),
-      ]),
+        _buildSettingListPicker(
+          wcLocalizations().settingsManualResetMode,
+          getManualResetModesList(),
+          manualResetMode2Str(),
+          (value) => ModelCtrl().setManualResetMode(str2ManualResetMode(value)),
+          enabled,
+        ),
+        if (manualResetMode == '')
+          _buildSettingListPicker(
+            wcLocalizations().settingsManualResetDuration,
+            List<String>.generate(24, (index) => '${index + 1}'),
+            manualResetDuration.toString(),
+            (value) => ModelCtrl().setManualResetMode(str2Int(value)),
+            enabled,
+          ),
+      ],
     );
   }
 
-  CardSettingsSection _buildMainSection() {
-    List<String> langList = AppLocalizations.supportedLocales.map((e) => localeToString(e)).toList();
-    langList.insert(0, wcLocalizations().settingsSystemLanguage);
+  Widget _buildMainSection() {
+    final List<String> langList = AppLocalizations.supportedLocales
+        .map((locale) => localeToString(locale))
+        .toList()
+      ..insert(0, wcLocalizations().settingsSystemLanguage);
     String curLangName = wcLocalizations().settingsSystemLanguage;
-    if (Settings().locale!=null) {
+    if (Settings().locale != null) {
       curLangName = localeToString(getCurrentLocale());
     }
 
-    return CardSettingsSection(
-      header: CardSettingsHeader(
-        label: wcLocalizations().settingsGroupMain,
-      ),
-      children: <CardSettingsWidget>[
-        // Line for choosing color theme
-        _buildCardSettingsListPickerType(wcLocalizations().settingsTheme, themesList, themeName, (value) {
+    return _settingsSection(
+      wcLocalizations().settingsGroupMain,
+      <Widget>[
+        _buildSettingListPicker(wcLocalizations().settingsTheme, themesList, themeName, (value) {
           themeName = value;
           Settings().setTheme(themeName);
           themeNotifier!.refreshAppTheme();
         }),
-        // Line for choosing language
-        _buildCardSettingsListPickerType(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
-          Locale ?newLocale;
+        _buildSettingListPicker(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
+          Locale? newLocale;
           curLangName = value;
           if (value != wcLocalizations().settingsSystemLanguage) {
-            for (Locale locale in AppLocalizations.supportedLocales) {
-              if (localeToString(locale)==value) {
+            for (final Locale locale in AppLocalizations.supportedLocales) {
+              if (localeToString(locale) == value) {
                 newLocale = locale;
                 break;
               }
@@ -317,39 +296,37 @@ class _SettingsPage extends State<SettingsPage> {
           Settings().setLocale(newLocale);
           themeNotifier!.refreshAppTheme();
         }),
-        // Line for choosing thermostats resolution
-        _buildCardSettingsListPickerType(wcLocalizations().settingsThermostatRes,
-          ['0.1', '0.2', '0.5', '1.0'], Settings().thermostatResolution.toString(), (value) {
-            Settings().setThermostatResolution(double.parse(value));
-          }),
+        _buildSettingListPicker(
+          wcLocalizations().settingsThermostatRes,
+          <String>['0.1', '0.2', '0.5', '1.0'],
+          Settings().thermostatResolution.toString(),
+          (value) => Settings().setThermostatResolution(double.parse(value)),
+        ),
       ],
     );
   }
 
-  CardSettingsSection _buildMQTTSection() {
-    return CardSettingsSection(
-      header: CardSettingsHeader(
-        label: wcLocalizations().settingsGroupMqtt,
-      ),
-      //divider: Divider(thickness: 1.0, color: AppTheme().focusColor),
-      children: <CardSettingsWidget>[
-        _buildCardSettingsText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
+  Widget _buildMQTTSection() {
+    return _settingsSection(
+      wcLocalizations().settingsGroupMqtt,
+      <Widget>[
+        _buildSettingText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
           mqttUrl = value;
           mqttChanged = true;
         }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildCardSettingsText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
+        _buildSettingText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
           mqttUser = value;
           mqttChanged = true;
         }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildCardSettingsPassword(_mqttPasswordKey, (value) {
+        _buildSettingPassword(_mqttPasswordKey, (value) {
           mqttPassword = value;
           mqttChanged = true;
         }),
-        _buildCardSettingsInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
+        _buildSettingInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
           mqttPort = value;
           mqttChanged = true;
         }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildCardSettingsBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
+        _buildSettingBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
           mqttSecure = value;
           mqttChanged = true;
         }, wcLocalizations().settingsErrorMandatoryValue),
@@ -357,139 +334,122 @@ class _SettingsPage extends State<SettingsPage> {
     );
   }
 
-  CardSettingsListPicker _buildCardSettingsListPickerType(String title, List values, dynamic initialValue, void Function(dynamic) onChanged, [bool enabled= true]) {
-    List<PickerModel> list = values.map((e) => PickerModel(e as String)).toList();
-    PickerModel initial = list.firstWhere((e) => e.name==initialValue as String, orElse: () => const PickerModel(""));
-    return CardSettingsListPicker<PickerModel>(
+  Widget _buildSettingListPicker(
+    String title,
+    List values,
+    dynamic initialValue,
+    void Function(dynamic) onChanged, [
+    bool enabled = true,
+  ]) {
+    final List<String> options = values.cast<String>();
+    return DropdownButtonFormField<String>(
       key: UniqueKey(),
-      label: title,
-      enabled: enabled,
-      initialItem: initial,
-      hintText: initialValue as String,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      items: list,
-      onChanged: (value) {
-        setState(() {
-          initial = value!;
-          onChanged(value.name);
-        });
-      },
+      initialValue: options.contains(initialValue) ? initialValue as String : null,
+      isExpanded: true,
+      decoration: InputDecoration(labelText: title),
+      items: options
+          .map((value) => DropdownMenuItem<String>(value: value, child: Text(value)))
+          .toList(),
+      onChanged: enabled
+          ? (value) {
+              if (value == null) return;
+              setState(() => onChanged(value));
+            }
+          : null,
     );
   }
 
-  CardSettingsText _buildCardSettingsText(Key key, String label, String initialValue, void Function(dynamic) onChanged, String ?requiredText) {
-    return CardSettingsText(
+  Widget _buildSettingText(
+    Key key,
+    String label,
+    String initialValue,
+    void Function(dynamic) onChanged,
+    String? requiredText,
+  ) {
+    return TextFormField(
       key: key,
-      label: label,
       initialValue: initialValue,
-      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      //focusNode: _focusNode,
-      inputAction: TextInputAction.next,
       maxLength: 32,
-      //inputActionNode: _actionNode,
-      //inputMask: '000.000.000.000',
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(labelText: label),
       validator: (value) {
-        if (requiredText!=null && (value == null || value.isEmpty)) return requiredText;
+        if (requiredText != null && (value == null || value.isEmpty)) return requiredText;
         return null;
       },
-      onChanged: (value) {
-        setState(() {
-          onChanged(value);
-        });
-      },
+      onChanged: (value) => setState(() => onChanged(value)),
     );
   }
 
-CardSettingsInt _buildCardSettingsInt(Key key, String label, int initialValue, void Function(dynamic) onChanged, String ?requiredText) {
-    return CardSettingsInt(
+  Widget _buildSettingInt(
+    Key key,
+    String label,
+    int initialValue,
+    void Function(dynamic) onChanged,
+    String? requiredText,
+  ) {
+    return TextFormField(
       key: key,
-      label: label,
-      initialValue: initialValue,
-      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      //focusNode: _focusNode,
-      inputAction: TextInputAction.next,
+      initialValue: initialValue.toString(),
       maxLength: 32,
-      //inputActionNode: _actionNode,
-      //inputMask: '000.000.000.000',
+      keyboardType: TextInputType.number,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(labelText: label),
       validator: (value) {
-        if (requiredText!=null && (value == null)) return requiredText;
+        if (requiredText != null && (value == null || value.isEmpty)) return requiredText;
+        if (value != null && int.tryParse(value) == null) return requiredText;
         return null;
       },
       onChanged: (value) {
-        setState(() {
-          onChanged(value);
-        });
+        final int? parsedValue = int.tryParse(value);
+        if (parsedValue != null) setState(() => onChanged(parsedValue));
       },
     );
   }
 
-// ignore: unused_element
-CardSettingsDouble _buildCardSettingsDouble(Key key, String label, double initialValue, double min_, double max_, void Function(dynamic) onChanged, String ?requiredText, String ?badValueText) {
-    return CardSettingsDouble(
+  Widget _buildSettingBool(
+    Key key,
+    String label,
+    bool initialValue,
+    void Function(dynamic) onChanged,
+    String? requiredText,
+  ) {
+    return ListTile(
       key: key,
-      label: label,
-      initialValue: initialValue,
-      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      //focusNode: _focusNode,
-      inputAction: TextInputAction.next,
-      decimalDigits: 2,
-      unitLabel: '°',
-      //inputActionNode: _actionNode,
-      //inputMask: '000.000.000.000',
-      validator: (value) {
-        if (requiredText!=null && (value == null)) return requiredText;
-        if (badValueText!=null && (value == null)) return requiredText;
-        return null;
-      },
-      onChanged: (value) {
-        setState(() {
-          onChanged(value);
-        });
-      },
+      contentPadding: EdgeInsets.zero,
+      title: Text(label),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(wcLocalizations().no),
+          Switch(
+            value: initialValue,
+            onChanged: (value) => setState(() => onChanged(value)),
+          ),
+          Text(wcLocalizations().yes),
+        ],
+      ),
     );
   }
 
-CardSettingsSwitch _buildCardSettingsBool(Key key, String label, bool initialValue, void Function(dynamic) onChanged, String ?requiredText) {
-    return CardSettingsSwitch(
+  Widget _buildSettingPassword(Key key, void Function(dynamic) onChanged) {
+    return TextFormField(
       key: key,
-      falseLabel: wcLocalizations().no,
-      trueLabel: wcLocalizations().yes,
-      label: label,
-      initialValue: initialValue,
-      requiredIndicator: requiredText!=null ? Text('*', style: TextStyle(color: AppTheme().focusColor)) : null,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      //focusNode: _focusNode,
-      //inputAction: TextInputAction.next,
-      //inputActionNode: _actionNode,
-      //inputMask: '000.000.000.000',
-      validator: (value) {
-        if (requiredText!=null && (value == null)) return requiredText;
-        return null;
-      },
-      onChanged: (value) {
-        setState(() {
-          onChanged(value);
-        });
-      },
-    );
-  }
-
-  CardSettingsPassword _buildCardSettingsPassword(Key key, void Function(dynamic) onChanged) {
-    return CardSettingsPassword(
-      key: key,
-      icon: const Icon(Icons.lock),
-      labelWidth: 200,
-      label: wcLocalizations().settingsPassword,
       initialValue: mqttPassword,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      onChanged: (value) {
-        setState(() {
-          onChanged(value);
-        });
-      },
+      obscureText: _obscureMqttPassword,
+      maxLength: 32,
+      decoration: InputDecoration(
+        labelText: wcLocalizations().settingsPassword,
+        prefixIcon: const Icon(Icons.lock),
+        suffixIcon: IconButton(
+          tooltip: wcLocalizations().settingsPassword,
+          icon: Icon(_obscureMqttPassword ? Icons.visibility : Icons.visibility_off),
+          onPressed: () => setState(() {
+            _obscureMqttPassword = !_obscureMqttPassword;
+          }),
+        ),
+      ),
+      onChanged: (value) => setState(() => onChanged(value)),
     );
   }
+
 }
