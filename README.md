@@ -49,7 +49,6 @@ And it depends on following flutter plugins :
 - [mqtt_client] - A server and browser based MQTT client for Dart
 - [navbar_router] - A custom BottomNavigationBar
 - [flutter_colorpicker] - A color picker inspired by all the good design for your amazing flutter apps
-- [flutter_picker] - A Flutter picker plugin
 - [selectable_list] - A flutter selectable list plugin
 - [flutter_launcher_icons] - A command-line tool which simplifies the task of updating your Flutter app's launcher icon
 - [sleek_circular_slider] - A highly customizable circular slider/progress bar & spinner for Flutter
@@ -109,7 +108,6 @@ This README has been written using [Dillinger]
   [mqtt_client]: <https://pub.dev/packages/mqtt_client>
   [navbar_router]: <https://pub.dev/packages/navbar_router>
   [flutter_colorpicker]: <https://pub.dev/packages/flutter_colorpicker>
-  [flutter_picker]: <https://pub.dev/packages/flutter_picker>
   [selectable_list]: <https://pub.dev/packages/selectable_list>
   [flutter_launcher_icons]: <https://pub.dev/packages/flutter_launcher_icons>
   [sleek_circular_slider]: <https://pub.dev/packages/sleek_circular_slider>

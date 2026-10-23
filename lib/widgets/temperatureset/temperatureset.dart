@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_picker/flutter_picker.dart';
-
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/settings.dart';
 import '../../common/theme.dart';
 import '../../utils/localizations.dart';
+import 'temperature_picker.dart';
 
 class TemperatureSet {
   static Widget temperatureSetTileBuilder(BuildContext context, Map tempSetData, String scheduleName,
@@ -173,7 +172,8 @@ class TemperatureSet {
                   navigate(context, ProductComments.route,
                       isRootNavigator: false,
                       arguments: {'id': argsId.toString()});*/
-            _showTemperaturePicker(context, data['setpoint'].toDouble(), Settings().minSetpoint, Settings().maxSetpoint).then((value) {
+            TemperaturePicker.show(context,
+                temperature: data['setpoint'].toDouble(), min: Settings().minSetpoint, max: Settings().maxSetpoint).then((value) {
               //setState(() => data['setpoint'] = value);
               if (data['setpoint'] != value) {
                 data['setpoint'] = value;
@@ -191,39 +191,6 @@ class TemperatureSet {
         ),
       );
     });
-  }
-
-  static Future<double> _showTemperaturePicker(BuildContext context, double temperature, int min, int max) async {
-    double result = temperature;
-    if (temperature < min) {
-      temperature = min.toDouble();
-    }
-    if (temperature > max) {
-      temperature = max.toDouble();
-    }
-    int intValue = temperature.toInt();
-    int decValue = (temperature * 10.0).toInt() % 10;
-    List<int> intList = List<int>.generate(max - min+1, (i) => i + min);
-    List<int> decList = List<int>.generate(10, (i) => i);
-    await Picker(
-        adapter: PickerDataAdapter<String>(pickerData: [intList, decList], isArray: true),
-        selecteds: [intValue - min, decValue],
-        hideHeader: true,
-        cancelText: wcLocalizations().cancelAction,
-        confirmText: wcLocalizations().validateAction,
-        cancelTextStyle: TextStyle(color: AppTheme().buttonTextColor),
-        confirmTextStyle: TextStyle(color: AppTheme().buttonTextColor),
-        backgroundColor: AppTheme().background2Color,
-        textStyle: TextStyle(color: AppTheme().specialTextColor, fontSize: 18),
-        selectedTextStyle: TextStyle(color: AppTheme().normalTextColor, fontSize: 22),
-        //title: new Text("Please Select"),
-        onConfirm: (Picker picker, List value) {
-          result = intList[value[0]].toDouble() + value[1].toDouble() / 10;
-          if (result > max) {
-            result = max.toDouble();
-          }
-        }).showDialog(context, backgroundColor: AppTheme().background2Color);
-    return result;
   }
 
   static void _onTemperatureSetPropertiesValidate(Map data, String scheduleName, Color pickedColor, String tapedName) {

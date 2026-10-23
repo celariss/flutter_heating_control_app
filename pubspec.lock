@@ -187,15 +187,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_picker:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "20241229-flutter-3.24"
-      resolved-ref: "189abf85695bdea69449fd3d318c4ad71708b666"
-      url: "https://github.com/SVyatoslavG/flutter_picker/"
-    source: git
-    version: "2.1.1"
   flutter_secure_storage:
     dependency: "direct main"
     description:

@@ -41,10 +41,6 @@ dependencies:
   navbar_router: ">=0.7.7"
   event: ">=3.1.0"
   flutter_colorpicker: ">=1.1.0"
-  flutter_picker: # (Jan 11 2025) : latest official v2.1.0 is not compatible with flutter 3.27+
-    git:
-      url: https://github.com/SVyatoslavG/flutter_picker/
-      ref: 20241229-flutter-3.24 # branch name or commit hash
   selectable_list: ">=0.1.1"
   flutter_launcher_icons: ">=0.14.4"
   sleek_circular_slider: ">=2.1.0"
