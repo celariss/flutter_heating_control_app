@@ -12,6 +12,7 @@ import '../../common/settings.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/package.dart';
 import '../../utils/localizations.dart';
+import '../../utils/settings_widget_helper.dart';
 import 'deviceseditorpage.dart';
 
 ///////////////////////////////////////////////////////////////////////////
@@ -25,15 +26,9 @@ class SettingsPage extends StatefulWidget {
   State<SettingsPage> createState() => _SettingsPage();
 }
 
-
 class _SettingsPage extends State<SettingsPage> {
   final _scrollController = ScrollController();
   Size size = Size.zero;
-  final GlobalKey<FormState> _mqttUrlKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _mqttUserKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _mqttPortKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _mqttSecureKey = GlobalKey<FormState>();
-  final GlobalKey<FormState> _mqttPasswordKey = GlobalKey<FormState>();
   ThemeNotifier ?themeNotifier;
 
   bool mqttChanged = false;
@@ -42,7 +37,6 @@ class _SettingsPage extends State<SettingsPage> {
   String mqttPassword = Settings().MQTT.password;
   int mqttPort = Settings().MQTT.port;
   bool mqttSecure = Settings().MQTT.secure;
-  bool _obscureMqttPassword = true;
   String themeName = Settings().themeName;
   List<String> themesList = Settings().getThemesList();
   String manualResetMode = '';
@@ -172,14 +166,14 @@ class _SettingsPage extends State<SettingsPage> {
         body: SingleChildScrollView(
           padding: Common.getNavbarHeightPadding(),
           child: Column(
-            children: <Widget>[
-              _buildInformationSection(),
-              _buildServerSection(),
-              _buildMainSection(),
-              _buildMQTTSection(),
-            ],
-          )
-        ),
+                children: [
+                  _buildInformationSection(),
+                  _buildServerSection(),
+                  _buildMainSection(),
+                  _buildMQTTSection(),
+                ],
+            )
+          ),
       ),
     );
   }
@@ -189,77 +183,51 @@ class _SettingsPage extends State<SettingsPage> {
     return '$lang (${locale.toLanguageTag()})';
   }
 
-  Widget _settingsSection(String title, List<Widget> children) {
-    return Card(
-      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(title, style: Theme.of(context).textTheme.titleMedium),
-            ),
-            ...children,
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _buildInformationSection() {
-    return _settingsSection(
+    return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
-      <Widget>[
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(wcLocalizations().settingsServerVersion(ModelCtrl().serverVersion)),
-        ),
-      ],
+      <Widget>[ ],
+      context
     );
   }
 
   Widget _buildServerSection() {
     final bool enabled = ModelCtrl().isConnectedToCtrlServer();
-    return _settingsSection(
+    return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupServer,
       <Widget>[
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(wcLocalizations().settingsEditDevicesList),
-          trailing: Common.createCircleIconButton(
-            Icons.edit_note,
-            iconSize: 50,
-            enabled: enabled,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-            onPressed: () {
-              NavbarNotifier.hideBottomNavBar = false;
-              Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
-            },
-          ),
+        SettingsWidgetHelper.createTextField(wcLocalizations().settingsServerVersion(enabled ? ModelCtrl().serverVersion : '?'), enabled: enabled),
+        SettingsWidgetHelper.createBtnField(
+          wcLocalizations().settingsEditDevicesList,
+          Icons.edit_note,
+          () {
+            NavbarNotifier.hideBottomNavBar = false;
+            Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+          },
+          enabled: enabled,
         ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Text(wcLocalizations().settingsGroupManualReset,
-              style: Theme.of(context).textTheme.titleSmall),
-        ),
-        _buildSettingListPicker(
-          wcLocalizations().settingsManualResetMode,
-          getManualResetModesList(),
-          manualResetMode2Str(),
-          (value) => ModelCtrl().setManualResetMode(str2ManualResetMode(value)),
-          enabled,
+        SettingsWidgetHelper.createFieldsGroup(
+          wcLocalizations().settingsGroupManualReset,
+          <Widget>[
+            SettingsWidgetHelper.createListPickerField(
+              wcLocalizations().settingsManualResetMode,
+              getManualResetModesList(),
+              manualResetMode2Str(),
+              (value) => ModelCtrl().setManualResetMode(str2ManualResetMode(value)),
+              enabled: enabled,
+            ),
+          ]
         ),
         if (manualResetMode == '')
-          _buildSettingListPicker(
+          SettingsWidgetHelper.createListPickerField(
             wcLocalizations().settingsManualResetDuration,
             List<String>.generate(24, (index) => '${index + 1}'),
             manualResetDuration.toString(),
             (value) => ModelCtrl().setManualResetMode(str2Int(value)),
-            enabled,
+            enabled: enabled,
           ),
       ],
+      context
     );
   }
 
@@ -273,15 +241,15 @@ class _SettingsPage extends State<SettingsPage> {
       curLangName = localeToString(getCurrentLocale());
     }
 
-    return _settingsSection(
+    return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupMain,
       <Widget>[
-        _buildSettingListPicker(wcLocalizations().settingsTheme, themesList, themeName, (value) {
+        SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsTheme, themesList, themeName, (value) {
           themeName = value;
           Settings().setTheme(themeName);
           themeNotifier!.refreshAppTheme();
         }),
-        _buildSettingListPicker(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
+        SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsLanguage, langList, curLangName, (value) {
           Locale? newLocale;
           curLangName = value;
           if (value != wcLocalizations().settingsSystemLanguage) {
@@ -296,160 +264,67 @@ class _SettingsPage extends State<SettingsPage> {
           Settings().setLocale(newLocale);
           themeNotifier!.refreshAppTheme();
         }),
-        _buildSettingListPicker(
+        SettingsWidgetHelper.createListPickerField(
           wcLocalizations().settingsThermostatRes,
           <String>['0.1', '0.2', '0.5', '1.0'],
           Settings().thermostatResolution.toString(),
           (value) => Settings().setThermostatResolution(double.parse(value)),
         ),
       ],
+      context
     );
   }
 
   Widget _buildMQTTSection() {
-    return _settingsSection(
+    return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupMqtt,
       <Widget>[
-        _buildSettingText(_mqttUrlKey, wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
-          mqttUrl = value;
-          mqttChanged = true;
-        }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildSettingText(_mqttUserKey, wcLocalizations().settingsUsername, mqttUser, (value) {
-          mqttUser = value;
-          mqttChanged = true;
-        }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildSettingPassword(_mqttPasswordKey, (value) {
-          mqttPassword = value;
-          mqttChanged = true;
-        }),
-        _buildSettingInt(_mqttPortKey, wcLocalizations().settingsPortNumber, mqttPort, (value) {
-          mqttPort = value;
-          mqttChanged = true;
-        }, wcLocalizations().settingsErrorMandatoryValue),
-        _buildSettingBool(_mqttSecureKey, wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
+        SettingsWidgetHelper.createTextFormField(wcLocalizations().settingsBrokerAddress, mqttUrl, (value) {
+            mqttUrl = value;
+            mqttChanged = true;
+          },
+          mandatory: true,
+          requiredErrorText: wcLocalizations().settingsErrorMandatoryValue,
+        ),
+        SettingsWidgetHelper.createTextFormField(wcLocalizations().settingsUsername, mqttUser, (value) {
+            mqttUser = value;
+            mqttChanged = true;
+          },
+        ),
+        SettingsWidgetHelper.createPasswordFormField(wcLocalizations().settingsPassword,mqttPassword, (value) {
+            mqttPassword = value;
+            mqttChanged = true;
+          },
+          showHideTooltip: wcLocalizations().settingsShowHidePassword,
+        ),
+        SettingsWidgetHelper.createIntFormField(wcLocalizations().settingsPortNumber, mqttPort, (value) {
+            mqttPort = value;
+            mqttChanged = true;
+          },
+          mandatory: true,
+          requiredErrorText: wcLocalizations().settingsErrorMandatoryValue,
+          errorText:wcLocalizations().settingsErrorInvalidFormat,
+        ),
+        _buildSettingBool(wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
           mqttSecure = value;
           mqttChanged = true;
-        }, wcLocalizations().settingsErrorMandatoryValue),
+        },),
       ],
-    );
-  }
-
-  Widget _buildSettingListPicker(
-    String title,
-    List values,
-    dynamic initialValue,
-    void Function(dynamic) onChanged, [
-    bool enabled = true,
-  ]) {
-    final List<String> options = values.cast<String>();
-    return DropdownButtonFormField<String>(
-      key: UniqueKey(),
-      initialValue: options.contains(initialValue) ? initialValue as String : null,
-      isExpanded: true,
-      decoration: InputDecoration(labelText: title),
-      items: options
-          .map((value) => DropdownMenuItem<String>(value: value, child: Text(value)))
-          .toList(),
-      onChanged: enabled
-          ? (value) {
-              if (value == null) return;
-              setState(() => onChanged(value));
-            }
-          : null,
-    );
-  }
-
-  Widget _buildSettingText(
-    Key key,
-    String label,
-    String initialValue,
-    void Function(dynamic) onChanged,
-    String? requiredText,
-  ) {
-    return TextFormField(
-      key: key,
-      initialValue: initialValue,
-      maxLength: 32,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(labelText: label),
-      validator: (value) {
-        if (requiredText != null && (value == null || value.isEmpty)) return requiredText;
-        return null;
-      },
-      onChanged: (value) => setState(() => onChanged(value)),
-    );
-  }
-
-  Widget _buildSettingInt(
-    Key key,
-    String label,
-    int initialValue,
-    void Function(dynamic) onChanged,
-    String? requiredText,
-  ) {
-    return TextFormField(
-      key: key,
-      initialValue: initialValue.toString(),
-      maxLength: 32,
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(labelText: label),
-      validator: (value) {
-        if (requiredText != null && (value == null || value.isEmpty)) return requiredText;
-        if (value != null && int.tryParse(value) == null) return requiredText;
-        return null;
-      },
-      onChanged: (value) {
-        final int? parsedValue = int.tryParse(value);
-        if (parsedValue != null) setState(() => onChanged(parsedValue));
-      },
+      context
     );
   }
 
   Widget _buildSettingBool(
-    Key key,
     String label,
     bool initialValue,
     void Function(dynamic) onChanged,
-    String? requiredText,
   ) {
-    return ListTile(
-      key: key,
-      contentPadding: EdgeInsets.zero,
-      title: Text(label),
-      trailing: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Text(wcLocalizations().no),
-          Switch(
-            value: initialValue,
-            onChanged: (value) => setState(() => onChanged(value)),
-          ),
-          Text(wcLocalizations().yes),
-        ],
-      ),
+    return SettingsWidgetHelper.createBoolFormField(
+      label,
+      initialValue,
+      onChanged,
+      noText:wcLocalizations().no,
+      yesText: wcLocalizations().yes
     );
   }
-
-  Widget _buildSettingPassword(Key key, void Function(dynamic) onChanged) {
-    return TextFormField(
-      key: key,
-      initialValue: mqttPassword,
-      obscureText: _obscureMqttPassword,
-      maxLength: 32,
-      decoration: InputDecoration(
-        labelText: wcLocalizations().settingsPassword,
-        prefixIcon: const Icon(Icons.lock),
-        suffixIcon: IconButton(
-          tooltip: wcLocalizations().settingsPassword,
-          icon: Icon(_obscureMqttPassword ? Icons.visibility : Icons.visibility_off),
-          onPressed: () => setState(() {
-            _obscureMqttPassword = !_obscureMqttPassword;
-          }),
-        ),
-      ),
-      onChanged: (value) => setState(() => onChanged(value)),
-    );
-  }
-
 }

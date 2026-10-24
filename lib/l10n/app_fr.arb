@@ -168,6 +168,8 @@
     },
 
     "settingsErrorMandatoryValue": "Une valeur est obligatoire",
+    "settingsErrorInvalidFormat": "la valeur est invalide",
+    "settingsShowHidePassword": "Montrer/cacher le mot de passe",
     "settingsGroupServer": "Paramètres du serveur",
     "settingsGroupMain": "Général",
     "settingsLanguage": "Langue",

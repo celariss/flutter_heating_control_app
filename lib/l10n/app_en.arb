@@ -168,6 +168,8 @@
     },
 
     "settingsErrorMandatoryValue": "value is mandatory",
+    "settingsErrorInvalidFormat": "value is invalid",
+    "settingsShowHidePassword": "Show/hide password",
     "settingsGroupServer": "Server side settings",
     "settingsGroupMain": "Main",
     "settingsLanguage": "Language",

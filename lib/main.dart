@@ -59,10 +59,13 @@ class MyApp extends StatelessWidget {
   static ThemeData getAppThemeData() {
     return ThemeData(
       dividerColor: AppTheme().focusColor, // Settings page dividers
+      disabledColor: AppTheme().normalTextColor.withValues(alpha: 0.38), // Disabled control text color
       dividerTheme: const DividerThemeData(
         color: Colors.transparent, // ugly divider that cuts off the selection in scroll picker (settings page)
       ),
-      colorScheme: ColorScheme.dark(secondary: AppTheme().focusColor,  // Settings page selected item in list picker
+      colorScheme: ColorScheme.dark(
+        secondary: AppTheme().focusColor, // Settings page selected item in list picker
+        onSurface: AppTheme().specialTextColor, // Used for disabled text (with opacity of 0.38)
         ),
       primaryColor: AppTheme().background3Color,
       secondaryHeaderColor: AppTheme().background3Color, // Settings page headers background
@@ -122,6 +125,7 @@ class MyApp extends StatelessWidget {
       
       textTheme: TextTheme(
             bodyMedium: TextStyle(color: AppTheme().normalTextColor), // thermostat setpoint
+            bodyLarge: TextStyle(color: AppTheme().normalTextColor), // TextFormField input text
             labelLarge: TextStyle(color: AppTheme().buttonTextColor), // button text
             titleMedium: TextStyle(color: AppTheme().normalTextColor), // input text
             titleLarge: TextStyle(color: AppTheme().normalTextColor), // card header text
@@ -135,9 +139,30 @@ class MyApp extends StatelessWidget {
         titleLarge: TextStyle(color: AppTheme().normalTextColor), // app header text
       ),
 
-      inputDecorationTheme: InputDecorationTheme(
+      inputDecorationTheme: InputDecorationTheme( // Input text fields (TextFormField)
         labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
+        iconColor: AppTheme().normalTextColor, // style for icons
+        prefixIconColor: AppTheme().specialTextColor, // style for prefix icons
+        suffixIconColor: AppTheme().specialTextColor, // style for suffix icons
+        counterStyle: TextStyle(
+          color: Colors.grey[600], // counter text style (max length) in TextFormField
+        ),
+        disabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme().normalTextColor.withValues(alpha: 0.38)), // underline color for TextFormField
+        ),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme().normalTextColor), // underline color for TextFormField
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: BorderSide(color: AppTheme().successColor), // underline color for TextFormField
+        ), // underline color for TextFormField
       ),
+      
+      menuTheme:MenuBarThemeData( // Menu theme (and DropDownMenu)
+        style: MenuStyle(
+          backgroundColor: WidgetStatePropertyAll(AppTheme().background1Color),
+        )
+      )
     );
   }
 

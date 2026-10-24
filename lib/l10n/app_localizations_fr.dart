@@ -222,6 +222,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsErrorMandatoryValue => 'Une valeur est obligatoire';
 
   @override
+  String get settingsErrorInvalidFormat => 'la valeur est invalide';
+
+  @override
+  String get settingsShowHidePassword => 'Montrer/cacher le mot de passe';
+
+  @override
   String get settingsGroupServer => 'Paramètres du serveur';
 
   @override

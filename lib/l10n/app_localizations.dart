@@ -416,6 +416,18 @@ abstract class AppLocalizations {
   /// **'value is mandatory'**
   String get settingsErrorMandatoryValue;
 
+  /// No description provided for @settingsErrorInvalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'value is invalid'**
+  String get settingsErrorInvalidFormat;
+
+  /// No description provided for @settingsShowHidePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Show/hide password'**
+  String get settingsShowHidePassword;
+
   /// No description provided for @settingsGroupServer.
   ///
   /// In en, this message translates to:

@@ -221,6 +221,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsErrorMandatoryValue => 'value is mandatory';
 
   @override
+  String get settingsErrorInvalidFormat => 'value is invalid';
+
+  @override
+  String get settingsShowHidePassword => 'Show/hide password';
+
+  @override
   String get settingsGroupServer => 'Server side settings';
 
   @override

@@ -80,6 +80,7 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            Text('-', style: selectedItemStyle),
             Expanded(
               child: _buildWheel(
                 controller: _wholeController,
@@ -91,7 +92,7 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
                 onSelectedItemChanged: (index) => setState(() => _wholeValue = _wholeValues[index]),
               ),
             ),
-            Text('.', style: selectedItemStyle),
+            Text('-', style: selectedItemStyle),
             Expanded(
               child: _buildWheel(
                 controller: _decimalController,
@@ -105,7 +106,7 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 4),
-              child: Text('°', style: selectedItemStyle),
+              child: Text('-', style: selectedItemStyle),
             ),
           ],
         ),
