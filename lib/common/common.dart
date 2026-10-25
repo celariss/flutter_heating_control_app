@@ -318,7 +318,7 @@ class Common {
   static Widget createTextButton(String text, {required void Function()? onPressed}) {
     return ElevatedButton(
       style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(AppTheme().buttonBackColor),
+          backgroundColor: WidgetStateProperty.all(AppTheme().focusColor),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -453,16 +453,19 @@ class Common {
   static Widget _buildDeviceChip(
       BuildContext context, void Function(void Function()) setState, String deviceName, List<String> filters) {
     return Common.wrapChip(FilterChip(
-      backgroundColor: AppTheme().notSelectedColor,
+      backgroundColor: AppTheme().background2Color,
       avatar: Icon(
         Common.getDeviceIconData(),
-        color: filters.contains(deviceName) ? AppTheme().background1Color : AppTheme().normalTextColor,
+        color: filters.contains(deviceName) ? AppTheme().buttonTextColor : AppTheme().normalTextColor,
       ),
       showCheckmark: false,
       elevation: 12,
       label: Text(deviceName),
+      labelStyle: TextStyle(
+          color: filters.contains(deviceName) ? AppTheme().buttonTextColor : AppTheme().specialTextColor,
+        ),
       selected: filters.contains(deviceName),
-      selectedColor: AppTheme().selectedColor,
+      selectedColor: AppTheme().focusColor, // Background color when selected
       onSelected: (bool selected) {
         setState(() {
           if (selected) {
@@ -730,13 +733,16 @@ class Common {
     for (var day in list) {
       chips.add(Flexible(
         child: Common.wrapChip(FilterChip(
-            backgroundColor: AppTheme().notSelectedColor,
+            backgroundColor: AppTheme().background3Color,
             showCheckmark: false,
             elevation: AppTheme().defaultElevation,
             shape: const CircleBorder(side: BorderSide.none),
             label: Text(day[1]),
             selected: weekDayFilters.contains(day[0]),
-            selectedColor: AppTheme().normalTextColor,
+            selectedColor: AppTheme().focusColor, // selected background color
+            labelStyle: TextStyle(
+              color: weekDayFilters.contains(day[0]) ? AppTheme().buttonTextColor : AppTheme().specialTextColor,
+            ),
             onSelected: (bool selected) {
               if (!passiveMode) {
                 if (selected) {

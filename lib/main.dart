@@ -59,7 +59,7 @@ class MyApp extends StatelessWidget {
   static ThemeData getAppThemeData() {
     return ThemeData(
       dividerColor: AppTheme().focusColor, // Settings page dividers
-      disabledColor: AppTheme().normalTextColor.withValues(alpha: 0.38), // Disabled control text color
+      disabledColor: AppTheme().specialTextColor, // Disabled control text color
       dividerTheme: const DividerThemeData(
         color: Colors.transparent, // ugly divider that cuts off the selection in scroll picker (settings page)
       ),
@@ -105,7 +105,12 @@ class MyApp extends StatelessWidget {
       
       appBarTheme: AppBarTheme(
         backgroundColor: AppTheme().appBarColor,
-        foregroundColor: AppTheme().normalTextColor,
+        foregroundColor: AppTheme().appBarTextColor,
+        titleTextStyle: TextStyle(
+          color: AppTheme().appBarTextColor,
+          fontSize: 22,
+          fontWeight: FontWeight.bold
+        )
       ),
 
       dialogTheme: DialogTheme(
@@ -113,12 +118,12 @@ class MyApp extends StatelessWidget {
       ).data,
 
       buttonTheme: ButtonThemeData(
-        buttonColor: AppTheme().buttonBackColor,
+        buttonColor: AppTheme().focusColor,
       ),
       textButtonTheme: TextButtonThemeData(
         // Buttons shown in popups of Settings page
         style: ButtonStyle(
-          backgroundColor:WidgetStatePropertyAll(AppTheme().buttonBackColor),
+          backgroundColor:WidgetStatePropertyAll(AppTheme().focusColor),
           textStyle: WidgetStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
         ),
       ),
@@ -139,6 +144,12 @@ class MyApp extends StatelessWidget {
         titleLarge: TextStyle(color: AppTheme().normalTextColor), // app header text
       ),
 
+      textSelectionTheme: TextSelectionThemeData(
+        cursorColor: AppTheme().focusColor,
+        selectionColor: AppTheme().focusColor,
+        selectionHandleColor: AppTheme().focusColor,
+      ),
+
       inputDecorationTheme: InputDecorationTheme( // Input text fields (TextFormField)
         labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
         iconColor: AppTheme().normalTextColor, // style for icons
@@ -154,10 +165,10 @@ class MyApp extends StatelessWidget {
           borderSide: BorderSide(color: AppTheme().normalTextColor), // underline color for TextFormField
         ),
         focusedBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme().successColor), // underline color for TextFormField
+          borderSide: BorderSide(color: AppTheme().focusColor), // underline color for TextFormField
         ), // underline color for TextFormField
       ),
-      
+
       menuTheme:MenuBarThemeData( // Menu theme (and DropDownMenu)
         style: MenuStyle(
           backgroundColor: WidgetStatePropertyAll(AppTheme().background1Color),

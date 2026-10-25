@@ -307,6 +307,7 @@ class SettingsWidgetHelper {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: DropdownMenu<String>(
         key: UniqueKey(),
+        requestFocusOnTap: false,
         initialSelection: options.contains(initialValue) ? initialValue as String : null,
         enabled: enabled,
         expandedInsets: EdgeInsets.zero,
@@ -319,37 +320,6 @@ class SettingsWidgetHelper {
           onChanged(value);
         },
       ),
-    );
-  }
-
-static Widget createListPickerField_(
-    /// Creates a list picker with the given title, list of values, initial value, and onChanged callback.
-    /// It allows the user to select a value from a list of options.
-    /// The field can be enabled or disabled.
-    String title,
-    List values,
-    dynamic initialValue,
-    void Function(String) onChanged,
-    { bool enabled = true}
-  ) {
-    final List<String> options = values.cast<String>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: DropdownButtonFormField<String>(
-        key: UniqueKey(),
-        initialValue: options.contains(initialValue) ? initialValue as String : null,
-        isExpanded: true,
-        decoration: InputDecoration(labelText: title),
-        items: options
-            .map((value) => DropdownMenuItem<String>(value: value, child: Text(value)))
-            .toList(),
-        onChanged: enabled
-            ? (value) {
-                if (value == null) return;
-                onChanged(value);
-              }
-            : null,
-        ),
     );
   }
 }

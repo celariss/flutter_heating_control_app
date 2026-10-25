@@ -21,6 +21,7 @@ class AppTheme {
     normalTextColor = string2Color(data['normalTextColor']);
     specialTextColor = string2Color(data['specialTextColor']);
     appBarColor = string2Color(data['appBarColor']);
+    appBarTextColor = string2Color(data['appBarTextColor']);
     focusColor = string2Color(data['focusColor']);
     heaterWidgetTrackColor = string2Color(data['heaterWidgetTrackColor']);
     heaterWidgetNoScheduleStateColor = string2Color(data['heaterWidgetNoScheduleStateColor']);
@@ -28,10 +29,7 @@ class AppTheme {
     heaterWidgetManuelStateColor = string2Color(data['heaterWidgetManuelStateColor']);
     heaterWidgetPendingStateColor = string2Color(data['heaterWidgetPendingStateColor']);
     heaterWidgetTitleColor = string2Color(data['heaterWidgetTitleColor']);
-    buttonBackColor = string2Color(data['buttonBackColor']);
     buttonTextColor = string2Color(data['buttonTextColor']);
-    selectedColor = string2Color(data['selectedColor']);
-    notSelectedColor = string2Color(data['notSelectedColor']);
     warningColor = string2Color(data['warningColor']);
     errorColor = string2Color(data['errorColor']);
     successColor = string2Color(data['successColor']);
@@ -62,6 +60,7 @@ class AppTheme {
       'normalTextColor':color2String(normalTextColor),
       'specialTextColor':color2String(specialTextColor),
       'appBarColor':color2String(appBarColor),
+      'appBarTextColor':color2String(appBarTextColor),
       'focusColor':color2String(focusColor),
       'heaterWidgetTrackColor':color2String(heaterWidgetTrackColor),
       'heaterWidgetNoScheduleStateColor':color2String(heaterWidgetNoScheduleStateColor),
@@ -69,10 +68,7 @@ class AppTheme {
       'heaterWidgetManuelStateColor':color2String(heaterWidgetManuelStateColor),
       'heaterWidgetPendingStateColor':color2String(heaterWidgetPendingStateColor),
       'heaterWidgetTitleColor':color2String(heaterWidgetTitleColor),
-      'buttonBackColor':color2String(buttonBackColor),
       'buttonTextColor':color2String(buttonTextColor),
-      'selectedColor':color2String(selectedColor),
-      'notSelectedColor':color2String(notSelectedColor),
       'warningColor':color2String(warningColor),
       'errorColor':color2String(errorColor),
       'successColor':color2String(successColor),
@@ -94,6 +90,8 @@ class AppTheme {
 
   Color appBarColor = Colors.indigo.shade800;
 
+  Color appBarTextColor = Colors.white;
+
   // Color for :
   //  - Special text
   Color focusColor = Colors.blue.shade900;
@@ -111,13 +109,7 @@ class AppTheme {
   Color heaterWidgetTitleColor = Colors.purple.shade800;
 
   /////////////////////////////////////////////////////////
-  Color buttonBackColor = Colors.blue.shade900;
-
   Color buttonTextColor = Colors.white;
-
-  Color selectedColor = Colors.lightGreen.shade600;
-
-  Color notSelectedColor = Colors.grey.shade400;
 
   Color warningColor = Colors.orange.shade600;
 

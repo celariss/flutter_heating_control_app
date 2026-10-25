@@ -47,7 +47,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
           // Create global button that adds a new timeslot
           Common.createFloatingButton(
               size: 55,
-              icon: const Icon(Icons.add, color: Colors.white),
+              icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
               onPressed: () {
                 List timeslots = timeslotSetData[widget.tsKey];
                 Map lastTimeslot = timeslots[timeslots.length - 1];

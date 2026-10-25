@@ -180,7 +180,8 @@ class ScheduleItem extends StatelessWidget {
 
   Widget _buildDeviceChip(String deviceName) {
     return Common.wrapChip(Chip(
-      backgroundColor: AppTheme().selectedColor,
+      backgroundColor: AppTheme().background2Color,
+      labelStyle: TextStyle(color: AppTheme().specialTextColor),
       elevation: AppTheme().defaultElevation,
       //showCheckmark: false,
       label: Text(deviceName),

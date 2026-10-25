@@ -172,7 +172,6 @@ class _HomePage extends State<HomePage> {
               child: Container(
                 decoration: BoxDecoration(
                   color: AppTheme().background2Color,
-                  backgroundBlendMode: BlendMode.difference,
                   border: Border.all(),
                   borderRadius: const BorderRadius.all(Radius.circular(8.0))),
                 child:SelectableList<String, String?>(
