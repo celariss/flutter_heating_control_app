@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
-import 'package:selectable_list/selectable_list.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
 import '../../common/themenotifier.dart';
 import '../../utils/localizations.dart';
+import '../../utils/selectable_list.dart';
 import 'settingspage.dart';
 import 'thermostat.dart';
 
@@ -171,21 +171,28 @@ class _HomePage extends State<HomePage> {
               removeBottom: true,
               child: Container(
                 decoration: BoxDecoration(
-                  color: AppTheme().background2Color,
-                  border: Border.all(),
+                  border: Border.all(color: AppTheme().specialTextColor, width: 2),
                   borderRadius: const BorderRadius.all(Radius.circular(8.0))),
-                child:SelectableList<String, String?>(
+                child: SelectableList<String, String?>(
                   key: UniqueKey(),
                   items: schedulesList,
-                  itemBuilder: (context, schedule, selected, onTap) => Column(children: [
+                  itemBuilder: (context, String schedule, bool selected, bool expanded, onTap) => Column(children: [
                     ListTile(
                         visualDensity: VisualDensity.compact,
-                        title: (schedule == selectedScheduleName)
+                        title: (expanded && (schedule == selectedScheduleName)) // Selected item ?
                             ? Text(schedule,
-                                style:
-                                    TextStyle(fontWeight: FontWeight.bold, color: AppTheme().normalTextColor, fontSize: 16))
-                            : Text(schedule, style: const TextStyle(fontWeight: FontWeight.normal, fontSize: 16)),
-                        shape: (schedule == selectedScheduleName)
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme().focusColor,
+                                  fontSize: 16)
+                                )
+                            : Text(schedule,
+                                style: TextStyle(
+                                  fontWeight: expanded ? FontWeight.normal : FontWeight.bold,
+                                  color: AppTheme().normalTextColor,
+                                  fontSize: 16)
+                                ),
+                        shape: (expanded && schedule == selectedScheduleName)
                             ? RoundedRectangleBorder(
                                 side: BorderSide(color: AppTheme().focusColor, width: 3),
                                 borderRadius: BorderRadius.circular(8),
