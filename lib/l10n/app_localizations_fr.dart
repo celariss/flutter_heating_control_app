@@ -243,7 +243,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsEditDevicesList => 'Editer la liste des vannes';
 
   @override
+  String get settingsEditThemes => 'Editer les thèmes';
+
+  @override
   String get settingsTheme => 'Thème';
+
+  @override
+  String themesEditorDeleteConfirmation(String name) {
+    return 'Voulez-vous supprimer le thème \'$name\' ?';
+  }
 
   @override
   String get settingsThermostatRes => 'Résolution thermostats';

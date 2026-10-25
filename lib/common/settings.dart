@@ -5,6 +5,7 @@
 /// License: BSD 3-Clause
 library;
 
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/utils/localizations.dart';
 import '../utils/configuration.dart';
@@ -35,7 +36,7 @@ class Settings {
       MQTT = MQTTSettings.fromMap(mqtt);
       await MQTT.readFromSharedPrefs();
       MQTT.saveToSharedPrefs();
-      
+
       temperatureSetDefaultColor = _getParamInt(config, 'temperatureSetDefaultColor', 0xFF000000);
       defaultSetpoint = _getParamDouble(config, 'defaultSetpoint', 19.0);
       minSetpoint = _getParamInt(config, 'minSetpoint', 7);
@@ -48,7 +49,14 @@ class Settings {
         locale = tryParseLocale(strLocale);
       }
       themeName = _getParam(config, 'themeName', '');
-      _themes = _getParam(config, 'themes', []);
+      final savedThemes = prefs!.getString('themes');
+      if (savedThemes != null) {
+        _themes = (jsonDecode(savedThemes) as List)
+            .map((theme) => Map<String, dynamic>.from(theme as Map))
+            .toList();
+      } else {
+        _themes = _getParam(config, 'themes', []);
+      }
       setTheme(themeName);
       _initDone = true;
     }
@@ -67,6 +75,62 @@ class Settings {
         break;
       }
     }
+  }
+
+  Map<String, dynamic>? getThemeData(String name) {
+    for (final theme in _themes) {
+      if (theme is Map && theme['name'] == name) {
+        return Map<String, dynamic>.from(theme);
+      }
+    }
+    return null;
+  }
+
+  bool createTheme(String name, {String? templateName}) {
+    final normalizedName = name.trim();
+    if (normalizedName.isEmpty || getThemesList().contains(normalizedName)) {
+      return false;
+    }
+
+    final source = getThemeData(templateName ?? themeName) ??
+        (_themes.isNotEmpty
+            ? Map<String, dynamic>.from(_themes.first)
+            : AppTheme().saveToMap());
+    source['name'] = normalizedName;
+    _themes.add(source);
+    _saveThemes();
+    return true;
+  }
+
+  bool updateThemeColor(String name, String colorName, Color color) {
+    final themes = _themes.cast<Map>().where((item) => item['name'] == name);
+    if (themes.isEmpty || !AppTheme().saveToMap().containsKey(colorName)) {
+      return false;
+    }
+
+    final selectedTheme = themes.first;
+    selectedTheme[colorName] = AppTheme.color2String(color);
+    if (themeName == name) {
+      AppTheme().loadFromMap(selectedTheme);
+    }
+    _saveThemes();
+    return true;
+  }
+
+  bool deleteTheme(String name) {
+    if (_themes.length <= 1) {
+      return false;
+    }
+    _themes.removeWhere((theme) => theme is Map && theme['name'] == name);
+    _saveThemes();
+    if (themeName == name) {
+      setTheme(_themes.first['name'] as String);
+    }
+    return true;
+  }
+
+  void _saveThemes() {
+    prefs!.setString('themes', jsonEncode(_themes));
   }
 
   void setMqttUrl(String value) {

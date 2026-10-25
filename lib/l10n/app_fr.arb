@@ -175,7 +175,12 @@
     "settingsLanguage": "Langue",
     "settingsSystemLanguage": "Système",
     "settingsEditDevicesList": "Editer la liste des vannes",
+    "settingsEditThemes": "Editer les thèmes",
     "settingsTheme": "Thème",
+    "themesEditorDeleteConfirmation": "Voulez-vous supprimer le thème '{name}' ?",
+    "@themesEditorDeleteConfirmation": {
+      "placeholders": { "name": { "type": "String" } }
+    },
     "settingsThermostatRes": "Résolution thermostats",
     "settingsGroupManualReset": "Gestion Consigne Manuelle (Vanne)",
     "settingsManualResetMode": "Mode de retour en mode auto",

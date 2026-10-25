@@ -242,7 +242,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsEditDevicesList => 'Edit devices list';
 
   @override
+  String get settingsEditThemes => 'Edit themes';
+
+  @override
   String get settingsTheme => 'Theme';
+
+  @override
+  String themesEditorDeleteConfirmation(String name) {
+    return 'Do you want to delete the theme \'$name\'?';
+  }
 
   @override
   String get settingsThermostatRes => 'thermostats resolution';

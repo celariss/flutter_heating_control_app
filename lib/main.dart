@@ -8,6 +8,7 @@ library;
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
+import 'package:heating_control_app/widgets/homepage/themeseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
@@ -214,6 +215,7 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
       '/': const HomePage(),
       SettingsPage.route: const SettingsPage(),
       DevicesEditorPage.route: const DevicesEditorPage(),
+      ThemesEditorPage.route: const ThemesEditorPage(),
     },
     1: {
       '/': const TemperatureSetsPage(),

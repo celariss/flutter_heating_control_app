@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
 import 'package:heating_control_app/main.dart';
+import 'package:heating_control_app/widgets/homepage/themeseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
@@ -27,6 +28,7 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPage extends State<SettingsPage> {
+  //final _formKey = GlobalKey<FormState>();
   final _scrollController = ScrollController();
   Size size = Size.zero;
   ThemeNotifier ?themeNotifier;
@@ -38,7 +40,7 @@ class _SettingsPage extends State<SettingsPage> {
   int mqttPort = Settings().MQTT.port;
   bool mqttSecure = Settings().MQTT.secure;
   String themeName = Settings().themeName;
-  List<String> themesList = Settings().getThemesList();
+  List<String> themesList = [];
   String manualResetMode = '';
   int manualResetDuration = 4;
 
@@ -148,6 +150,7 @@ class _SettingsPage extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     themeNotifier = Provider.of<ThemeNotifier>(context);
+    themesList = Settings().getThemesList();
     return PopScope(
       // Called when user click on back button of the navigation bar
       onPopInvokedWithResult: (bool didPop, dynamic) {
@@ -244,6 +247,25 @@ class _SettingsPage extends State<SettingsPage> {
     return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupMain,
       <Widget>[
+         SettingsWidgetHelper.createBtnField(
+          wcLocalizations().settingsEditThemes,
+          Icons.edit_note,
+          () async {
+            NavbarNotifier.hideBottomNavBar = false;
+            await Common.navBarNavigate(context, ThemesEditorPage.route, isRootNavigator: false);
+            if (!mounted) return;
+            setState(() {
+              themesList = Settings().getThemesList();
+              if (!themesList.contains(themeName)) {
+                themeName = themesList.contains(Settings().themeName)
+                    ? Settings().themeName
+                    : (themesList.isEmpty ? '' : themesList.first);
+                Settings().setTheme(themeName);
+              }
+              themeNotifier!.refreshAppTheme();
+            });
+          },
+        ),
         SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsTheme, themesList, themeName, (value) {
           themeName = value;
           Settings().setTheme(themeName);

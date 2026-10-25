@@ -458,11 +458,23 @@ abstract class AppLocalizations {
   /// **'Edit devices list'**
   String get settingsEditDevicesList;
 
+  /// No description provided for @settingsEditThemes.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit themes'**
+  String get settingsEditThemes;
+
   /// No description provided for @settingsTheme.
   ///
   /// In en, this message translates to:
   /// **'Theme'**
   String get settingsTheme;
+
+  /// No description provided for @themesEditorDeleteConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to delete the theme \'{name}\'?'**
+  String themesEditorDeleteConfirmation(String name);
 
   /// No description provided for @settingsThermostatRes.
   ///

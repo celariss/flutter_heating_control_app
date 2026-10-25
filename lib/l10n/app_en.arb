@@ -175,7 +175,12 @@
     "settingsLanguage": "Language",
     "settingsSystemLanguage": "System",
     "settingsEditDevicesList": "Edit devices list",
+    "settingsEditThemes": "Edit themes",
     "settingsTheme": "Theme",
+    "themesEditorDeleteConfirmation": "Do you want to delete the theme '{name}'?",
+    "@themesEditorDeleteConfirmation": {
+      "placeholders": { "name": { "type": "String" } }
+    },
     "settingsThermostatRes": "thermostats resolution",
     "settingsGroupManualReset": "Manual valve setpoint handling",
     "settingsManualResetMode": "Auto mode back mode",

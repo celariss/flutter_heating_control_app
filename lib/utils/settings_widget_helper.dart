@@ -112,7 +112,8 @@ class SettingsWidgetHelper {
       String? Function(String?)? validator}
   ) {
     return TextFormField(
-      //key: key,
+      //key: UniqueKey(),
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       enabled: enabled,
       autovalidateMode: AutovalidateMode.onUserInteraction,
       initialValue: initialValue,
@@ -156,7 +157,8 @@ class SettingsWidgetHelper {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
         return TextFormField(
-          //key: key,
+          //key: UniqueKey(),
+          onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
           enabled: enabled,
           obscureText: obscureMqttPassword,
           autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -212,7 +214,8 @@ class SettingsWidgetHelper {
       String? Function(int)? validator}
   ) {
     return TextFormField(
-      //key: GlobalKey<FormState>(),
+      //key: UniqueKey(),
+      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
       autovalidateMode: AutovalidateMode.onUserInteraction,
       enabled: enabled,
       initialValue: initialValue.toString(),
@@ -267,7 +270,7 @@ class SettingsWidgetHelper {
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
         return ListTile(
-          //key: key,
+          //key: UniqueKey(),
           enabled: enabled,
           contentPadding: EdgeInsets.zero,
           title: Text(label),
@@ -306,7 +309,7 @@ class SettingsWidgetHelper {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: DropdownMenu<String>(
-        key: UniqueKey(),
+        //key: UniqueKey(),
         requestFocusOnTap: false,
         initialSelection: options.contains(initialValue) ? initialValue as String : null,
         enabled: enabled,
