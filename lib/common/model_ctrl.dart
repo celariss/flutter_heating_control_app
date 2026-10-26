@@ -115,6 +115,7 @@ class ModelCtrl {
   // true if app is currently in foreground and having input focus
   bool _isAppActive = true;
   String serverVersion = '-';
+  String clientID = "FlutterClient#${Random().nextInt(100000).toString()}";
 
   static final ModelCtrl _instance = ModelCtrl._internal();
   ModelCtrl._internal();
@@ -125,7 +126,7 @@ class ModelCtrl {
   void connect() {
     if (_mqttClient==null) {
       _mqttClient ??= MQTTClient(Settings().MQTT.brokerAddress, Settings().MQTT.port,
-          ssl: Settings().MQTT.secure, user: Settings().MQTT.user, password: Settings().MQTT.password);
+          ssl: Settings().MQTT.secure, user: Settings().MQTT.user, password: Settings().MQTT.password, clientID: clientID);
       _mqttClient!.onConnected = _onMqttConnectedCallback;
       _mqttClient!.onDisconnected = _onMqttDisconnectedCallback;
       _mqttClient!.onMessageString = _onMqttMessageStringCallback;

@@ -72,8 +72,10 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
         height: 180,
         child: DecimalPicker.createDecimalPicker(widget.temperature, theme.specialTextColor, theme.focusColor, widget.min, widget.max, onValueChanged),
       ),
-      actions: [
-        TextButton(
+      actionsPadding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
+      actions: [Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: [ TextButton(
           onPressed: () => Navigator.of(context).pop(),
           child: Text(wcLocalizations().cancelAction, style: TextStyle(color: theme.buttonTextColor)),
         ),
@@ -83,6 +85,8 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
           },
           child: Text(wcLocalizations().validateAction, style: TextStyle(color: theme.buttonTextColor)),
         ),
+      ]
+      ),
       ],
     );
   }

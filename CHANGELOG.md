@@ -1,3 +1,12 @@
+## V1.1.0 (2026-10-26) :
+- updated to flutter 3.47.8
+- **New Feature** : Added ThemesEditorPage in order to customize themes
+- removed dependency "flutter\_picker" + added temperature\_picker.dart updated to use only standard widgets
+- Settings page rebuilt and SettingsWidgetHelper created
+- colors bug fix + settings page bug fix
+- added utility class DecimalPicker
+- improved active schedule name rendering on home page + created class SelectableList
+
 ## V1.0.3 (2026-09-28) :
 - updated to flutter 3.47.5
 - removed dependency : card_settings

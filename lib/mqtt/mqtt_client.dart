@@ -13,7 +13,6 @@ import 'dart:io';
 import 'package:mqtt_client/mqtt_client.dart';
 
 import 'mqtt_stub.dart' if (dart.library.js) 'mqtt_web.dart' if (dart.library.io) 'mqtt_io.dart';
-import 'package:mqtt_client/mqtt_server_client.dart';
 
 class MQTTClient {
   MqttClient client;
