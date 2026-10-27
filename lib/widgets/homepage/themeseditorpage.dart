@@ -165,7 +165,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Common.createCircleIconButton(Icons.add, onPressed: _createTheme),
+                  Common.createIconButton(Icons.add, onPressed: _createTheme),
                 ],
               ),
             ),
@@ -192,7 +192,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
                       ),
                   ),
                   const SizedBox(width: 8),
-                  Common.createCircleIconButton(
+                  Common.createIconButton(
                     Icons.delete_outline,
                     onPressed: () => {
                       if (selectedTheme != null && _themes.length > 1) {

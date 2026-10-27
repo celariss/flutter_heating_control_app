@@ -70,7 +70,7 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
       contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       content: SizedBox(
         height: 180,
-        child: DecimalPicker.createDecimalPicker(widget.temperature, theme.normalTextColor, theme.focusColor, widget.min, widget.max, onValueChanged),
+        child: DecimalPicker.createDecimalPicker(widget.temperature, theme.normalTextColor, theme.focusColor, widget.min, widget.max, onValueChanged, unit:'°'),
       ),
       actionsPadding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
       actions: [

@@ -141,7 +141,7 @@ class _HomePage extends State<HomePage> {
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().homePageTitle, actions:[
-        Common.createCircleIconButton(
+        Common.createIconButton(
             Icons.settings,
             //iconSize: 50,
             iconColor: AppTheme().normalTextColor,

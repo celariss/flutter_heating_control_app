@@ -285,8 +285,8 @@ class Common {
     );
   }
 
-  static Widget createCircleIcon({required Icon icon, required double size, required Color backColor}) {
-    return Container(
+  static Widget createCircleIcon({required Icon icon, required double size, required Color backColor, String? tooltip}) {
+    final Widget widget = Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -295,15 +295,24 @@ class Common {
       ),
       child: icon,
     );
+    
+    if (tooltip == null || tooltip.isEmpty) return widget;
+    return Tooltip(message: tooltip, child: widget);
   }
 
   /// Floating buttons appears over the app bar to trigger an global action
   static Widget createFloatingButton(
-      {required Widget icon, double size = 0, Color? backColor, required void Function() onPressed}) {
+      {required Widget icon,
+      double size = 0,
+      Color? backColor,
+      required void Function() onPressed,
+      String? tooltip,}
+  ) {
     Widget button = FloatingActionButton(
       backgroundColor: backColor ?? AppTheme().focusColor,
       elevation: AppTheme().defaultElevation,
       onPressed: onPressed,
+      tooltip: tooltip,
       child: icon,
     );
 
@@ -315,8 +324,12 @@ class Common {
     return Container(width: size, height: size, padding: const EdgeInsets.all(5), child: button);
   }
 
-  static Widget createTextButton(String text, {required void Function()? onPressed}) {
-    return ElevatedButton(
+  static Widget createTextButton(
+    String text,
+   {required void Function()? onPressed,
+    String? tooltip,}
+  ){
+    final button = ElevatedButton(
       style: ButtonStyle(
           backgroundColor: WidgetStateProperty.all(AppTheme().focusColor),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
@@ -332,22 +345,45 @@ class Common {
         ),
       ),
     );
+
+    if (tooltip == null || tooltip.isEmpty) return button;
+    return Tooltip(message: tooltip, child: button);
   }
 
-  static ElevatedButton createCircleIconButton(IconData iconData,
-      {required void Function() onPressed, Color? iconColor, Color? backColor, double? iconSize, OutlinedBorder? shape, bool? enabled}) {
-    return ElevatedButton(
-      onPressed: (enabled??true) ? onPressed : null,
-      style: ElevatedButton.styleFrom(
-        shape: shape ?? const CircleBorder(),
-        elevation: AppTheme().defaultElevation,
+  static Widget createIconButton(
+    IconData iconData,
+   {required void Function() onPressed,
+    Color? iconColor,
+    Color? backColor,
+    double? iconSize,
+    OutlinedBorder shape = const CircleBorder(),
+    bool? enabled,
+    String? tooltip,}
+  ) {
+    final Color buttonBackgroundColor = backColor ?? AppTheme().focusColor;
+    final Color overlayColor = buttonBackgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
+    final button = ElevatedButton(
+      onPressed: (enabled ?? true) ? onPressed : null,
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(shape),
+        elevation: WidgetStatePropertyAll(AppTheme().defaultElevation),
         visualDensity: VisualDensity.compact,
-        backgroundColor: backColor ?? AppTheme().focusColor,
+        backgroundColor: WidgetStatePropertyAll(buttonBackgroundColor),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.pressed)) return overlayColor.withValues(alpha: 0.2);
+          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+            return overlayColor.withValues(alpha: 0.12);
+          }
+          return null;
+        }),
       ),
       child: Icon(iconData, color: iconColor ?? AppTheme().buttonTextColor),
     );
-  }
 
+    if (tooltip == null || tooltip.isEmpty) return button;
+    return Tooltip(message: tooltip, child: button);
+  }
   /// Builds and returns a [PopupMenuButton] that contains all items given in [menuItems].
   static Widget createPopupMenu(List<MyMenuItem> menuItems,
       {required void Function(dynamic) onSelected, void Function()? onOpened, Color? iconColor}) {

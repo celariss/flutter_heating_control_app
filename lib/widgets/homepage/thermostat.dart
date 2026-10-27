@@ -38,7 +38,7 @@ class Thermostat {
         line.add(const Spacer());
         if (showResetButton) {
           line.add(Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Common.createCircleIconButton(Icons.replay, iconSize: 10, onPressed: () {
+            Common.createIconButton(Icons.replay, iconSize: 10, onPressed: () {
               onSetpoint(device.name, activeSetpoint);
             }),
           ]));

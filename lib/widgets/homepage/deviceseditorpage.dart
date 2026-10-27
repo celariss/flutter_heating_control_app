@@ -226,7 +226,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
           if (showDeleteBtn==true) {
             columnChildren += [
               const SizedBox(height: 20,),
-              Common.createCircleIconButton(Icons.delete, backColor:AppTheme().errorColor, onPressed: () async {
+              Common.createIconButton(Icons.delete, backColor:AppTheme().errorColor, onPressed: () async {
                 bool result =
                 await Common.showWarningDialog(context, wcLocalizations().removeConfirmation("eqpt", deviceName));
                 if (result) {

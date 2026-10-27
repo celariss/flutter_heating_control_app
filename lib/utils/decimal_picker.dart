@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class DecimalPicker {
   
-  static Widget createDecimalPicker(double initialValue, Color itemColor, Color selectedItemColor, int min, int max, void Function(double) onChanged) {
+  static Widget createDecimalPicker(double initialValue, Color itemColor, Color selectedItemColor, int min, int max, void Function(double) onChanged, {String unit=''}) {
     final TextStyle itemStyle = TextStyle(color: itemColor, fontSize: 18);
     final TextStyle selectedItemStyle = TextStyle(color: selectedItemColor, fontSize: 22, fontWeight: FontWeight.bold);
     final List<int> wholeValues = List<int>.generate(max - min + 1, (index) => min + index);
@@ -18,39 +18,56 @@ class DecimalPicker {
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('-', style: selectedItemStyle),
             Expanded(
-              child: DecimalPicker._buildWheel(
-                controller: wholeController,
-                selectedItem: wholeValue - min,
-                itemCount: wholeValues.length,
-                itemBuilder: (index) => wholeValues[index].toString(),
-                itemStyle: itemStyle,
-                selectedItemStyle: selectedItemStyle,
-                onSelectedItemChanged: (index) => {
-                  localSetState(() => wholeValue = wholeValues[index]),
-                  onChanged(wholeValue + decimalValue / 10)
-                },
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  Row(
+                    children: [
+                      Expanded(
+                        child: DecimalPicker._buildWheel(
+                          controller: wholeController,
+                          selectedItem: wholeValue - min,
+                          itemCount: wholeValues.length,
+                          itemBuilder: (index) => wholeValues[index].toString(),
+                          itemStyle: itemStyle,
+                          selectedItemStyle: selectedItemStyle,
+                          onSelectedItemChanged: (index) => {
+                            localSetState(() => wholeValue = wholeValues[index]),
+                            onChanged(wholeValue + decimalValue / 10)
+                          },
+                        ),
+                      ),
+                      Text(unit, style: selectedItemStyle.apply(fontSizeFactor: 1.2), textAlign: TextAlign.left,),
+                      SizedBox(width:20),
+                      Text(',', style: selectedItemStyle.apply(fontSizeFactor: 1.2), textAlign: TextAlign.right,),
+                      Expanded(
+                        child: DecimalPicker._buildWheel(
+                          controller: decimalController,
+                          selectedItem: decimalValue,
+                          itemCount: 10,
+                          itemBuilder: (index) => index.toString(),
+                          itemStyle: itemStyle,
+                          selectedItemStyle: selectedItemStyle,
+                          onSelectedItemChanged: (index) => {
+                            localSetState(() => decimalValue = index),
+                            onChanged(wholeValue + decimalValue / 10)
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  IgnorePointer(
+                    child: Container(
+                      height: 45,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: selectedItemColor, width: 1.5),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-            ),
-            Text('-', style: selectedItemStyle),
-            Expanded(
-              child: DecimalPicker._buildWheel(
-                controller: decimalController,
-                selectedItem: decimalValue,
-                itemCount: 10,
-                itemBuilder: (index) => index.toString(),
-                itemStyle: itemStyle,
-                selectedItemStyle: selectedItemStyle,
-                onSelectedItemChanged: (index) => {
-                  localSetState(() => decimalValue = index),
-                  onChanged(wholeValue + decimalValue / 10)
-                }
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 4),
-              child: Text('-', style: selectedItemStyle),
             ),
           ],
         );

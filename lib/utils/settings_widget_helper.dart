@@ -107,17 +107,18 @@ class SettingsWidgetHelper {
     );
   }
 
-  static Widget createBtnField(String text, IconData icon, VoidCallback onPressed, {bool enabled=true}) {
+  static Widget createBtnField(String text, IconData icon, VoidCallback onPressed, {bool enabled=true, String ?tooltip}) {
     /// Creates a button field with the given text, icon, and onPressed callback.
     return SettingsWidgetHelper.createTextField(
       text,
       enabled: enabled,
-      suffixWidget: Common.createCircleIconButton(
+      suffixWidget: Common.createIconButton(
         icon,
         iconSize: 50,
         enabled: enabled,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
         onPressed: onPressed,
+        tooltip: tooltip,
       ),
     );
   }
