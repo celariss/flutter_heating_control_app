@@ -153,14 +153,14 @@ class MyApp extends StatelessWidget {
 
       inputDecorationTheme: InputDecorationTheme( // Input text fields (TextFormField)
         labelStyle: TextStyle(color: AppTheme().specialTextColor), // style for labels
-        iconColor: AppTheme().normalTextColor, // style for icons
+        iconColor: AppTheme().normalTextColor, // style 
         prefixIconColor: AppTheme().specialTextColor, // style for prefix icons
         suffixIconColor: AppTheme().specialTextColor, // style for suffix icons
         counterStyle: TextStyle(
-          color: Colors.grey[600], // counter text style (max length) in TextFormField
+          color: AppTheme().normalTextColor, // counter text style (max length) in TextFormField
         ),
         disabledBorder: UnderlineInputBorder(
-          borderSide: BorderSide(color: AppTheme().normalTextColor.withValues(alpha: 0.38)), // underline color for TextFormField
+          borderSide: BorderSide(color: AppTheme().normalTextColor.withValues(alpha: 0.20)), // underline color for TextFormField
         ),
         enabledBorder: UnderlineInputBorder(
           borderSide: BorderSide(color: AppTheme().normalTextColor), // underline color for TextFormField

@@ -82,10 +82,7 @@ class ScheduleItem extends StatelessWidget {
                       const SizedBox(height: 8),
                     ]));
                   },
-                  onReorder: (oldIndex, newIndex) {
-                    if (oldIndex < newIndex) {
-                      newIndex -= 1;
-                    }
+                  onReorderItem: (oldIndex, newIndex) {
                     Map item = timeslotsSets.removeAt(oldIndex);
                     timeslotsSets.insert(newIndex, item);
                     ModelCtrl().onScheduleChanged(scheduleName);

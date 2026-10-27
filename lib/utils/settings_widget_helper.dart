@@ -3,67 +3,105 @@ import 'package:heating_control_app/common/common.dart';
 
 class SettingsWidgetHelper {
 
-  static Widget createSection(String title, List<Widget> children, BuildContext context) {
+  static const double padding = 10; // Padding between each field
+  static const double formPadding = 2; // Padding between each form field
+
+  static Widget createSection(String title, List<Widget> children, {Widget ?suffixWidget}) {
     /// Creates a settings section with a title and containinga list of children widgets.
-    return Card(
-      margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.only(bottom: 8),
-              child: Text(title, style: Theme.of(context).textTheme.titleLarge),
+    return Builder(
+      builder: (BuildContext context) {
+        Widget field = Text(title, style: Theme.of(context).textTheme.titleLarge);
+        return Card(
+          margin: const EdgeInsets.fromLTRB(12, 12, 12, 8),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8),
+                  child: suffixWidget==null ? field :
+                    Row(
+                      children: [
+                        field,
+                        Expanded(child: Container()), // Spacer to push the suffix widget to the right
+                        suffixWidget,
+                      ],
+                    ),
+                ),
+                ...children,
+              ],
             ),
-            ...children,
-          ],
-        ),
-      ),
+          ),
+        );
+      }
     );
   }
 
-  static Widget createFieldsGroup(String title, List<Widget> children) {
+  static Widget createFieldsGroup(String title, List<Widget> children, {bool enabled=true}) {
     /// Creates a group of fields with a title and containing a list of children widgets.
     /// The aim is to visually group fields by category within a settings section.
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: InputDecorator(
-        decoration: InputDecoration(
-          labelText: title,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey),
+  
+    return Builder(
+      builder: (BuildContext context) {
+        final inputTheme = Theme.of(context).inputDecorationTheme;
+        Color? themeEnabledColor = Theme.of(context).colorScheme.outline;
+        if (inputTheme.enabledBorder!=null && inputTheme.enabledBorder?.borderSide!=null) {
+          themeEnabledColor = inputTheme.enabledBorder?.borderSide.color;
+        }
+        Color? themedisabledColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.15);
+        if (inputTheme.disabledBorder!=null && inputTheme.disabledBorder?.borderSide!=null) {
+          themedisabledColor = inputTheme.disabledBorder?.borderSide.color;
+        }
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.padding+8),
+          child: InputDecorator(
+            decoration: InputDecoration(
+              labelText: title,
+              enabled: enabled,
+              disabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                borderSide: BorderSide(color: themedisabledColor!, width: 1.5),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(color: themeEnabledColor!, width: 1.5),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 5.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[...children,],
+              ),
+            )
           ),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(8.0),
-            borderSide: const BorderSide(color: Colors.grey, width: 1.5),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.only(top: 5.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[...children,],
-          ),
-        )
-      ),
+        );
+      }
     );
   }
 
-  static Widget createTextField(String text, {bool enabled=true}) {
+  static Widget createTextField(String text, {bool enabled=true, Widget ?suffixWidget}) {
     /// Creates a simple text field with the given text.
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
         ThemeData theme = Theme.of(context);
-        return Padding(
-          padding:  const EdgeInsets.symmetric(vertical: 8),
-          child: Text(
-            text,
-            style: theme.textTheme.titleMedium?.apply(
-              color: enabled ? theme.textTheme.titleMedium?.color : theme.colorScheme.onSurface.withValues(alpha: 0.38)
-            ),
+        Widget field = Text(
+          text,
+          style: theme.textTheme.titleMedium?.apply(
+            color: enabled ? theme.textTheme.titleMedium?.color : theme.colorScheme.onSurface.withValues(alpha: 0.38)
           ),
+        );
+        return Padding(
+          padding:  const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.padding),
+          child: suffixWidget==null ? field :
+            Row(
+              children: [
+                field,
+                Expanded(child: Container()), // Spacer to push the button to the right
+                suffixWidget,
+              ]
+            ),
         );
       }
     );
@@ -71,31 +109,16 @@ class SettingsWidgetHelper {
 
   static Widget createBtnField(String text, IconData icon, VoidCallback onPressed, {bool enabled=true}) {
     /// Creates a button field with the given text, icon, and onPressed callback.
-    return StatefulBuilder(
-      builder: (BuildContext context, StateSetter localSetState) {
-        ThemeData theme = Theme.of(context);
-        return Padding(
-          padding:  const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            children: [
-              Text(
-                text,
-                style: theme.textTheme.titleMedium?.apply(
-                  color: enabled ? theme.textTheme.titleMedium?.color : theme.colorScheme.onSurface.withValues(alpha: 0.38)
-                ),
-              ),
-              Expanded(child: Container()), // Spacer to push the button to the right
-              Common.createCircleIconButton(
-                icon,
-                iconSize: 50,
-                enabled: enabled,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-                onPressed: onPressed,
-              ),
-            ]
-          ),
-        );
-      }
+    return SettingsWidgetHelper.createTextField(
+      text,
+      enabled: enabled,
+      suffixWidget: Common.createCircleIconButton(
+        icon,
+        iconSize: 50,
+        enabled: enabled,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+        onPressed: onPressed,
+      ),
     );
   }
 
@@ -109,33 +132,46 @@ class SettingsWidgetHelper {
     { bool enabled = true,
       bool mandatory = false,
       String? requiredErrorText,
-      String? Function(String?)? validator}
+      String? Function(String?)? validator,
+      Widget ?suffixWidget}
   ) {
-    return TextFormField(
-      //key: UniqueKey(),
-      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      enabled: enabled,
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      initialValue: initialValue,
-      maxLength: 32,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(labelText: label),
-      validator: (value) {
-        String? validationResult;
-        if (mandatory && (value == null || value.isEmpty)) {
-          validationResult = requiredErrorText ?? "This field is required";
-        }
-        else if (value != null && value.isNotEmpty && validator != null) {
-            validationResult = validator(value);
-        }
-        if (validationResult != null) {
-          if (enabled) {
-            onChanged(initialValue); // Reset to initial value if validation fails
+    Widget field = TextFormField(
+        //key: UniqueKey(),
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+        enabled: enabled,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        initialValue: initialValue,
+        maxLength: 32,
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(labelText: label),
+        validator: (value) {
+          String? validationResult;
+          if (mandatory && (value == null || value.isEmpty)) {
+            validationResult = requiredErrorText ?? "This field is required";
           }
-        }
-        return validationResult;
-      },
-      onChanged: (value) => onChanged(value),
+          else if (value != null && value.isNotEmpty && validator != null) {
+              validationResult = validator(value);
+          }
+          if (validationResult != null) {
+            if (enabled) {
+              onChanged(initialValue); // Reset to initial value if validation fails
+            }
+          }
+          return validationResult;
+        },
+        onChanged: (value) => onChanged(value),
+      );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.formPadding),
+      child: suffixWidget==null ? field :
+        Row(
+          children: [
+            Expanded(child:field),
+            const SizedBox(width: 10),
+            suffixWidget,
+          ]
+        ),
     );
   }
 
@@ -151,49 +187,62 @@ class SettingsWidgetHelper {
       bool mandatory = false,
       String? requiredErrorText,
       String? showHideTooltip,
-      String? Function(String?)? validator}
+      String? Function(String?)? validator,
+      Widget ?suffixWidget}
   ) {
-    bool obscureMqttPassword = true; // Local state to control
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
-        return TextFormField(
-          //key: UniqueKey(),
-          onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-          enabled: enabled,
-          obscureText: obscureMqttPassword,
-          autovalidateMode: AutovalidateMode.onUserInteraction,
-          initialValue: initialValue,
-          maxLength: 32,
-          textInputAction: TextInputAction.next,
-          decoration: InputDecoration(
-            labelText: label,
-            prefixIcon: const Icon(Icons.lock),
-            suffixIcon: IconButton(
-              tooltip: showHideTooltip ?? "Show/hide password",
-              icon: Icon(obscureMqttPassword ? Icons.visibility : Icons.visibility_off),
-              onPressed: () => {
-                localSetState(() {
-                  obscureMqttPassword = !obscureMqttPassword;
-                })
-              },
+        bool obscureMqttPassword = true; // Local state to control
+        Widget field = TextFormField(
+                //key: UniqueKey(),
+                onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+                enabled: enabled,
+                obscureText: obscureMqttPassword,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                initialValue: initialValue,
+                maxLength: 32,
+                textInputAction: TextInputAction.next,
+                decoration: InputDecoration(
+                  labelText: label,
+                  prefixIcon: const Icon(Icons.lock),
+                  suffixIcon: IconButton(
+                    tooltip: showHideTooltip ?? "Show/hide password",
+                    icon: Icon(obscureMqttPassword ? Icons.visibility : Icons.visibility_off),
+                    onPressed: () => {
+                      localSetState(() {
+                        obscureMqttPassword = !obscureMqttPassword;
+                      })
+                    },
+                  ),
+                ),
+                validator: (value) {
+                  String? validationResult;
+                  if (mandatory && (value == null || value.isEmpty)) {
+                    validationResult = requiredErrorText ?? "This field is required";
+                  }
+                  else if (value != null && value.isNotEmpty && validator != null) {
+                      validationResult = validator(value);
+                  }
+                  if (validationResult != null) {
+                    if (enabled) {
+                      onChanged(initialValue); // Reset to initial value if validation fails
+                    }
+                  }
+                  return validationResult;
+                },
+                onChanged: (value) => onChanged(value),
+              );
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.formPadding),
+          child: suffixWidget==null ? field :
+            Row(
+              children: [
+                Expanded(child:field),
+                const SizedBox(width: 10),
+                suffixWidget,
+              ]
             ),
-          ),
-          validator: (value) {
-            String? validationResult;
-            if (mandatory && (value == null || value.isEmpty)) {
-              validationResult = requiredErrorText ?? "This field is required";
-            }
-            else if (value != null && value.isNotEmpty && validator != null) {
-                validationResult = validator(value);
-            }
-            if (validationResult != null) {
-              if (enabled) {
-                onChanged(initialValue); // Reset to initial value if validation fails
-              }
-            }
-            return validationResult;
-          },
-          onChanged: (value) => onChanged(value),
         );
       }
     );
@@ -211,46 +260,59 @@ class SettingsWidgetHelper {
       bool mandatory = false,
       String? requiredErrorText,
       String? errorText,
-      String? Function(int)? validator}
+      String? Function(int)? validator,
+      Widget ?suffixWidget}
   ) {
-    return TextFormField(
-      //key: UniqueKey(),
-      onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
-      autovalidateMode: AutovalidateMode.onUserInteraction,
-      enabled: enabled,
-      initialValue: initialValue.toString(),
-      maxLength: 32,
-      keyboardType: TextInputType.number,
-      textInputAction: TextInputAction.next,
-      decoration: InputDecoration(labelText: label),
-      validator: (value) {
-        String? validationResult;
-        if (mandatory && (value == null || value.isEmpty)) {
-          validationResult = requiredErrorText ?? "This field is required";
-        }
-        else if (value != null && value.isNotEmpty) {
+    Widget field = TextFormField(
+        //key: UniqueKey(),
+        onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+        autovalidateMode: AutovalidateMode.onUserInteraction,
+        enabled: enabled,
+        initialValue: initialValue.toString(),
+        maxLength: 32,
+        keyboardType: TextInputType.number,
+        textInputAction: TextInputAction.next,
+        decoration: InputDecoration(labelText: label),
+        validator: (value) {
+          String? validationResult;
+          if (mandatory && (value == null || value.isEmpty)) {
+            validationResult = requiredErrorText ?? "This field is required";
+          }
+          else if (value != null && value.isNotEmpty) {
+            final int? parsedValue = int.tryParse(value);
+            if (parsedValue == null) {
+              validationResult = errorText ?? "Please enter a valid integer";
+            } else if (validator != null) {
+              validationResult = validator(parsedValue);
+            }
+          }
+          if (validationResult != null) {
+            if (enabled) {
+              onChanged(initialValue); // Reset to initial value if validation fails
+            }
+          }
+          return validationResult;
+        },
+        // No need to call setState() here : The field updates its internal state on its own
+        onChanged: (value) {
+          if (enabled == false) return; // Do not call onChanged if the field is disabled
           final int? parsedValue = int.tryParse(value);
-          if (parsedValue == null) {
-            validationResult = errorText ?? "Please enter a valid integer";
-          } else if (validator != null) {
-            validationResult = validator(parsedValue);
+          if (parsedValue != null) {
+            onChanged(parsedValue);
           }
-        }
-        if (validationResult != null) {
-          if (enabled) {
-            onChanged(initialValue); // Reset to initial value if validation fails
-          }
-        }
-        return validationResult;
-      },
-      // No need to call setState() here : The field updates its internal state on its own
-      onChanged: (value) {
-        if (enabled == false) return; // Do not call onChanged if the field is disabled
-        final int? parsedValue = int.tryParse(value);
-        if (parsedValue != null) {
-          onChanged(parsedValue);
-        }
-      },
+        },
+      );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.formPadding),
+      child: suffixWidget==null ? field :
+        Row(
+          children: [
+            Expanded(child:field),
+            const SizedBox(width: 10),
+            suffixWidget,
+          ]
+        ),
     );
   }
 
@@ -269,26 +331,29 @@ class SettingsWidgetHelper {
 
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
-        return ListTile(
-          //key: UniqueKey(),
-          enabled: enabled,
-          contentPadding: EdgeInsets.zero,
-          title: Text(label),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(noText ?? ""),
-              Switch(
-                value: localValue,
-                onChanged: enabled ? (value) {
-                  localSetState(() {
-                    localValue = value; // Force the Switch to change its position visually
-                  });
-                  onChanged(value);
-                } : null,
-              ),
-              Text(yesText ?? ""),
-            ],
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.padding),
+          child: ListTile(
+            //key: UniqueKey(),
+            enabled: enabled,
+            contentPadding: EdgeInsets.zero,
+            title: Text(label),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                Text(noText ?? ""),
+                Switch(
+                  value: localValue,
+                  onChanged: enabled ? (value) {
+                    localSetState(() {
+                      localValue = value; // Force the Switch to change its position visually
+                    });
+                    onChanged(value);
+                  } : null,
+                ),
+                Text(yesText ?? ""),
+              ],
+            ),
           ),
         );
       }
@@ -303,12 +368,11 @@ class SettingsWidgetHelper {
     List values,
     dynamic initialValue,
     void Function(String) onChanged,
-    { bool enabled = true}
+    { bool enabled = true,
+      Widget ?suffixWidget}
   ) {
     final List<String> options = values.cast<String>();
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: DropdownMenu<String>(
+    Widget field = DropdownMenu<String>(
         //key: UniqueKey(),
         requestFocusOnTap: false,
         initialSelection: options.contains(initialValue) ? initialValue as String : null,
@@ -322,7 +386,18 @@ class SettingsWidgetHelper {
           if (value == null) return;
           onChanged(value);
         },
-      ),
+      );
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: SettingsWidgetHelper.padding),
+      child: suffixWidget==null ? field :
+        Row(
+          children: [
+            Expanded(child:field),
+            const SizedBox(width: 10),
+            suffixWidget,
+          ]
+        ),
     );
   }
 }

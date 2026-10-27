@@ -150,22 +150,8 @@
     },
 
     "settingsPageTitle": "Settings",
-    "settingsAppVersion": "Application version : {version}",
-    "@settingsAppVersion": {
-      "placeholders": {
-          "version": {
-          "type": "String"
-          }
-      }
-    },
-    "settingsServerVersion": "Server version : {version}",
-    "@settingsServerVersion": {
-      "placeholders": {
-          "version": {
-          "type": "String"
-          }
-      }
-    },
+    "settingsAppVersion": "Application version",
+    "settingsServerVersion": "Server version",
 
     "settingsErrorMandatoryValue": "value is mandatory",
     "settingsErrorInvalidFormat": "value is invalid",
@@ -226,5 +212,24 @@
     "scheduleParentPrefix": "Inherits from",
 
     "timeslotsFortnightSwitch": "Fortnight mode on/off",
-    "timeslotsErrorNotEmpty": "Some weekdays are still active on this daily timeslots"
+    "timeslotsErrorNotEmpty": "Some weekdays are still active on this daily timeslots",
+
+    "background1Color": "Background #1 (behind)",
+    "background2Color": "Background #2 (middle)",
+    "background3Color": "Background #3 (front)",
+    "normalTextColor": "Standard text",
+    "specialTextColor": "Special text",
+    "appBarColor": "App bar",
+    "appBarTextColor": "App bar text",
+    "focusColor": "Focus/selections",
+    "heaterWidgetTrackColor": "Heater track",
+    "heaterWidgetNoScheduleStateColor": "No active schedule (heater)",
+    "heaterWidgetAutoStateColor": "On schedule mode (heater)",
+    "heaterWidgetManuelStateColor": "Manual mode (heater)",
+    "heaterWidgetPendingStateColor": "Heater in pending state",
+    "heaterWidgetTitleColor": "Heater title",
+    "buttonTextColor": "Button text",
+    "warningColor": "Warning",
+    "errorColor": "Error",
+    "successColor": "Success"
 }

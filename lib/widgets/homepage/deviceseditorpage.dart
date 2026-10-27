@@ -119,11 +119,8 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
             itemCount: devices.length,
             itemBuilder: (BuildContext context, int index) =>
                 deviceTileBuilder(context, devices[orderedDevices[index]]),
-            onReorder: (oldIndex, newIndex) {
+            onReorderItem: (oldIndex, newIndex) {
               setState(() {
-                if (oldIndex < newIndex) {
-                  newIndex -= 1;
-                }
                 if (oldIndex != newIndex) {
                   String item = orderedDevices.removeAt(oldIndex);
                   orderedDevices.insert(newIndex, item);

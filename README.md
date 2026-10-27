@@ -64,8 +64,8 @@ And it depends on following flutter plugins :
 - Heating control App requires [Flutter] to build.
 - Go to https://docs.flutter.dev/get-started/install and follow instructions.
 - I use the following tool chain :
-  - Android Studio : Android Studio Ladybug | 2024.2.1 Patch 3
-  - Flutter : 3.27.1 (very important, do not use a more recent version)
+  - Visual Studio Code (for code edition)
+  - Flutter : see CHANGELOG.md to know which version to install
 To use the correct flutter version, do the following :
     ```sh
     cd <flutter_git_dir>
@@ -83,6 +83,7 @@ To make flutter use the correct version of the JDK, do the following :
 From the repo root folder, type :
     ```sh
     flutter pub get
+    dart run flutter_launcher_icons
     flutter build apk --split-per-abi
     flutter install --use-application-binary=build\app\outputs\flutter-apk\app-arm64-v8a-release.apk
     ```
@@ -96,9 +97,6 @@ From the repo root folder, type :
     ```
     The built exe is located in `.\build\windows\x64\runner\Release\`
 
-## Other
-This README has been written using [Dillinger]
-
 [//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
 
   [heating_control_server]: <https://github.com/celariss/heating_control_server/>
@@ -109,4 +107,3 @@ This README has been written using [Dillinger]
   [flutter_colorpicker]: <https://pub.dev/packages/flutter_colorpicker>
   [flutter_launcher_icons]: <https://pub.dev/packages/flutter_launcher_icons>
   [sleek_circular_slider]: <https://pub.dev/packages/sleek_circular_slider>
-  [dillinger]: <https://dillinger.io/>

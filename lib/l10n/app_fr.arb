@@ -150,22 +150,8 @@
     },
 
     "settingsPageTitle": "Paramètres",
-    "settingsAppVersion": "Version application : {version}",
-    "@settingsAppVersion": {
-      "placeholders": {
-          "version": {
-          "type": "String"
-          }
-      }
-    },
-    "settingsServerVersion": "Version serveur : {version}",
-    "@settingsServerVersion": {
-      "placeholders": {
-          "version": {
-          "type": "String"
-          }
-      }
-    },
+    "settingsAppVersion": "Version application",
+    "settingsServerVersion": "Version serveur",
 
     "settingsErrorMandatoryValue": "Une valeur est obligatoire",
     "settingsErrorInvalidFormat": "la valeur est invalide",
@@ -226,5 +212,24 @@
     "scheduleParentPrefix": "Hérite de",
 
     "timeslotsFortnightSwitch": "Quinzaine on/off",
-    "timeslotsErrorNotEmpty": "Certains jours de la semaine sont encore affectés à cette plage hebdomadaire"
+    "timeslotsErrorNotEmpty": "Certains jours de la semaine sont encore affectés à cette plage hebdomadaire",
+
+    "background1Color": "Fond #1 (derrière)",
+    "background2Color": "Fond #2 (milieu)",
+    "background3Color": "Fond #3 (devant)",
+    "normalTextColor": "Texte standard",
+    "specialTextColor": "Texte special",
+    "appBarColor": "Barre de l'App",
+    "appBarTextColor": "Texte de la barre de l'App",
+    "focusColor": "Focus/sélections",
+    "heaterWidgetTrackColor": "Cercle des vannes",
+    "heaterWidgetNoScheduleStateColor": "Aucun planning actif (vannes)",
+    "heaterWidgetAutoStateColor": "Vannes pilotées par le planning",
+    "heaterWidgetManuelStateColor": "Vannes en mode manuel",
+    "heaterWidgetPendingStateColor": "Vannes en attente de réception",
+    "heaterWidgetTitleColor": "Titre des vannes",
+    "buttonTextColor": "Texte boutons/îcones",
+    "warningColor": "Avertissements",
+    "errorColor": "Erreurs",
+    "successColor": "Succès"
 }

@@ -24,11 +24,8 @@ class _TemperatureSetsState extends State<TemperatureSets> {
         itemCount: widget.temperatureSetsData.length,
         itemBuilder: (BuildContext context, int index) =>
             TemperatureSet.temperatureSetTileBuilder(context, widget.temperatureSetsData[index], widget.scheduleName),
-        onReorder: (oldIndex, newIndex) {
+        onReorderItem: (oldIndex, newIndex) {
           setState(() {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
             if (oldIndex != newIndex) {
               final Map item = widget.temperatureSetsData.removeAt(oldIndex);
               widget.temperatureSetsData.insert(newIndex, item);

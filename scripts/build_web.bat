@@ -1,4 +1,4 @@
 pushd ..
-dart run flutter_launcher_icons
+call dart run flutter_launcher_icons
 call flutter build web 
 popd

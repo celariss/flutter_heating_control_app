@@ -209,14 +209,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsPageTitle => 'Paramètres';
 
   @override
-  String settingsAppVersion(String version) {
-    return 'Version application : $version';
-  }
+  String get settingsAppVersion => 'Version application';
 
   @override
-  String settingsServerVersion(String version) {
-    return 'Version serveur : $version';
-  }
+  String get settingsServerVersion => 'Version serveur';
 
   @override
   String get settingsErrorMandatoryValue => 'Une valeur est obligatoire';
@@ -376,4 +372,59 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get timeslotsErrorNotEmpty =>
       'Certains jours de la semaine sont encore affectés à cette plage hebdomadaire';
+
+  @override
+  String get background1Color => 'Fond #1 (derrière)';
+
+  @override
+  String get background2Color => 'Fond #2 (milieu)';
+
+  @override
+  String get background3Color => 'Fond #3 (devant)';
+
+  @override
+  String get normalTextColor => 'Texte standard';
+
+  @override
+  String get specialTextColor => 'Texte special';
+
+  @override
+  String get appBarColor => 'Barre de l\'App';
+
+  @override
+  String get appBarTextColor => 'Texte de la barre de l\'App';
+
+  @override
+  String get focusColor => 'Focus/sélections';
+
+  @override
+  String get heaterWidgetTrackColor => 'Cercle des vannes';
+
+  @override
+  String get heaterWidgetNoScheduleStateColor =>
+      'Aucun planning actif (vannes)';
+
+  @override
+  String get heaterWidgetAutoStateColor => 'Vannes pilotées par le planning';
+
+  @override
+  String get heaterWidgetManuelStateColor => 'Vannes en mode manuel';
+
+  @override
+  String get heaterWidgetPendingStateColor => 'Vannes en attente de réception';
+
+  @override
+  String get heaterWidgetTitleColor => 'Titre des vannes';
+
+  @override
+  String get buttonTextColor => 'Texte boutons/îcones';
+
+  @override
+  String get warningColor => 'Avertissements';
+
+  @override
+  String get errorColor => 'Erreurs';
+
+  @override
+  String get successColor => 'Succès';
 }

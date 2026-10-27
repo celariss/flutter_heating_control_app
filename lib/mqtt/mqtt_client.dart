@@ -11,6 +11,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:mqtt_client/mqtt_client.dart';
+import 'package:flutter/foundation.dart';
 
 import 'mqtt_stub.dart' if (dart.library.js) 'mqtt_web.dart' if (dart.library.io) 'mqtt_io.dart';
 
@@ -92,16 +93,16 @@ class MQTTClient {
       await client.connect();
     } on NoConnectionException catch (e) {
       // Raised by the client when connection fails.
-      print('Socket exception: $e');
+      debugPrint('Socket exception: $e');
     } on SocketException catch (e) {
       // Raised by the socket layer
-      print('Socket exception: $e');
+      debugPrint('Socket exception: $e');
     } on ArgumentError catch (e) {
       // Raised when the url has an invalid format
-      print('Socket exception: $e');
+      debugPrint('Socket exception: $e');
     } on Exception catch (e) {
       // Other Exception
-      print('Socket exception: $e');
+      debugPrint('Socket exception: $e');
     }
 
     /// Check we are connected

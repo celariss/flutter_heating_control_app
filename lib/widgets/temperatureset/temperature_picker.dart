@@ -70,23 +70,25 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
       contentPadding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       content: SizedBox(
         height: 180,
-        child: DecimalPicker.createDecimalPicker(widget.temperature, theme.specialTextColor, theme.focusColor, widget.min, widget.max, onValueChanged),
+        child: DecimalPicker.createDecimalPicker(widget.temperature, theme.normalTextColor, theme.focusColor, widget.min, widget.max, onValueChanged),
       ),
       actionsPadding: const EdgeInsets.fromLTRB(8, 20, 8, 8),
-      actions: [Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [ TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(wcLocalizations().cancelAction, style: TextStyle(color: theme.buttonTextColor)),
+      actions: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text(wcLocalizations().cancelAction, style: TextStyle(color: theme.buttonTextColor)),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(currentValue);
+              },
+              child: Text(wcLocalizations().validateAction, style: TextStyle(color: theme.buttonTextColor)),
+            ),
+          ]
         ),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(currentValue);
-          },
-          child: Text(wcLocalizations().validateAction, style: TextStyle(color: theme.buttonTextColor)),
-        ),
-      ]
-      ),
       ],
     );
   }

@@ -1,3 +1,7 @@
+## V1.1.1 (2026-10-xx) :
+- theme editor now use localized strings
+- fixed code warnings (obsolete calls)
+
 ## V1.1.0 (2026-10-26) :
 - updated to flutter 3.47.8
 - **New Feature** : Added ThemesEditorPage in order to customize themes

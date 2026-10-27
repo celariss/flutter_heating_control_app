@@ -401,14 +401,14 @@ abstract class AppLocalizations {
   /// No description provided for @settingsAppVersion.
   ///
   /// In en, this message translates to:
-  /// **'Application version : {version}'**
-  String settingsAppVersion(String version);
+  /// **'Application version'**
+  String get settingsAppVersion;
 
   /// No description provided for @settingsServerVersion.
   ///
   /// In en, this message translates to:
-  /// **'Server version : {version}'**
-  String settingsServerVersion(String version);
+  /// **'Server version'**
+  String get settingsServerVersion;
 
   /// No description provided for @settingsErrorMandatoryValue.
   ///
@@ -715,6 +715,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Some weekdays are still active on this daily timeslots'**
   String get timeslotsErrorNotEmpty;
+
+  /// No description provided for @background1Color.
+  ///
+  /// In en, this message translates to:
+  /// **'Background #1 (behind)'**
+  String get background1Color;
+
+  /// No description provided for @background2Color.
+  ///
+  /// In en, this message translates to:
+  /// **'Background #2 (middle)'**
+  String get background2Color;
+
+  /// No description provided for @background3Color.
+  ///
+  /// In en, this message translates to:
+  /// **'Background #3 (front)'**
+  String get background3Color;
+
+  /// No description provided for @normalTextColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Standard text'**
+  String get normalTextColor;
+
+  /// No description provided for @specialTextColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Special text'**
+  String get specialTextColor;
+
+  /// No description provided for @appBarColor.
+  ///
+  /// In en, this message translates to:
+  /// **'App bar'**
+  String get appBarColor;
+
+  /// No description provided for @appBarTextColor.
+  ///
+  /// In en, this message translates to:
+  /// **'App bar text'**
+  String get appBarTextColor;
+
+  /// No description provided for @focusColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Focus/selections'**
+  String get focusColor;
+
+  /// No description provided for @heaterWidgetTrackColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Heater track'**
+  String get heaterWidgetTrackColor;
+
+  /// No description provided for @heaterWidgetNoScheduleStateColor.
+  ///
+  /// In en, this message translates to:
+  /// **'No active schedule (heater)'**
+  String get heaterWidgetNoScheduleStateColor;
+
+  /// No description provided for @heaterWidgetAutoStateColor.
+  ///
+  /// In en, this message translates to:
+  /// **'On schedule mode (heater)'**
+  String get heaterWidgetAutoStateColor;
+
+  /// No description provided for @heaterWidgetManuelStateColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual mode (heater)'**
+  String get heaterWidgetManuelStateColor;
+
+  /// No description provided for @heaterWidgetPendingStateColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Heater in pending state'**
+  String get heaterWidgetPendingStateColor;
+
+  /// No description provided for @heaterWidgetTitleColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Heater title'**
+  String get heaterWidgetTitleColor;
+
+  /// No description provided for @buttonTextColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Button text'**
+  String get buttonTextColor;
+
+  /// No description provided for @warningColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warningColor;
+
+  /// No description provided for @errorColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorColor;
+
+  /// No description provided for @successColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get successColor;
 }
 
 class _AppLocalizationsDelegate

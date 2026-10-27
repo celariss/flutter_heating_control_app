@@ -208,14 +208,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsPageTitle => 'Settings';
 
   @override
-  String settingsAppVersion(String version) {
-    return 'Application version : $version';
-  }
+  String get settingsAppVersion => 'Application version';
 
   @override
-  String settingsServerVersion(String version) {
-    return 'Server version : $version';
-  }
+  String get settingsServerVersion => 'Server version';
 
   @override
   String get settingsErrorMandatoryValue => 'value is mandatory';
@@ -375,4 +371,58 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get timeslotsErrorNotEmpty =>
       'Some weekdays are still active on this daily timeslots';
+
+  @override
+  String get background1Color => 'Background #1 (behind)';
+
+  @override
+  String get background2Color => 'Background #2 (middle)';
+
+  @override
+  String get background3Color => 'Background #3 (front)';
+
+  @override
+  String get normalTextColor => 'Standard text';
+
+  @override
+  String get specialTextColor => 'Special text';
+
+  @override
+  String get appBarColor => 'App bar';
+
+  @override
+  String get appBarTextColor => 'App bar text';
+
+  @override
+  String get focusColor => 'Focus/selections';
+
+  @override
+  String get heaterWidgetTrackColor => 'Heater track';
+
+  @override
+  String get heaterWidgetNoScheduleStateColor => 'No active schedule (heater)';
+
+  @override
+  String get heaterWidgetAutoStateColor => 'On schedule mode (heater)';
+
+  @override
+  String get heaterWidgetManuelStateColor => 'Manual mode (heater)';
+
+  @override
+  String get heaterWidgetPendingStateColor => 'Heater in pending state';
+
+  @override
+  String get heaterWidgetTitleColor => 'Heater title';
+
+  @override
+  String get buttonTextColor => 'Button text';
+
+  @override
+  String get warningColor => 'Warning';
+
+  @override
+  String get errorColor => 'Error';
+
+  @override
+  String get successColor => 'Success';
 }

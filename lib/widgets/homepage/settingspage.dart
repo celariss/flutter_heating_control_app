@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
+import 'package:heating_control_app/common/theme.dart';
 import 'package:heating_control_app/main.dart';
 import 'package:heating_control_app/widgets/homepage/themeseditorpage.dart';
 import 'package:navbar_router/navbar_router.dart';
@@ -186,11 +187,38 @@ class _SettingsPage extends State<SettingsPage> {
     return '$lang (${locale.toLanguageTag()})';
   }
 
+  static Widget _createVersionWidget(String version) {
+    return Builder(
+      builder: (BuildContext context) {
+        final inputTheme = Theme.of(context).inputDecorationTheme;
+        Color? themeEnabledColor = Theme.of(context).colorScheme.outline;
+        if (inputTheme.enabledBorder!=null && inputTheme.enabledBorder?.borderSide!=null) {
+          themeEnabledColor = inputTheme.enabledBorder?.borderSide.color;
+        }
+        themeEnabledColor = themeEnabledColor?.withValues(alpha:0.35);
+        return SizedBox(
+          width: 80.0,
+          height: 30.0,
+          child: InputDecorator(
+            decoration: InputDecoration(
+              contentPadding: EdgeInsetsGeometry.all(0),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide(color: themeEnabledColor!, width: 1.5),
+              ),
+            ),
+            child: Text(version, textAlign: TextAlign.center, style: TextStyle(color: AppTheme().normalTextColor, fontSize: 18)),
+          ),
+        );
+      }
+    );
+  }
+
   Widget _buildInformationSection() {
     return SettingsWidgetHelper.createSection(
-      wcLocalizations().settingsAppVersion(Package().getPackageInfo()?.version ?? ''),
+      wcLocalizations().settingsAppVersion,
       <Widget>[ ],
-      context
+      suffixWidget: _createVersionWidget(Package().getPackageInfo()?.version ?? '?'),
     );
   }
 
@@ -199,7 +227,11 @@ class _SettingsPage extends State<SettingsPage> {
     return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupServer,
       <Widget>[
-        SettingsWidgetHelper.createTextField(wcLocalizations().settingsServerVersion(enabled ? ModelCtrl().serverVersion : '?'), enabled: enabled),
+        SettingsWidgetHelper.createTextField(
+          wcLocalizations().settingsServerVersion,
+          enabled: enabled,
+          suffixWidget: _createVersionWidget(enabled ? ModelCtrl().serverVersion : '?'),
+        ),
         SettingsWidgetHelper.createBtnField(
           wcLocalizations().settingsEditDevicesList,
           Icons.edit_note,
@@ -219,7 +251,8 @@ class _SettingsPage extends State<SettingsPage> {
               (value) => ModelCtrl().setManualResetMode(str2ManualResetMode(value)),
               enabled: enabled,
             ),
-          ]
+          ],
+          enabled: enabled,
         ),
         if (manualResetMode == '')
           SettingsWidgetHelper.createListPickerField(
@@ -230,7 +263,6 @@ class _SettingsPage extends State<SettingsPage> {
             enabled: enabled,
           ),
       ],
-      context
     );
   }
 
@@ -293,7 +325,6 @@ class _SettingsPage extends State<SettingsPage> {
           (value) => Settings().setThermostatResolution(double.parse(value)),
         ),
       ],
-      context
     );
   }
 
@@ -332,7 +363,6 @@ class _SettingsPage extends State<SettingsPage> {
           mqttChanged = true;
         },),
       ],
-      context
     );
   }
 

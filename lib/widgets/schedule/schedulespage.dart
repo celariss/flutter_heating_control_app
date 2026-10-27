@@ -124,10 +124,7 @@ class _SchedulesPage extends State<SchedulesPage> {
           itemBuilder: (context, index) {
             return Schedule.scheduleTileBuilder(context, schedulerData!['schedules'][index]);
           },
-          onReorder: (oldIndex, newIndex) {
-            if (oldIndex < newIndex) {
-              newIndex -= 1;
-            }
+          onReorderItem: (oldIndex, newIndex) {
             if (oldIndex != newIndex) {
               ModelCtrl().swapSchedules(oldIndex, newIndex);
             }

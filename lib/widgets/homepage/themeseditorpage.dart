@@ -237,10 +237,27 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
   }
 
   String _displayColorName(String name) {
-    final words = name
-        .replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match.group(1)!}')
-        .replaceFirst(' Color', '')
-        .trim();
-    return words[0].toUpperCase() + words.substring(1);
+    final l10n = wcLocalizations();
+    switch (name) {
+      case "background1Color": return l10n.background1Color;
+      case "background2Color": return l10n.background2Color;
+      case "background3Color": return l10n.background3Color;
+      case "normalTextColor": return l10n.normalTextColor;
+      case "specialTextColor": return l10n.specialTextColor;
+      case "appBarColor": return l10n.appBarColor;
+      case "appBarTextColor": return l10n.appBarTextColor;
+      case "focusColor": return l10n.focusColor;
+      case "heaterWidgetTrackColor": return l10n.heaterWidgetTrackColor;
+      case "heaterWidgetNoScheduleStateColor": return l10n.heaterWidgetNoScheduleStateColor;
+      case "heaterWidgetAutoStateColor": return l10n.heaterWidgetAutoStateColor;
+      case "heaterWidgetManuelStateColor": return l10n.heaterWidgetManuelStateColor;
+      case "heaterWidgetPendingStateColor": return l10n.heaterWidgetPendingStateColor;
+      case "heaterWidgetTitleColor": return l10n.heaterWidgetTitleColor;
+      case "buttonTextColor": return l10n.buttonTextColor;
+      case "warningColor": return l10n.warningColor;
+      case "errorColor": return l10n.errorColor;
+      case "successColor": return l10n.successColor;
+      default: return '*** UNKNOWN NAME ***';
+    }
   }
 }
