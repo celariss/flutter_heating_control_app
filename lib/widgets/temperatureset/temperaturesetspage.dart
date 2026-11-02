@@ -96,7 +96,6 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().tempSetsPageTitle),
       body: Common.cnxStateWidgetFilter(TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: '')),
-      key: UniqueKey(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
