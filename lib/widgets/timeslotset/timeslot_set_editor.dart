@@ -46,7 +46,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
           // Create global button that adds a new timeslot
           Common.createFloatingButton(
               size: 55,
-              icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
+              iconData: Icons.add,
               onPressed: () {
                 List timeslots = timeslotSetData[widget.tsKey];
                 Map lastTimeslot = timeslots[timeslots.length - 1];
@@ -73,7 +73,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
           // Create global button that saves the timeslot set and exit the editor
           Common.createFloatingButton(
             size: 55,
-            icon: const Icon(Icons.check, color: Colors.white),
+            iconData: Icons.check,
             //backColor: Colors.green.shade700,
             onPressed: () {
               ModelCtrl()

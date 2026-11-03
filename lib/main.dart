@@ -76,6 +76,8 @@ class MyApp extends StatelessWidget {
       // Color visible during transition between pages
       canvasColor: AppTheme().background1Color,
       iconTheme: IconThemeData(color: AppTheme().specialTextColor),
+
+      // Navigation bar : on mobile platforms
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: AppTheme().background2Color,
         indicatorColor: AppTheme().background2Color,
@@ -87,16 +89,20 @@ class MyApp extends StatelessWidget {
           color: states.contains(WidgetState.selected) ? AppTheme().focusColor : AppTheme().normalTextColor,
         )),
       ),
+
+      // Navigation rail : on desktop and web platforms
       navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: AppTheme().background2Color,
         indicatorColor: AppTheme().background2Color,
         selectedLabelTextStyle: TextStyle(
           fontWeight: FontWeight.bold,
           color: AppTheme().focusColor,
         ),
-        selectedIconTheme: IconThemeData(color: AppTheme().focusColor),
         unselectedLabelTextStyle: TextStyle(color: AppTheme().normalTextColor),
+        selectedIconTheme: IconThemeData(color: AppTheme().focusColor),
         unselectedIconTheme: IconThemeData(color: AppTheme().normalTextColor),
       ),
+
       listTileTheme: ListTileThemeData(
         textColor: AppTheme().specialTextColor,
       ),
@@ -114,7 +120,13 @@ class MyApp extends StatelessWidget {
 
       switchTheme: SwitchThemeData(
         trackColor:  WidgetStateProperty.resolveWith((states) =>
-        states.contains(WidgetState.selected) ? AppTheme().focusColor : null)
+          states.contains(WidgetState.selected) ? AppTheme().focusColor : AppTheme().background2Color),
+        trackOutlineColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? null : AppTheme().normalTextColor),
+        thumbColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? AppTheme().buttonTextColor : AppTheme().normalTextColor),
+        overlayColor: WidgetStateProperty.resolveWith((states) =>
+          states.contains(WidgetState.selected) ? AppTheme().normalTextColor.withValues(alpha: 0.15) : AppTheme().normalTextColor.withValues(alpha: 0.15)),
       ),
       
       appBarTheme: AppBarTheme(

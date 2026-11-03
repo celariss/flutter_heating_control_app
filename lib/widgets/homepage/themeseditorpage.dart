@@ -19,24 +19,19 @@ class ThemesEditorPage extends StatefulWidget {
 
 class _ThemesEditorPageState extends State<ThemesEditorPage> {
   static const List<String> _colorNames = [
-    'appBarColor',
-    'appBarTextColor',
     'background1Color',
     'background2Color',
     'background3Color',
+    'appBarColor',
+    'appBarTextColor',
     'normalTextColor',
     'specialTextColor',
-    'focusColor',
     'buttonTextColor',
+    'focusColor',
+    'heaterWidgetManuelStateColor',
     'warningColor',
     'errorColor',
     'successColor',
-    'heaterWidgetTrackColor',
-    'heaterWidgetNoScheduleStateColor',
-    'heaterWidgetAutoStateColor',
-    'heaterWidgetManuelStateColor',
-    'heaterWidgetPendingStateColor',
-    'heaterWidgetTitleColor',
   ];
 
   final ScrollController _scrollController = ScrollController();
@@ -50,8 +45,8 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
   void initState() {
     super.initState();
     final themes = _themes;
-    _selectedThemeName = themes.contains(Settings().themeName)
-        ? Settings().themeName
+    _selectedThemeName = themes.contains(Settings().activeThemeName)
+        ? Settings().activeThemeName
         : (themes.isEmpty ? null : themes.first);
   }
 
@@ -67,7 +62,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
   Future<void> _createTheme() async {
     final name = _newThemeNameController.text.trim();
     if (name.isEmpty) return;
-    if (!Settings().createTheme(name, templateName: _selectedThemeName)) {
+    if (!Settings().createTheme(name, templateThemeName: _selectedThemeName)) {
       await Common.showWarningDialog(
         context,
         wcLocalizations().errorDuplicateKey(name),
@@ -93,8 +88,8 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
     Settings().deleteTheme(name);
     setState(() {
       final themes = _themes;
-      _selectedThemeName = themes.contains(Settings().themeName)
-          ? Settings().themeName
+      _selectedThemeName = themes.contains(Settings().activeThemeName)
+          ? Settings().activeThemeName
           : (themes.isEmpty ? null : themes.first);
     });
     _themeNotifier.refreshAppTheme();
@@ -107,7 +102,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
     if (!mounted) return;
     if (Settings().updateThemeColor(themeName, colorName, color)) {
       setState(() {});
-      if (Settings().themeName == themeName) {
+      if (Settings().activeThemeName == themeName) {
         _themeNotifier.refreshAppTheme();
       }
     }
@@ -224,12 +219,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
       case "appBarColor": return l10n.appBarColor;
       case "appBarTextColor": return l10n.appBarTextColor;
       case "focusColor": return l10n.focusColor;
-      case "heaterWidgetTrackColor": return l10n.heaterWidgetTrackColor;
-      case "heaterWidgetNoScheduleStateColor": return l10n.heaterWidgetNoScheduleStateColor;
-      case "heaterWidgetAutoStateColor": return l10n.heaterWidgetAutoStateColor;
       case "heaterWidgetManuelStateColor": return l10n.heaterWidgetManuelStateColor;
-      case "heaterWidgetPendingStateColor": return l10n.heaterWidgetPendingStateColor;
-      case "heaterWidgetTitleColor": return l10n.heaterWidgetTitleColor;
       case "buttonTextColor": return l10n.buttonTextColor;
       case "warningColor": return l10n.warningColor;
       case "errorColor": return l10n.errorColor;

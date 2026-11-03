@@ -23,12 +23,7 @@ class AppTheme {
     appBarColor = string2Color(data['appBarColor']);
     appBarTextColor = string2Color(data['appBarTextColor']);
     focusColor = string2Color(data['focusColor']);
-    heaterWidgetTrackColor = string2Color(data['heaterWidgetTrackColor']);
-    heaterWidgetNoScheduleStateColor = string2Color(data['heaterWidgetNoScheduleStateColor']);
-    heaterWidgetAutoStateColor = string2Color(data['heaterWidgetAutoStateColor']);
     heaterWidgetManuelStateColor = string2Color(data['heaterWidgetManuelStateColor']);
-    heaterWidgetPendingStateColor = string2Color(data['heaterWidgetPendingStateColor']);
-    heaterWidgetTitleColor = string2Color(data['heaterWidgetTitleColor']);
     buttonTextColor = string2Color(data['buttonTextColor']);
     warningColor = string2Color(data['warningColor']);
     errorColor = string2Color(data['errorColor']);
@@ -62,12 +57,7 @@ class AppTheme {
       'appBarColor':color2String(appBarColor),
       'appBarTextColor':color2String(appBarTextColor),
       'focusColor':color2String(focusColor),
-      'heaterWidgetTrackColor':color2String(heaterWidgetTrackColor),
-      'heaterWidgetNoScheduleStateColor':color2String(heaterWidgetNoScheduleStateColor),
-      'heaterWidgetAutoStateColor':color2String(heaterWidgetAutoStateColor),
       'heaterWidgetManuelStateColor':color2String(heaterWidgetManuelStateColor),
-      'heaterWidgetPendingStateColor':color2String(heaterWidgetPendingStateColor),
-      'heaterWidgetTitleColor':color2String(heaterWidgetTitleColor),
       'buttonTextColor':color2String(buttonTextColor),
       'warningColor':color2String(warningColor),
       'errorColor':color2String(errorColor),
@@ -96,17 +86,7 @@ class AppTheme {
   //  - Special text
   Color focusColor = Colors.blue.shade900;
 
-  Color heaterWidgetTrackColor = Colors.black;
-
-  Color heaterWidgetNoScheduleStateColor = Colors.black;
-
-  Color heaterWidgetAutoStateColor = Colors.blue.shade900;
-
   Color heaterWidgetManuelStateColor = Colors.deepOrange.shade900;
-
-  Color heaterWidgetPendingStateColor = Colors.grey;
-
-  Color heaterWidgetTitleColor = Colors.purple.shade800;
 
   /////////////////////////////////////////////////////////
   Color buttonTextColor = Colors.white;

@@ -149,7 +149,8 @@ class Common {
             [
               Common.createCircleIcon(
                   size: 32,
-                  icon: Icon(ModelCtrl().isConnectedToCtrlServer() ? Icons.link : Icons.link_off, color: Colors.white),
+                  iconData: ModelCtrl().isConnectedToCtrlServer() ? Icons.link : Icons.link_off,
+                  iconColor: Colors.white,
                   backColor: ModelCtrl().isConnectedToCtrlServer()
                       ? Colors.green.shade700
                       : ModelCtrl().isConnectedToMQTT()
@@ -268,15 +269,15 @@ class Common {
     );
   }
 
-  static Widget createCircleIcon({required Icon icon, required double size, required Color backColor, String? tooltip}) {
+  static Widget createCircleIcon({required IconData iconData, required double size, Color ? iconColor, Color ? backColor, String? tooltip}) {
     final Widget widget = Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
-        color: backColor,
+        color: backColor ?? AppTheme().focusColor,
         shape: BoxShape.circle,
       ),
-      child: icon,
+      child: Icon(iconData, color: iconColor ??AppTheme().buttonTextColor),
     );
     
     if (tooltip == null || tooltip.isEmpty) return widget;
@@ -285,7 +286,7 @@ class Common {
 
   /// Floating buttons appears over the app bar to trigger an global action
   static Widget createFloatingButton(
-      {required Widget icon,
+      {required IconData iconData,
       double size = 0,
       Color? backColor,
       required void Function() onPressed,
@@ -293,10 +294,11 @@ class Common {
   ) {
     Widget button = FloatingActionButton(
       backgroundColor: backColor ?? AppTheme().focusColor,
+      foregroundColor: AppTheme().buttonTextColor,
       elevation: AppTheme().defaultElevation,
       onPressed: onPressed,
       tooltip: tooltip,
-      child: icon,
+      child: Icon(iconData, color: AppTheme().buttonTextColor),
     );
 
     if (size == 0) {
@@ -367,6 +369,7 @@ class Common {
     if (tooltip == null || tooltip.isEmpty) return button;
     return Tooltip(message: tooltip, child: button);
   }
+
   /// Builds and returns a [PopupMenuButton] that contains all items given in [menuItems].
   static Widget createPopupMenu(List<MyMenuItem> menuItems,
       {required void Function(dynamic) onSelected, void Function()? onOpened, Color? iconColor}) {

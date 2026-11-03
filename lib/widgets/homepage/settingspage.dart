@@ -36,7 +36,7 @@ class _SettingsPage extends State<SettingsPage> {
   String mqttPassword = Settings().MQTT.password;
   int mqttPort = Settings().MQTT.port;
   bool mqttSecure = Settings().MQTT.secure;
-  String themeName = Settings().themeName;
+  String themeName = Settings().activeThemeName;
   List<String> themesList = [];
   String manualResetMode = '';
   int manualResetDuration = 4;
@@ -258,10 +258,10 @@ class _SettingsPage extends State<SettingsPage> {
             setState(() {
               themesList = Settings().getThemesList();
               if (!themesList.contains(themeName)) {
-                themeName = themesList.contains(Settings().themeName)
-                    ? Settings().themeName
+                themeName = themesList.contains(Settings().activeThemeName)
+                    ? Settings().activeThemeName
                     : (themesList.isEmpty ? '' : themesList.first);
-                Settings().setTheme(themeName);
+                Settings().setActiveTheme(themeName);
               }
               themeNotifier!.refreshAppTheme();
             });
@@ -269,7 +269,7 @@ class _SettingsPage extends State<SettingsPage> {
         ),
         SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsTheme, themesList, themeName, (value) {
           themeName = value;
-          Settings().setTheme(themeName);
+          Settings().setActiveTheme(themeName);
           themeNotifier!.refreshAppTheme();
         }),
         SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsLanguage, langList, curLangName, (value) {

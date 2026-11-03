@@ -743,7 +743,7 @@ abstract class AppLocalizations {
   /// No description provided for @specialTextColor.
   ///
   /// In en, this message translates to:
-  /// **'Special text'**
+  /// **'Secondary text / heater track'**
   String get specialTextColor;
 
   /// No description provided for @appBarColor.
@@ -761,44 +761,14 @@ abstract class AppLocalizations {
   /// No description provided for @focusColor.
   ///
   /// In en, this message translates to:
-  /// **'Focus/selections'**
+  /// **'Focus/selections/buttons'**
   String get focusColor;
-
-  /// No description provided for @heaterWidgetTrackColor.
-  ///
-  /// In en, this message translates to:
-  /// **'Heater track'**
-  String get heaterWidgetTrackColor;
-
-  /// No description provided for @heaterWidgetNoScheduleStateColor.
-  ///
-  /// In en, this message translates to:
-  /// **'No active schedule (heater)'**
-  String get heaterWidgetNoScheduleStateColor;
-
-  /// No description provided for @heaterWidgetAutoStateColor.
-  ///
-  /// In en, this message translates to:
-  /// **'On schedule mode (heater)'**
-  String get heaterWidgetAutoStateColor;
 
   /// No description provided for @heaterWidgetManuelStateColor.
   ///
   /// In en, this message translates to:
   /// **'Manual mode (heater)'**
   String get heaterWidgetManuelStateColor;
-
-  /// No description provided for @heaterWidgetPendingStateColor.
-  ///
-  /// In en, this message translates to:
-  /// **'Heater in pending state'**
-  String get heaterWidgetPendingStateColor;
-
-  /// No description provided for @heaterWidgetTitleColor.
-  ///
-  /// In en, this message translates to:
-  /// **'Heater title'**
-  String get heaterWidgetTitleColor;
 
   /// No description provided for @buttonTextColor.
   ///

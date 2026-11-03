@@ -109,15 +109,15 @@ class _HomePage extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // We need this line with listen:true to ensure refresh of this page
+    // We need this line with listen:true to ensure refresh of this page when theme is changed
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().homePageTitle, actions:[
         Common.createIconButton(
             Icons.settings,
             //iconSize: 50,
-            iconColor: AppTheme().normalTextColor,
-            backColor: AppTheme().background3Color,
+            iconColor: AppTheme().appBarColor,
+            backColor: AppTheme().appBarTextColor,
             onPressed: () {
               Common.navigate(context, SettingsPage.route, isRootNavigator: false);
             },)

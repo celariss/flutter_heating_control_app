@@ -73,14 +73,14 @@ class _SchedulesPage extends State<SchedulesPage> {
 
   @override
   Widget build(BuildContext context) {
-    // We need this line with listen:true to ensure refresh of this page
+    // We need this line with listen:true to ensure refresh of this page when theme is changed
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().schedulesPageTitle),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
-        icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
+        iconData: Icons.add,
         onPressed: () {
           Map scheduleData = {'alias': wcLocalizations().new_};
           Common.editScheduleProperties(context, scheduleData, _onNewScheduleValidate);

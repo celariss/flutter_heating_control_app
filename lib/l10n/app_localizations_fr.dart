@@ -386,7 +386,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get normalTextColor => 'Texte standard';
 
   @override
-  String get specialTextColor => 'Texte special';
+  String get specialTextColor => 'Texte secondaire / cercle vannes';
 
   @override
   String get appBarColor => 'Barre de l\'App';
@@ -395,26 +395,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get appBarTextColor => 'Texte de la barre de l\'App';
 
   @override
-  String get focusColor => 'Focus/sélections';
-
-  @override
-  String get heaterWidgetTrackColor => 'Cercle des vannes';
-
-  @override
-  String get heaterWidgetNoScheduleStateColor =>
-      'Aucun planning actif (vannes)';
-
-  @override
-  String get heaterWidgetAutoStateColor => 'Vannes pilotées par le planning';
+  String get focusColor => 'Focus / sélections / boutons';
 
   @override
   String get heaterWidgetManuelStateColor => 'Vannes en mode manuel';
-
-  @override
-  String get heaterWidgetPendingStateColor => 'Vannes en attente de réception';
-
-  @override
-  String get heaterWidgetTitleColor => 'Titre des vannes';
 
   @override
   String get buttonTextColor => 'Texte boutons/îcones';

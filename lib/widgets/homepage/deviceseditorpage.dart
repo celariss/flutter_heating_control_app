@@ -67,7 +67,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
-        icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
+        iconData: Icons.add,
         onPressed: () async {
           await editDeviceProperties(
             context,
@@ -197,7 +197,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
           if (showDeleteBtn==true) {
             columnChildren += [
               const SizedBox(height: 20,),
-              Common.createIconButton(Icons.delete, backColor:AppTheme().errorColor, onPressed: () async {
+              Common.createIconButton(Icons.delete, onPressed: () async {
                 bool result =
                 await Common.showWarningDialog(context, wcLocalizations().removeConfirmation("eqpt", deviceName));
                 if (result) {

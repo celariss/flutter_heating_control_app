@@ -48,16 +48,26 @@ class Settings {
       } else {
         locale = tryParseLocale(strLocale);
       }
-      themeName = _getParam(config, 'themeName', '');
+
+      activeThemeName = _getParam(config, 'themeName', '');
       final savedThemes = prefs!.getString('themes');
       if (savedThemes != null) {
         _themes = (jsonDecode(savedThemes) as List)
             .map((theme) => Map<String, dynamic>.from(theme as Map))
             .toList();
+
+        // Putting back missing defaut themes from config file that are not in the saved themes
+        List defaultThemes = config.getSection('themes') ?? [];
+        for (Map theme in defaultThemes) {
+          if (!getThemesList().contains(theme['name'])) {
+            _themes.insert(0, Map<String, dynamic>.from(theme));
+          }
+         _saveThemes();
+        }
       } else {
         _themes = _getParam(config, 'themes', []);
       }
-      setTheme(themeName);
+      setActiveTheme(activeThemeName);
       _initDone = true;
     }
   }
@@ -66,10 +76,10 @@ class Settings {
     return _themes.map((theme) => theme['name'] as String).toList();
   }
 
-  void setTheme(String name) {
-    themeName = name;
+  void setActiveTheme(String name) {
+    activeThemeName = name;
     for (Map theme in _themes) {
-      if (theme.containsKey('name') && theme['name']==themeName) {
+      if (theme.containsKey('name') && theme['name']==activeThemeName) {
         AppTheme().loadFromMap(theme);
         prefs!.setString('themeName', name);
         break;
@@ -86,13 +96,15 @@ class Settings {
     return null;
   }
 
-  bool createTheme(String name, {String? templateName}) {
+  bool createTheme(String name, {String? templateThemeName}) {
+  /// Creates a new theme with the given name, optionally using an existing theme as a template.
+  /// Returns true if the theme was created successfully, false if a theme with the same name already exists or if the name is empty.
     final normalizedName = name.trim();
     if (normalizedName.isEmpty || getThemesList().contains(normalizedName)) {
       return false;
     }
 
-    final source = getThemeData(templateName ?? themeName) ??
+    final source = getThemeData(templateThemeName ?? activeThemeName) ??
         (_themes.isNotEmpty
             ? Map<String, dynamic>.from(_themes.first)
             : AppTheme().saveToMap());
@@ -110,7 +122,7 @@ class Settings {
 
     final selectedTheme = themes.first;
     selectedTheme[colorName] = AppTheme.color2String(color);
-    if (themeName == name) {
+    if (activeThemeName == name) {
       AppTheme().loadFromMap(selectedTheme);
     }
     _saveThemes();
@@ -123,8 +135,8 @@ class Settings {
     }
     _themes.removeWhere((theme) => theme is Map && theme['name'] == name);
     _saveThemes();
-    if (themeName == name) {
-      setTheme(_themes.first['name'] as String);
+    if (activeThemeName == name) {
+      setActiveTheme(_themes.first['name'] as String);
     }
     return true;
   }
@@ -181,7 +193,7 @@ class Settings {
   int minSetpoint = 0;
   int maxSetpoint = 0;
   double thermostatResolution = 0;
-  String themeName = '';
+  String activeThemeName = '';
   Locale ?locale;
 
   bool _initDone = false;
@@ -208,7 +220,7 @@ class Settings {
     return _string2double(config.getValue(paramName), defaultValue);
   }
 
-  static int _string2Int(dynamic str, [int defaultValue = 0]) {
+  int _string2Int(dynamic str, [int defaultValue = 0]) {
     if (str is int) {
       return str;
     }
@@ -226,7 +238,7 @@ class Settings {
     return defaultValue;
   }
 
-  static double _string2double(dynamic str, [double defaultValue = 0.0]) {
+  double _string2double(dynamic str, [double defaultValue = 0.0]) {
     if (str is double) {
       return str;
     }

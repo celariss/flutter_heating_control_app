@@ -385,7 +385,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get normalTextColor => 'Standard text';
 
   @override
-  String get specialTextColor => 'Special text';
+  String get specialTextColor => 'Secondary text / heater track';
 
   @override
   String get appBarColor => 'App bar';
@@ -394,25 +394,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appBarTextColor => 'App bar text';
 
   @override
-  String get focusColor => 'Focus/selections';
-
-  @override
-  String get heaterWidgetTrackColor => 'Heater track';
-
-  @override
-  String get heaterWidgetNoScheduleStateColor => 'No active schedule (heater)';
-
-  @override
-  String get heaterWidgetAutoStateColor => 'On schedule mode (heater)';
+  String get focusColor => 'Focus/selections/buttons';
 
   @override
   String get heaterWidgetManuelStateColor => 'Manual mode (heater)';
-
-  @override
-  String get heaterWidgetPendingStateColor => 'Heater in pending state';
-
-  @override
-  String get heaterWidgetTitleColor => 'Heater title';
 
   @override
   String get buttonTextColor => 'Button text';

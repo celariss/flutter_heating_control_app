@@ -191,9 +191,9 @@ class SettingsWidgetHelper {
       String? Function(String?)? validator,
       Widget ?suffixWidget}
   ) {
+    bool obscureMqttPassword = true; // Local state to control password visibility
     return StatefulBuilder(
       builder: (BuildContext context, StateSetter localSetState) {
-        bool obscureMqttPassword = true; // Local state to control
         Widget field = TextFormField(
                 //key: UniqueKey(),
                 onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
@@ -206,15 +206,17 @@ class SettingsWidgetHelper {
                 decoration: InputDecoration(
                   labelText: label,
                   prefixIcon: const Icon(Icons.lock),
+                  prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                   suffixIcon: IconButton(
                     tooltip: showHideTooltip ?? "Show/hide password",
                     icon: Icon(obscureMqttPassword ? Icons.visibility : Icons.visibility_off),
-                    onPressed: () => {
+                    onPressed: () {
                       localSetState(() {
                         obscureMqttPassword = !obscureMqttPassword;
-                      })
+                      });
                     },
                   ),
+                  suffixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
                 ),
                 validator: (value) {
                   String? validationResult;

@@ -1,9 +1,11 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
 import '../../common/theme.dart';
+import '../../common/themenotifier.dart';
 import '../../utils/localizations.dart';
 import 'temperaturesets.dart';
 
@@ -65,13 +67,15 @@ class _TemperatureSetsPageState extends State<TemperatureSetsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // We need this line with listen:true to ensure refresh of this page when theme is changed
+    Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().tempSetsPageTitle),
       body: Common.cnxStateWidgetFilter(TemperatureSets(temperatureSetsData: globalTemperatureSetsData, scheduleName: '')),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
       floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
         size: 55,
-        icon: Icon(Icons.add, color: AppTheme().buttonTextColor),
+        iconData: Icons.add,
         onPressed: () {
           Map tempSetData = {'alias': wcLocalizations().new_};
           Common.editTemperatureSetProperties(context, tempSetData, '', _onNewTemperatureSetValidate);

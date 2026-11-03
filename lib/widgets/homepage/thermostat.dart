@@ -20,9 +20,10 @@ class Thermostat {
         manualMode &&
         (device.pendingSetpoint == null || device.pendingSetpoint != activeSetpoint);
     Color manualColor = AppTheme().heaterWidgetManuelStateColor;
-    Color autoColor = AppTheme().heaterWidgetAutoStateColor;
-    Color normalColor = AppTheme().heaterWidgetNoScheduleStateColor;
-    Color titleColor = AppTheme().heaterWidgetTitleColor;
+    Color normalColor = AppTheme().specialTextColor;
+    Color autoColor = AppTheme().focusColor;
+    Color pendingColor = AppTheme().background2Color;
+    Color titleColor = AppTheme().normalTextColor;
     bool bActive = device.actualSetpoint > 0.0 && device.currentTemperature > 0.0;
 
     List<Widget> createFirstLine() {
@@ -114,13 +115,13 @@ class Thermostat {
             progressBarColor: !bActive
                 ? AppTheme().background1Color
                 : pending
-                    ? AppTheme().heaterWidgetPendingStateColor
+                    ? pendingColor
                     : manualMode
                         ? manualColor
                         : autoMode
                             ? autoColor
                             : normalColor,
-            trackColor: bActive ? AppTheme().heaterWidgetTrackColor : AppTheme().background1Color,
+            trackColor: bActive ? AppTheme().specialTextColor : AppTheme().background1Color,
           ),
           customWidths: CustomSliderWidths(progressBarWidth: 10, handlerSize: 5),
           /*infoProperties: InfoProperties(

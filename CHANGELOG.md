@@ -1,6 +1,11 @@
-## V1.1.1 (2026-10-xx) :
+## V1.1.3 (2026-11-03) :
 - theme editor now use localized strings
 - fixed code warnings (obsolete calls)
+- removed navbar_router dependency
+- bug fix : temperature sets page refresh without loosing position
+- added selection frame in DecimalPicker
+- dependencies updated
+- various visual improvements
 
 ## V1.1.0 (2026-10-26) :
 - updated to flutter 3.47.8
