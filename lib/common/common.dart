@@ -8,7 +8,6 @@ import 'dart:math';
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
-import 'package:navbar_router/navbar_router.dart';
 import '../utils/platform.dart';
 import '../utils/localizations.dart';
 
@@ -111,22 +110,6 @@ class Common {
 
   static final Map _savedStates = {};
 
-  /// Padding to avoid the bottom of a page to be hidden by Navbar
-  static EdgeInsets getNavbarHeightPadding() {
-    return EdgeInsets.only(bottom: getNavbarHeight());
-  }
-
-  static double getNavbarHeight() {
-    if (!NavbarNotifier.isNavbarHidden) {
-      if (PlatformDetails().isMobile) {
-        return 100;
-      }
-      else {
-        return 50;
-      }
-    }
-    return 0;
-  }
 
   /// Saves given [value] to internal data map with identifier [key] 
   static void setSavedState(String key, dynamic value) {
@@ -176,9 +159,9 @@ class Common {
   }
 
   /// Call this to navigate to a new page with given [route]
-  /// The [route] must have been declared in current [NavbarRouter.destinations]
-  static Future<void> navBarNavigate(BuildContext context, String route,
-          {bool isDialog = false, bool isRootNavigator = true, Map<String, dynamic>? arguments}) =>
+  /// The [route] must be declared in the active Navigator
+  static Future<void> navigate(BuildContext context, String route,
+          {bool isRootNavigator = true, Map<String, dynamic>? arguments}) =>
       Navigator.of(context, rootNavigator: isRootNavigator).pushNamed(route, arguments: arguments);
 
   /// Shows the snackbar with given [text]
@@ -733,6 +716,7 @@ class Common {
                       decoration: BoxDecoration(
                         color: color,
                         shape: BoxShape.circle,
+                        border: Border.all(width: 2, color: AppTheme().specialTextColor),
                       ),
                     ),
                   ),

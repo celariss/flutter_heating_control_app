@@ -1,12 +1,10 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
 import 'package:heating_control_app/common/theme.dart';
 import 'package:heating_control_app/main.dart';
 import 'package:heating_control_app/widgets/homepage/themeseditorpage.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -30,8 +28,6 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPage extends State<SettingsPage> {
   //final _formKey = GlobalKey<FormState>();
-  final _scrollController = ScrollController();
-  Size size = Size.zero;
   ThemeNotifier ?themeNotifier;
 
   bool mqttChanged = false;
@@ -78,27 +74,7 @@ class _SettingsPage extends State<SettingsPage> {
     }
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    size = MediaQuery.of(context).size;
-    if (size.width < 600) {
-      _addScrollListener();
-    }
-  }
 
-  void handleScroll() {
-    if (size.width > 600) return;
-    if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if (NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = false;
-      }
-    } else {
-      if (!NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = true;
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -126,9 +102,6 @@ class _SettingsPage extends State<SettingsPage> {
     }
   }
 
-  void _addScrollListener() {
-    _scrollController.addListener(handleScroll);
-  }
 
   void _onSchedulesEvent(Value<Map> args) {
     Map? schedulerData = args.value;
@@ -144,7 +117,6 @@ class _SettingsPage extends State<SettingsPage> {
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -168,7 +140,6 @@ class _SettingsPage extends State<SettingsPage> {
       child: Scaffold(
         appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
         body: SingleChildScrollView(
-          padding: Common.getNavbarHeightPadding(),
           child: Column(
                 children: [
                   _buildInformationSection(),
@@ -236,8 +207,7 @@ class _SettingsPage extends State<SettingsPage> {
           wcLocalizations().settingsEditDevicesList,
           Icons.edit_note,
           () {
-            NavbarNotifier.hideBottomNavBar = false;
-            Common.navBarNavigate(context, DevicesEditorPage.route, isRootNavigator: false);
+            Common.navigate(context, DevicesEditorPage.route, isRootNavigator: false);
           },
           enabled: enabled,
         ),
@@ -283,8 +253,7 @@ class _SettingsPage extends State<SettingsPage> {
           wcLocalizations().settingsEditThemes,
           Icons.edit_note,
           () async {
-            NavbarNotifier.hideBottomNavBar = false;
-            await Common.navBarNavigate(context, ThemesEditorPage.route, isRootNavigator: false);
+            await Common.navigate(context, ThemesEditorPage.route, isRootNavigator: false);
             if (!mounted) return;
             setState(() {
               themesList = Settings().getThemesList();

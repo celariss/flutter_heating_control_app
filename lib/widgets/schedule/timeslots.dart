@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
+import '../../common/theme.dart';
 import '../../common/timetool.dart';
 
 class Timeslots {
@@ -52,6 +53,7 @@ class Timeslots {
     BoxDecoration deco = BoxDecoration(
       color: color,
       shape: BoxShape.rectangle,
+      border: Border.all(width: 1, color: AppTheme().background3Color),
       borderRadius: (timeslotsData.length == 1)
           ? BorderRadius.horizontal(left: Radius.circular(timeslotsHeight), right: Radius.circular(timeslotsHeight))
           : (schedulePos.timeslotIdx == 0)

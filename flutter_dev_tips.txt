@@ -52,9 +52,3 @@ To get back to latest flutter version :
 
 To create new project :
 	flutter create . --org com.yourdomain --project-name your_app_name
-	
-About the navbar_router lib :
-    - url :
-	  https://pub.dev/packages/navbar_router
-    - Explanation about nav_bar implementation and use :
-	  https://medium.com/flutter-community/everything-about-the-bottomnavigationbar-in-flutter-e99e5470dddb

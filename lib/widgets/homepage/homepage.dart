@@ -1,7 +1,5 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
@@ -25,31 +23,9 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePage extends State<HomePage> {
-  final _scrollController = ScrollController();
   Map? schedulerData;
-  Size size = Size.zero;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    size = MediaQuery.of(context).size;
-    if (size.width < 600) {
-      _addScrollListener();
-    }
-  }
 
-  void handleScroll() {
-    if (size.width > 600) return;
-    if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if (NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = false;
-      }
-    } else {
-      if (!NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = true;
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -76,16 +52,12 @@ class _HomePage extends State<HomePage> {
   //   super.didUpdateWidget(oldWidget);
   // }
 
-  void _addScrollListener() {
-    _scrollController.addListener(handleScroll);
-  }
 
   @override
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -147,12 +119,10 @@ class _HomePage extends State<HomePage> {
             iconColor: AppTheme().normalTextColor,
             backColor: AppTheme().background3Color,
             onPressed: () {
-              NavbarNotifier.hideBottomNavBar = false;
-              Common.navBarNavigate(context, SettingsPage.route, isRootNavigator: false);
+              Common.navigate(context, SettingsPage.route, isRootNavigator: false);
             },)
       ]),
       body: Common.cnxStateWidgetFilter(SingleChildScrollView(
-        padding: Common.getNavbarHeightPadding(),
         child: Column(children: [
           const SizedBox(height: 10),
           Text(

@@ -5,7 +5,6 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:navbar_router/navbar_router.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
@@ -76,8 +75,7 @@ class TimeslotsSet extends StatelessWidget {
     
     return InkWell(
       onTap: () {
-        NavbarNotifier.hideBottomNavBar = false;
-        Common.navBarNavigate(context, TimeSlotSetPage.route, isRootNavigator: false, arguments: {
+        Common.navigate(context, TimeSlotSetPage.route, isRootNavigator: false, arguments: {
           'scheduleName': scheduleName,
           'scheduleItemIdx': scheduleItemIdx,
           'timeslotSetIdx': timeslotSetIdx,

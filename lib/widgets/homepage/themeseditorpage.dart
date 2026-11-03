@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 
 import '../../common/common.dart';
@@ -43,7 +41,6 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newThemeNameController = TextEditingController();
-  Size size = Size.zero;
   String? _selectedThemeName;
   late ThemeNotifier _themeNotifier;
 
@@ -58,26 +55,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
         : (themes.isEmpty ? null : themes.first);
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    size = MediaQuery.of(context).size;
-    if (size.width < 600) {
-      _scrollController.addListener(_handleScroll);
-    }
-  }
 
-  void _handleScroll() {
-    if (size.width > 600 || !_scrollController.hasClients) return;
-    if (_scrollController.position.userScrollDirection ==
-        ScrollDirection.forward) {
-      if (NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = false;
-      }
-    } else if (!NavbarNotifier.isNavbarHidden) {
-      NavbarNotifier.hideBottomNavBar = true;
-    }
-  }
 
   @override
   void dispose() {
@@ -146,7 +124,6 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
       appBar: Common.createAppBar(wcLocalizations().settingsEditThemes),
       body: SingleChildScrollView(
         controller: _scrollController,
-        padding: Common.getNavbarHeightPadding(),
         child: Column(
           children: [
             Padding(

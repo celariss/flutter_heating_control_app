@@ -39,7 +39,6 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
     pullData = true;
     ScheduleDataPosition pos = ScheduleDataPosition(widget.scheduleName, widget.scheduleItemIdx, widget.timeslotSetIdx);
     return SingleChildScrollView(
-        padding: Common.getNavbarHeightPadding(),
         child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -97,7 +96,6 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: Timeslots.timeslotsBuilder(context, pos, timeslotSetData, widget.tsKey, false, false, timeSlotBuilder: buildTimeslotEditor),
       ),
-      // Widget to avoid content being hidden by navbar
       const SizedBox(height: 55)
     ]));
   }
@@ -137,7 +135,7 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
                   width: 100,
                   decoration: BoxDecoration(
                       color: color,
-                      //border: Border.all(color: Colors.grey),
+                      border: Border.all(width: 1, color: AppTheme().background3Color),
                       borderRadius: BorderRadius.circular(10.0)),
                   child: Center(
                       child: Text(tempSet['alias'],

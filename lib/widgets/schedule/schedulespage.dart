@@ -1,7 +1,5 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
@@ -22,31 +20,9 @@ class SchedulesPage extends StatefulWidget {
 }
 
 class _SchedulesPage extends State<SchedulesPage> {
-  final _scrollController = ScrollController();
   Map? schedulerData;
-  Size size = Size.zero;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    size = MediaQuery.of(context).size;
-    if (size.width < 600) {
-      _addScrollListener();
-    }
-  }
 
-  void handleScroll() {
-    if (size.width > 600) return;
-    if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if (NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = false;
-      }
-    } else {
-      if (!NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = true;
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -60,16 +36,12 @@ class _SchedulesPage extends State<SchedulesPage> {
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
-  void _addScrollListener() {
-    _scrollController.addListener(handleScroll);
-  }
 
   @override
   void dispose() {
     ModelCtrl().onSchedulesEvent.unsubscribe(_onSchedulesEvent);
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
-    _scrollController.dispose();
     super.dispose();
   }
 
@@ -115,7 +87,6 @@ class _SchedulesPage extends State<SchedulesPage> {
         },
       )),
       body: Common.cnxStateWidgetFilter(ReorderableListView.builder(
-          padding: Common.getNavbarHeightPadding(),
           // The two following lines are here to avoid "viewport has unbounded height" error
           // and allows the scroll to work in nested listviews
           physics: const ClampingScrollPhysics(),

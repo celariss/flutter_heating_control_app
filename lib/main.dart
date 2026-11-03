@@ -7,9 +7,9 @@ library;
 
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:heating_control_app/widgets/homepage/deviceseditorpage.dart';
 import 'package:heating_control_app/widgets/homepage/themeseditorpage.dart';
-import 'package:navbar_router/navbar_router.dart';
 import 'package:provider/provider.dart';
 import 'l10n/app_localizations.dart';
 
@@ -76,13 +76,26 @@ class MyApp extends StatelessWidget {
       // Color visible during transition between pages
       canvasColor: AppTheme().background1Color,
       iconTheme: IconThemeData(color: AppTheme().specialTextColor),
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppTheme().background2Color,
+        indicatorColor: AppTheme().background2Color,
+        labelTextStyle: WidgetStateProperty.resolveWith((states) => TextStyle(
+          fontWeight: states.contains(WidgetState.selected) ? FontWeight.bold : FontWeight.normal,
+          color: states.contains(WidgetState.selected) ? AppTheme().focusColor : AppTheme().normalTextColor,
+        )),
+        iconTheme: WidgetStateProperty.resolveWith((states) => IconThemeData(
+          color: states.contains(WidgetState.selected) ? AppTheme().focusColor : AppTheme().normalTextColor,
+        )),
+      ),
       navigationRailTheme: NavigationRailThemeData(
-        unselectedLabelTextStyle: TextStyle(
-          color: AppTheme().normalTextColor
-          ),
-        unselectedIconTheme: IconThemeData(
-          color: AppTheme().normalTextColor
-        )
+        indicatorColor: AppTheme().background2Color,
+        selectedLabelTextStyle: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: AppTheme().focusColor,
+        ),
+        selectedIconTheme: IconThemeData(color: AppTheme().focusColor),
+        unselectedLabelTextStyle: TextStyle(color: AppTheme().normalTextColor),
+        unselectedIconTheme: IconThemeData(color: AppTheme().normalTextColor),
       ),
       listTileTheme: ListTileThemeData(
         textColor: AppTheme().specialTextColor,
@@ -181,7 +194,6 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     ModelCtrl().connect();
-    NavbarNotifier.hideBottomNavBar = false;
 
     return Consumer<ThemeNotifier>(
       builder: (context, appState, child) {
@@ -210,23 +222,16 @@ class RootPage extends StatefulWidget {
 }
 
 class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
-  Map<int, Map<String, Widget>> routes = {
-    0: {
-      '/': const HomePage(),
-      SettingsPage.route: const SettingsPage(),
-      DevicesEditorPage.route: const DevicesEditorPage(),
-      ThemesEditorPage.route: const ThemesEditorPage(),
-    },
-    1: {
-      '/': const TemperatureSetsPage(),
-    },
-    2: {
-      '/': const SchedulesPage(),
-      TimeSlotSetPage.route: const TimeSlotSetPage(),
-    },
-  };
+  static const int _mobileBreakpoint = 600;
+  static const int _extendedRailBreakpoint = 800;
 
-  ThemeNotifier ?themeNotifier;
+  final List<GlobalKey<NavigatorState>> _navigatorKeys = [
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+    GlobalKey<NavigatorState>(),
+  ];
+  final List<int> _tabHistory = [];
+  int _selectedIndex = 0;
   DateTime oldTime = DateTime.now();
   DateTime newTime = DateTime.now();
 
@@ -280,34 +285,19 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
     Color textColor = Common.contrastColor(backColor);
     switch (message.code) {
       case EMsgInfoCode.mqttServerConnected:
-        //msgText = wcLocalizations().msgInfoCode_mqttServerConnected;
-        msgText = "";
-        refresh = true;
-        break;
       case EMsgInfoCode.mqttServerDisconnected:
-        //msgText = wcLocalizations().msgInfoCode_mqttServerDisconnected;
-        msgText = "";
+      case EMsgInfoCode.controlServerAvailable:
+      case EMsgInfoCode.controlServerUnavailable:
+        msgText = '';
         refresh = true;
         break;
       case EMsgInfoCode.mqttMessageError:
         msgText = wcLocalizations().msgInfoCode_mqttMessageError;
         break;
-      case EMsgInfoCode.controlServerAvailable:
-        //msgText = wcLocalizations().msgInfoCode_controlServerAvailable;
-        msgText = "";
-        refresh = true;
-        break;
-      case EMsgInfoCode.controlServerUnavailable:
-        //msgText = wcLocalizations().msgInfoCode_controlServerUnavailable;
-        msgText = "";
-        refresh = true;
-        break;
       default:
         break;
     }
-    if (refresh) {
-      setState(() {});
-    }
+    if (refresh) setState(() {});
     if (msgText.isNotEmpty) {
       Common.hideSnackBar(context);
       Common.showSnackBar(context, msgText, backColor: backColor, textColor: textColor, durationMs: duration);
@@ -326,17 +316,16 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   void dispose() {
     ModelCtrl().onServerResponseEvent.unsubscribe(_onServerResponseEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
-    super.dispose();
     WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state==AppLifecycleState.resumed) {
+    if (state == AppLifecycleState.resumed) {
       ModelCtrl().onAppActive();
-    }
-    else {
+    } else {
       ModelCtrl().onAppInactive();
     }
   }
@@ -344,71 +333,117 @@ class _RootPageState extends State<RootPage> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
-    // We need this line with listen:true to ensure refresh of NavBarRouter when current theme changes
-    themeNotifier = Provider.of<ThemeNotifier>(context, listen: true);
-    List<NavbarItem> items = [
-        NavbarItem(Icons.home, wcLocalizations().navbarHome, backgroundColor: AppTheme().background2Color),
-        NavbarItem(Icons.list, wcLocalizations().navbarTempsets, backgroundColor: AppTheme().background2Color),
-        NavbarItem(Icons.schedule, wcLocalizations().navbarPlannings, backgroundColor: AppTheme().background2Color),
-      ];
+    Provider.of<ThemeNotifier>(context, listen: true);
+    final isDesktop = size.width >= _mobileBreakpoint;
+    final destinations = <NavigationDestination>[
+      NavigationDestination(icon: const Icon(Icons.home), label: wcLocalizations().navbarHome),
+      NavigationDestination(icon: const Icon(Icons.list), label: wcLocalizations().navbarTempsets),
+      NavigationDestination(icon: const Icon(Icons.schedule), label: wcLocalizations().navbarPlannings),
+    ];
 
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      body: NavbarRouter(
-        type: NavbarType.standard,
-        errorBuilder: (context) {
-          return const Center(child: Text('NavBarRouter Error : unknown route'));
-        },
-        isDesktop: size.width > 600 ? true : false,
-        onBackButtonPressed: (isExitingApp) {
-          if (isExitingApp) {
-            newTime = DateTime.now();
-            int difference = newTime.difference(oldTime).inMilliseconds;
-            oldTime = newTime;
-            if (difference < 1000) {
-              Common.hideSnackBar(context);
-              return isExitingApp;
-            } else {
-              Common.showSnackBar(context, wcLocalizations().snackbarBackButton);
-              return false;
-            }
-          } else {
-            return isExitingApp;
-          }
-        },
-        destinationAnimationCurve: Curves.fastOutSlowIn,
-        destinationAnimationDuration: 600,
-        decoration: NavbarDecoration(
-            showUnselectedLabels: true,
-            backgroundColor: AppTheme().background2Color,
-            indicatorColor: AppTheme().background2Color,
-            selectedLabelTextStyle: TextStyle(fontWeight: FontWeight.bold, color: AppTheme().focusColor),
-            selectedIconTheme: IconThemeData(color: AppTheme().focusColor),
-            selectedIconColor: AppTheme().focusColor,
-            unselectedLabelTextStyle: TextStyle(color: AppTheme().normalTextColor),
-            unselectedIconTheme: IconThemeData(color: AppTheme().normalTextColor),
-            unselectedLabelColor: AppTheme().normalTextColor,
-            unselectedIconColor: AppTheme().normalTextColor,
-            unselectedItemColor: AppTheme().normalTextColor,
-            isExtended: size.width > 800 ? true : false,
-            navbarType: BottomNavigationBarType.fixed),
-        onChanged: (x) {},
-        backButtonBehavior: BackButtonBehavior.rememberHistory,
-        destinations: [
-          for (int i = 0; i < items.length; i++)
-            DestinationRouter(
-              navbarItem: items[i],
-              destinations: [
-                for (int j = 0; j < routes[i]!.keys.length; j++)
-                  Destination(
-                    route: routes[i]!.keys.elementAt(j),
-                    widget: routes[i]!.values.elementAt(j),
-                  ),
-              ],
-              initialRoute: routes[i]!.keys.first,
+    return PopScope<Object?>(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, result) {
+        if (!didPop) _handleBackButton();
+      },
+      child: Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Row(
+          children: [
+            if (isDesktop)
+              NavigationRail(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: _selectTab,
+                labelType: size.width >= _extendedRailBreakpoint
+                    ? null
+                    : NavigationRailLabelType.selected,
+                extended: size.width >= _extendedRailBreakpoint,
+                destinations: [
+                  for (final destination in destinations)
+                    NavigationRailDestination(
+                      icon: destination.icon,
+                      selectedIcon: destination.selectedIcon,
+                      label: Text(destination.label),
+                    ),
+                ],
+              ),
+            Expanded(
+              child: IndexedStack(
+                index: _selectedIndex,
+                children: [
+                  _buildTabNavigator(0),
+                  _buildTabNavigator(1),
+                  _buildTabNavigator(2),
+                ],
+              ),
             ),
-        ],
+          ],
+        ),
+        bottomNavigationBar: isDesktop
+            ? null
+            : NavigationBar(
+                selectedIndex: _selectedIndex,
+                onDestinationSelected: _selectTab,
+                destinations: destinations,
+              ),
       ),
     );
+  }
+
+  Widget _buildTabNavigator(int tabIndex) {
+    final routes = <Map<String, WidgetBuilder>>[
+      {
+        HomePage.route: (_) => const HomePage(),
+        SettingsPage.route: (_) => const SettingsPage(),
+        DevicesEditorPage.route: (_) => const DevicesEditorPage(),
+        ThemesEditorPage.route: (_) => const ThemesEditorPage(),
+      },
+      {TemperatureSetsPage.route: (_) => const TemperatureSetsPage()},
+      {
+        SchedulesPage.route: (_) => const SchedulesPage(),
+        TimeSlotSetPage.route: (_) => const TimeSlotSetPage(),
+      },
+    ][tabIndex];
+
+    return Navigator(
+      key: _navigatorKeys[tabIndex],
+      onGenerateRoute: (settings) {
+        final builder = routes[settings.name];
+        return MaterialPageRoute<void>(
+          settings: settings,
+          builder: builder ?? (_) => const Scaffold(
+            body: Center(child: Text('Route introuvable')),
+          ),
+        );
+      },
+    );
+  }
+
+  void _selectTab(int index) {
+    if (index == _selectedIndex) return;
+    _tabHistory.add(_selectedIndex);
+    setState(() => _selectedIndex = index);
+  }
+
+  void _handleBackButton() {
+    final navigator = _navigatorKeys[_selectedIndex].currentState;
+    if (navigator?.canPop() ?? false) {
+      navigator!.pop();
+      return;
+    }
+    if (_tabHistory.isNotEmpty) {
+      setState(() => _selectedIndex = _tabHistory.removeLast());
+      return;
+    }
+
+    newTime = DateTime.now();
+    final difference = newTime.difference(oldTime).inMilliseconds;
+    oldTime = newTime;
+    if (difference < 1000) {
+      Common.hideSnackBar(context);
+      SystemNavigator.pop();
+    } else {
+      Common.showSnackBar(context, wcLocalizations().snackbarBackButton);
+    }
   }
 }

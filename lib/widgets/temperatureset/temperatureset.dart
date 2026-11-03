@@ -168,10 +168,6 @@ class TemperatureSet {
         padding: const EdgeInsets.only(left: 10, right: 10),
         child: ListTile(
           onTap: () {
-            /*NavbarNotifier.hideBottomNavBar = false;
-                  navigate(context, ProductComments.route,
-                      isRootNavigator: false,
-                      arguments: {'id': argsId.toString()});*/
             TemperaturePicker.show(context,
                 temperature: data['setpoint'].toDouble(), min: Settings().minSetpoint, max: Settings().maxSetpoint).then((value) {
               //setState(() => data['setpoint'] = value);

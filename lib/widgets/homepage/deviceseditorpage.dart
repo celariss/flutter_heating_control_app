@@ -2,8 +2,6 @@ import 'dart:math';
 
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
-import 'package:navbar_router/navbar_router.dart';
 
 import '../../common/common.dart';
 import '../../common/model_ctrl.dart';
@@ -19,33 +17,11 @@ class DevicesEditorPage extends StatefulWidget {
 }
 
 class _DevicesEditorPageState extends State<DevicesEditorPage> {
-  final _scrollController = ScrollController();
-  Size size = Size.zero;
   Map<String, Device> devices = {};
   List<String> orderedDevices = [];
   Map<String, Entity> entities = {};
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    size = MediaQuery.of(context).size;
-    if (size.width < 600) {
-      _addScrollListener();
-    }
-  }
 
-  void handleScroll() {
-    if (size.width > 600) return;
-    if (_scrollController.position.userScrollDirection == ScrollDirection.forward) {
-      if (NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = false;
-      }
-    } else {
-      if (!NavbarNotifier.isNavbarHidden) {
-        NavbarNotifier.hideBottomNavBar = true;
-      }
-    }
-  }
 
   @override
   void initState() {
@@ -58,13 +34,9 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     ModelCtrl().onMessageEvent.subscribe(_onMessageEvent);
   }
 
-  void _addScrollListener() {
-    _scrollController.addListener(handleScroll);
-  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
     ModelCtrl().onDevicesEvent.unsubscribe(_onDevicesEvent);
     ModelCtrl().onEntitiesEvent.unsubscribe(_onEntitiesEvent);
     ModelCtrl().onMessageEvent.unsubscribe(_onMessageEvent);
@@ -110,7 +82,6 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
       )),
       body: Common.cnxStateWidgetFilter(SingleChildScrollView(
         child: ReorderableListView.builder(
-            padding: Common.getNavbarHeightPadding(),
             // The two following lines are here to avoid "viewport has unbounded height" error
             // and allows the scroll to work in nested listviews
             //physics: const BouncingScrollPhysics(),
