@@ -39,9 +39,12 @@ class Thermostat {
         line.add(const Spacer());
         if (showResetButton) {
           line.add(Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            Common.createIconButton(Icons.replay, iconSize: 10, onPressed: () {
-              onSetpoint(device.name, activeSetpoint);
-            }),
+            Common.createPlainIconButton(Icons.replay,
+              padding: EdgeInsets.zero,
+              onPressed: () {
+                onSetpoint(device.name, activeSetpoint);
+              }
+            ),
           ]));
           line.add(const Spacer());
           line.add(const Spacer());
@@ -75,10 +78,9 @@ class Thermostat {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: device.isAvailable
                     ? [
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
+                        Common.createTransparentIconButton(
+                          Icons.keyboard_double_arrow_left,
                           padding: EdgeInsets.zero,
-                          icon: Icon(Icons.keyboard_double_arrow_left, color: AppTheme().focusColor),
                           onPressed: () {
                             double newValue = round(value - Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
@@ -88,10 +90,9 @@ class Thermostat {
                         ),
                         Text('${min(maxValue, max(minValue, value)).toStringAsFixed(1)}°',
                             style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-                        IconButton(
-                          visualDensity: VisualDensity.compact,
+                        Common.createTransparentIconButton(
+                          Icons.keyboard_double_arrow_right,
                           padding: EdgeInsets.zero,
-                          icon: Icon(Icons.keyboard_double_arrow_right, color: AppTheme().focusColor),
                           onPressed: () {
                             double newValue = round(value + Settings().thermostatResolution, Settings().thermostatResolution, minValue:minValue, maxValue:maxValue);
                             if (newValue != value) {
@@ -143,4 +144,3 @@ class Thermostat {
     ]);
   }
 }
-

@@ -113,11 +113,8 @@ class _HomePage extends State<HomePage> {
     Provider.of<ThemeNotifier>(context, listen: true);
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().homePageTitle, actions:[
-        Common.createIconButton(
+        Common.createAppBarIconButton(
             Icons.settings,
-            //iconSize: 50,
-            iconColor: AppTheme().appBarColor,
-            backColor: AppTheme().appBarTextColor,
             onPressed: () {
               Common.navigate(context, SettingsPage.route, isRootNavigator: false);
             },)

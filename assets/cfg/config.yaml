@@ -1,7 +1,7 @@
 themeName: DarkGreen
 temperatureSetDefaultColor: 0xFF000099
 defaultSetpoint: 18
-minSetpoint: 7
+minSetpoint: 5
 maxSetpoint: 30
 thermostatResolution: 0.5
 # MQTT topics to use to communicate with the heating control server
@@ -21,7 +21,7 @@ mqtt:
 
   # For the following parameters, you can :
   # 1) Set them in secrets.yaml (under mqtt tag)
-  # 2) Set them in the settingz page of the running application
+  # 2) Set them in the settings page of the running application
   # => Prefer #2 to insure secured storage of these values since secrets.yaml will be accessible in the target storage !
   brokerAddress: ''
   user: ''

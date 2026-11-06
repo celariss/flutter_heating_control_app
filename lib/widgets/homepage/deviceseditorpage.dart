@@ -65,21 +65,23 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().devicesEditorTitle),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
-        size: 55,
-        iconData: Icons.add,
-        onPressed: () async {
-          await editDeviceProperties(
-            context,
-            wcLocalizations().new_,
-            entities.entries.first.value.serverEntity,
-            false,
-            (deviceName, tapedName, deviceEntity) {
-              ModelCtrl().createDevice(tapedName, deviceEntity);
-            },
-          );
-        },
-      )),
+      floatingActionButton: Common.cnxStateButtonFilter(
+        Common.createFloatingButton(
+          size: 55,
+          iconData: Icons.add,
+          onPressed: () async {
+            await editDeviceProperties(
+              context,
+              wcLocalizations().new_,
+              entities.entries.first.value.serverEntity,
+              false,
+              (deviceName, tapedName, deviceEntity) {
+                ModelCtrl().createDevice(tapedName, deviceEntity);
+              },
+            );
+          },
+        )
+      ),
       body: Common.cnxStateWidgetFilter(SingleChildScrollView(
         child: ReorderableListView.builder(
             // The two following lines are here to avoid "viewport has unbounded height" error
@@ -110,17 +112,18 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
       name = device.name;
       entity = device.serverEntity;
     }
-    Widget leading = Icon(Common.getDeviceIconData(), color: null);
+    Widget leading = Icon(Common.getDeviceIconData());
     Widget title = Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-      Flexible(child: Text(
-        name,
-        overflow: TextOverflow.fade,
-        style: TextStyle(fontSize: Common.getRadioListTextSize(),
-        fontWeight: FontWeight.bold, color: null)),
+      Flexible(child:
+        Text(
+          name,
+          overflow: TextOverflow.fade,
+          style: TextStyle(fontSize: Common.getRadioListTextSize(),
+          fontWeight: FontWeight.bold, color: null)
+        ),
       ),
       Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-        IconButton(
-          icon: Icon(Icons.edit, color: AppTheme().focusColor),
+        Common.createTransparentIconButton(Icons.edit,
           onPressed: () async {
             await editDeviceProperties(
               context,
@@ -197,7 +200,7 @@ class _DevicesEditorPageState extends State<DevicesEditorPage> {
           if (showDeleteBtn==true) {
             columnChildren += [
               const SizedBox(height: 20,),
-              Common.createIconButton(Icons.delete, onPressed: () async {
+              Common.createPlainIconButton(Icons.delete_outline, onPressed: () async {
                 bool result =
                 await Common.showWarningDialog(context, wcLocalizations().removeConfirmation("eqpt", deviceName));
                 if (result) {

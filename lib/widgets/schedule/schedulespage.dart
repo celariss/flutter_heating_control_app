@@ -78,14 +78,16 @@ class _SchedulesPage extends State<SchedulesPage> {
     return Scaffold(
       appBar: Common.createAppBar(wcLocalizations().schedulesPageTitle),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerTop,
-      floatingActionButton: Common.cnxStateButtonFilter(Common.createFloatingButton(
-        size: 55,
-        iconData: Icons.add,
-        onPressed: () {
-          Map scheduleData = {'alias': wcLocalizations().new_};
-          Common.editScheduleProperties(context, scheduleData, _onNewScheduleValidate);
-        },
-      )),
+      floatingActionButton: Common.cnxStateButtonFilter(
+        Common.createFloatingButton(
+          size: 55,
+          iconData: Icons.add,
+          onPressed: () {
+            Map scheduleData = {'alias': wcLocalizations().new_};
+            Common.editScheduleProperties(context, scheduleData, _onNewScheduleValidate);
+          },
+        )
+      ),
       body: Common.cnxStateWidgetFilter(ReorderableListView.builder(
           // The two following lines are here to avoid "viewport has unbounded height" error
           // and allows the scroll to work in nested listviews

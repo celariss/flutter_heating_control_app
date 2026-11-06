@@ -153,6 +153,22 @@ class MyApp extends StatelessWidget {
           textStyle: WidgetStatePropertyAll(TextStyle(color:AppTheme().buttonTextColor))
         ),
       ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: AppTheme().focusColor,
+        foregroundColor: AppTheme().buttonTextColor,
+        hoverColor: AppTheme().buttonTextColor.withValues(alpha: 0.5),
+      ),
+      iconButtonTheme: IconButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.hovered)) {
+              return AppTheme().buttonTextColor.withValues(alpha: 0.5);
+            }
+            return Colors.transparent;
+          }),
+          foregroundColor: WidgetStatePropertyAll(AppTheme().focusColor),
+        ),
+      ),
       
       textTheme: TextTheme(
             bodyMedium: TextStyle(color: AppTheme().normalTextColor), // thermostat setpoint

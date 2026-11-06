@@ -279,7 +279,7 @@ class Common {
       ),
       child: Icon(iconData, color: iconColor ??AppTheme().buttonTextColor),
     );
-    
+  
     if (tooltip == null || tooltip.isEmpty) return widget;
     return Tooltip(message: tooltip, child: widget);
   }
@@ -293,8 +293,7 @@ class Common {
       String? tooltip,}
   ) {
     Widget button = FloatingActionButton(
-      backgroundColor: backColor ?? AppTheme().focusColor,
-      foregroundColor: AppTheme().buttonTextColor,
+      backgroundColor: backColor,
       elevation: AppTheme().defaultElevation,
       onPressed: onPressed,
       tooltip: tooltip,
@@ -316,7 +315,12 @@ class Common {
   ){
     final button = ElevatedButton(
       style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.all(AppTheme().focusColor),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.focused) || states.contains(WidgetState.hovered)) {
+              return AppTheme().focusColor.withValues(alpha: 0.6);
+            }
+            return AppTheme().focusColor;
+          }),
           shape: WidgetStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(10.0),
@@ -335,7 +339,90 @@ class Common {
     return Tooltip(message: tooltip, child: button);
   }
 
-  static Widget createIconButton(
+  static Widget _createIconButton(
+    IconData iconData,
+   {required void Function() onPressed,
+    required Color iconColor,
+    required Color backColor,
+    double? iconSize,
+    OutlinedBorder shape = const CircleBorder(),
+    bool? enabled,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    String? tooltip,}
+  ) {
+    final Color buttonBackgroundColor = backColor;
+    final Color overlayColor = buttonBackgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+
+    return IconButton(
+      icon: Icon(iconData, color: iconColor, size: iconSize),
+      onPressed: (enabled ?? true) ? onPressed : null,
+      padding: padding,
+      tooltip: tooltip,
+
+      style: ButtonStyle(
+        shape: WidgetStatePropertyAll(shape),
+        elevation: WidgetStatePropertyAll(AppTheme().defaultElevation),
+        visualDensity: VisualDensity.compact,
+        backgroundColor: WidgetStatePropertyAll(buttonBackgroundColor),
+        overlayColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.pressed)) return overlayColor.withValues(alpha: 0.2);
+          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+            return overlayColor.withValues(alpha: 0.20);
+          }
+          return null;
+        }),
+      ),
+    );
+  }
+
+  static Widget createTransparentIconButton(
+    IconData iconData,
+   {required void Function() onPressed,
+    Color? iconColor,
+    double? iconSize,
+    OutlinedBorder shape = const CircleBorder(),
+    bool? enabled,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    String? tooltip,}
+  ) {
+    return _createIconButton(
+      iconData,
+      onPressed: onPressed,
+      iconColor: iconColor ?? AppTheme().focusColor,
+      backColor: Colors.transparent,
+      iconSize: iconSize,
+      shape: shape,
+      enabled: enabled,
+      padding: padding,
+      tooltip: tooltip,
+    );
+  }
+
+  static Widget createPlainIconButton(
+    IconData iconData,
+   {required void Function() onPressed,
+    Color? iconColor,
+    Color? backColor,
+    double? iconSize,
+    OutlinedBorder shape = const CircleBorder(),
+    bool? enabled,
+    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    String? tooltip,}
+  ) {
+    return _createIconButton(
+      iconData,
+      onPressed: onPressed,
+      iconColor: iconColor ?? AppTheme().buttonTextColor,
+      backColor: backColor ?? AppTheme().focusColor,
+      iconSize: iconSize,
+      shape: shape,
+      enabled: enabled,
+      padding: padding,
+      tooltip: tooltip,
+    );
+  }
+
+  static Widget createAppBarIconButton(
     IconData iconData,
    {required void Function() onPressed,
     Color? iconColor,
@@ -345,29 +432,16 @@ class Common {
     bool? enabled,
     String? tooltip,}
   ) {
-    final Color buttonBackgroundColor = backColor ?? AppTheme().focusColor;
-    final Color overlayColor = buttonBackgroundColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
-
-    final button = ElevatedButton(
-      onPressed: (enabled ?? true) ? onPressed : null,
-      style: ButtonStyle(
-        shape: WidgetStatePropertyAll(shape),
-        elevation: WidgetStatePropertyAll(AppTheme().defaultElevation),
-        visualDensity: VisualDensity.compact,
-        backgroundColor: WidgetStatePropertyAll(buttonBackgroundColor),
-        overlayColor: WidgetStateProperty.resolveWith((states) {
-          if (states.contains(WidgetState.pressed)) return overlayColor.withValues(alpha: 0.2);
-          if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
-            return overlayColor.withValues(alpha: 0.12);
-          }
-          return null;
-        }),
-      ),
-      child: Icon(iconData, color: iconColor ?? AppTheme().buttonTextColor),
+    return _createIconButton(
+      iconData,
+      onPressed: onPressed,
+      iconColor: iconColor ?? AppTheme().appBarColor,
+      backColor: backColor ?? AppTheme().appBarTextColor,
+      iconSize: iconSize,
+      shape: shape,
+      enabled: enabled,
+      tooltip: tooltip,
     );
-
-    if (tooltip == null || tooltip.isEmpty) return button;
-    return Tooltip(message: tooltip, child: button);
   }
 
   /// Builds and returns a [PopupMenuButton] that contains all items given in [menuItems].
@@ -757,12 +831,23 @@ class Common {
       chips.add(Flexible(
         child: Common.wrapChip(FilterChip(
             backgroundColor: AppTheme().background3Color,
+            selectedColor: AppTheme().focusColor,
+            
+            // background colors
+            color: WidgetStateProperty.resolveWith((states) {
+              if (!passiveMode) {
+                if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+                  return AppTheme().focusColor.withValues(alpha: 0.60);
+                }
+              }
+              return null;
+            }),
+            
             showCheckmark: false,
             elevation: AppTheme().defaultElevation,
             shape: const CircleBorder(side: BorderSide.none),
             label: Text(day[1]),
             selected: weekDayFilters.contains(day[0]),
-            selectedColor: AppTheme().focusColor, // selected background color
             labelStyle: TextStyle(
               color: weekDayFilters.contains(day[0]) ? AppTheme().buttonTextColor : AppTheme().specialTextColor,
             ),

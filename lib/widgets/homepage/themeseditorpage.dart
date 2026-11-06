@@ -137,7 +137,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  Common.createIconButton(Icons.add, onPressed: _createTheme),
+                  Common.createPlainIconButton(Icons.add, onPressed: _createTheme),
                 ],
               ),
             ),
@@ -164,7 +164,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
                       ),
                   ),
                   const SizedBox(width: 8),
-                  Common.createIconButton(
+                  Common.createPlainIconButton(
                     Icons.delete_outline,
                     onPressed: () => {
                       if (selectedTheme != null && _themes.length > 1) {
@@ -194,10 +194,10 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    trailing: IconButton(
-                      tooltip: wcLocalizations().popupPickColorTitle,
-                      icon: Icon(Icons.colorize, color: AppTheme().focusColor),
+                    trailing: Common.createTransparentIconButton(
+                      Icons.colorize,
                       onPressed: () => _editColor(name, color),
+                      tooltip: wcLocalizations().popupPickColorTitle,
                     ),
                   ),
                 );

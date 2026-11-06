@@ -6,6 +6,8 @@ library;
 
 import 'dart:io';
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yaml/yaml.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -58,7 +60,7 @@ class Configuration {
       }
       target = configMap_[targetSection];
     }
-    mergeMaps_(target, map);
+    _mergeMaps(target, map);
   }
 
   // Don't forget to add ${path} to pubspec.yaml :
@@ -116,14 +118,57 @@ class Configuration {
     return true;
   }
 
+  Future<void> addFromSharedPreferences({String? srcKey, String? targetSection}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    if (srcKey != null) {
+      Object? value = prefs.get(srcKey);
+      if (value != null) {
+        if (value is String) {
+          if (_isJsonValid(value)) {
+            addFromJsonString(value, targetSection: targetSection);
+          } else {
+            configMap_[targetSection ?? srcKey] = value;
+          }
+        } else if (value is Map) {
+          addFromMap(value, targetSection: targetSection);
+        } else if (value is List) {
+          addFromMap({(targetSection ?? srcKey): value}, targetSection: targetSection);
+        }
+      }
+    } else {
+      Map map = {};
+      for (String key in prefs.getKeys()) {
+        map[key] = prefs.get(key);
+      }
+      addFromMap(map, targetSection: targetSection);
+    }
+  }
+
+  Future<void> addFromFlutterSecureStorage(FlutterSecureStorage storage, {String? targetSection}) async {
+    Map map = {};
+    Map<String, String> allValues = await storage.readAll();
+    for (String key in allValues.keys) {
+      map[key] = _jsonDecode(allValues[key]);
+    }
+    addFromMap(map, targetSection: targetSection);
+  }
+
   void addFromYamlString(String yamlString, {String? targetSection}) {
     dynamic map = loadYaml(yamlString);
     addFromMap(YamlMapConverter.toMap(map), targetSection: targetSection);
   }
 
   void addFromJsonString(String jsonString, {String? targetSection}) {
-    dynamic map = jsonDecode(jsonString);
-    addFromMap(map, targetSection: targetSection);
+    try {
+      dynamic object = jsonDecode(jsonString);
+      if (object is Map) {
+        addFromMap(object, targetSection: targetSection);
+      } else if (object is List) {
+        addFromMap({(targetSection!=null ? targetSection.toString() : 'list'): object});
+      }
+    } catch (e) {
+      // catch Json parsing error
+    }
   }
 
   static FileType getFileType(String path) {
@@ -138,7 +183,7 @@ class Configuration {
     }
   }
 
-  static void mergeMaps_(Map target, Map source) {
+  static void _mergeMaps(Map target, Map source) {
     for (String key in source.keys) {
       dynamic sourceItem = source[key];
       if (target.containsKey(key)) {
@@ -151,7 +196,7 @@ class Configuration {
           }
         } else if (targetItem is Map) {
           if (sourceItem is Map) {
-            mergeMaps_(targetItem, sourceItem);
+            _mergeMaps(targetItem, sourceItem);
           } else {
             // TBD : ERROR
           }
@@ -162,5 +207,26 @@ class Configuration {
         target[key] = source[key];
       }
     }
+  }
+
+  static bool _isJsonValid(String source) {
+    try {
+      final parsed = jsonDecode(source);
+      return parsed is Map<String, dynamic> || parsed is List;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  static dynamic _jsonDecode(String? value) {
+    if (value != null) {
+      try {
+        final parsed = jsonDecode(value);
+        return parsed;
+      } catch (e) {
+        // catch Json parsing error
+      }
+    }
+    return value;
   }
 }

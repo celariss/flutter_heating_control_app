@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:heating_control_app/common/common.dart';
 
 class SettingsWidgetHelper {
 
@@ -112,13 +111,24 @@ class SettingsWidgetHelper {
     return SettingsWidgetHelper.createTextField(
       text,
       enabled: enabled,
-      suffixWidget: Common.createIconButton(
-        icon,
-        iconSize: 50,
-        enabled: enabled,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
-        onPressed: onPressed,
+      suffixWidget: IconButton(
+        icon: Icon(icon, size: 25),
+        onPressed: enabled ? onPressed : null,
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         tooltip: tooltip,
+        style: ButtonStyle(
+          //shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          //elevation: WidgetStatePropertyAll(AppTheme().defaultElevation),
+          visualDensity: VisualDensity.compact,
+          //backgroundColor: WidgetStatePropertyAll(buttonBackgroundColor),
+          //overlayColor: WidgetStateProperty.resolveWith((states) {
+          //  if (states.contains(WidgetState.pressed)) return overlayColor.withValues(alpha: 0.2);
+          //  if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
+          //    return overlayColor.withValues(alpha: 0.20);
+          //  }
+          //  return null;
+          //}
+        ),
       ),
     );
   }

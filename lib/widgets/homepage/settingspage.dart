@@ -158,6 +158,19 @@ class _SettingsPage extends State<SettingsPage> {
     return '$lang (${locale.toLanguageTag()})';
   }
 
+  static Widget _wrapIconButton(Widget btn) {
+    return IconButtonTheme(
+      data: IconButtonThemeData(
+        style: IconButton.styleFrom(
+          backgroundColor: AppTheme().focusColor,
+          foregroundColor: AppTheme().buttonTextColor,
+          hoverColor: AppTheme().buttonTextColor.withValues(alpha: 0.5),
+        ),
+      ),
+      child: btn,
+    );
+  }
+
   static Widget _createVersionWidget(String version) {
     return Builder(
       builder: (BuildContext context) {
@@ -203,13 +216,14 @@ class _SettingsPage extends State<SettingsPage> {
           enabled: enabled,
           suffixWidget: _createVersionWidget(enabled ? ModelCtrl().serverVersion : '?'),
         ),
-        SettingsWidgetHelper.createBtnField(
-          wcLocalizations().settingsEditDevicesList,
-          Icons.edit_note,
-          () {
-            Common.navigate(context, DevicesEditorPage.route, isRootNavigator: false);
-          },
-          enabled: enabled,
+        _wrapIconButton(SettingsWidgetHelper.createBtnField(
+            wcLocalizations().settingsEditDevicesList,
+            Icons.edit_note,
+            () {
+              Common.navigate(context, DevicesEditorPage.route, isRootNavigator: false);
+            },
+            enabled: enabled,
+          ),
         ),
         SettingsWidgetHelper.createFieldsGroup(
           wcLocalizations().settingsGroupManualReset,
@@ -249,24 +263,24 @@ class _SettingsPage extends State<SettingsPage> {
     return SettingsWidgetHelper.createSection(
       wcLocalizations().settingsGroupMain,
       <Widget>[
-         SettingsWidgetHelper.createBtnField(
-          wcLocalizations().settingsEditThemes,
-          Icons.edit_note,
-          () async {
-            await Common.navigate(context, ThemesEditorPage.route, isRootNavigator: false);
-            if (!mounted) return;
-            setState(() {
-              themesList = Settings().getThemesList();
-              if (!themesList.contains(themeName)) {
-                themeName = themesList.contains(Settings().activeThemeName)
-                    ? Settings().activeThemeName
-                    : (themesList.isEmpty ? '' : themesList.first);
-                Settings().setActiveTheme(themeName);
-              }
-              themeNotifier!.refreshAppTheme();
-            });
-          },
-        ),
+        _wrapIconButton(SettingsWidgetHelper.createBtnField(
+            wcLocalizations().settingsEditThemes,
+            Icons.edit_note,
+            () async {
+              await Common.navigate(context, ThemesEditorPage.route, isRootNavigator: false);
+              if (!mounted) return;
+              setState(() {
+                themesList = Settings().getThemesList();
+                if (!themesList.contains(themeName)) {
+                  themeName = themesList.contains(Settings().activeThemeName)
+                      ? Settings().activeThemeName
+                      : (themesList.isEmpty ? '' : themesList.first);
+                  Settings().setActiveTheme(themeName);
+                }
+                themeNotifier!.refreshAppTheme();
+              });
+            },
+         )),
         SettingsWidgetHelper.createListPickerField(wcLocalizations().settingsTheme, themesList, themeName, (value) {
           themeName = value;
           Settings().setActiveTheme(themeName);

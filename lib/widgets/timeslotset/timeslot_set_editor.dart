@@ -187,14 +187,6 @@ class _TimeSlotSetEditor extends State<TimeSlotSetEditor> {
           });
         });
 
-    /*Widget deleteBtn =
-        Common.createCircleIconButton(Icons.cancel, iconColor: Common.getErrorColor(), backColor: Colors.white, onPressed: () {
-      timeslotsData.removeAt(tsIndex);
-      setState(() {
-        pullData = false;
-      });
-    });*/
-
     Widget menuBtn = Common.createPopupMenu(
       [
         MyMenuItem(Icons.edit, wcLocalizations().timeslotAddAfter, 'add'),
