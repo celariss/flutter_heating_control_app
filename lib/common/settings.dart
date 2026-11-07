@@ -6,6 +6,7 @@
 library;
 
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/utils/localizations.dart';
 import '../utils/configuration.dart';
@@ -21,6 +22,29 @@ class Settings {
   }
   SharedPreferences ?prefs;
 
+  Map<String,String> _themeColors = {};
+
+  Map<String,String> getThemeColors() {
+    if (_themeColors.isEmpty) {
+      final l10n = wcLocalizations();
+      _themeColors = {
+        'background1Color' : l10n.background1Color,
+        'background2Color' : l10n.background2Color,
+        'background3Color' : l10n.background3Color,
+        'appBarColor' : l10n.appBarColor,
+        'appBarTextColor' : l10n.appBarTextColor,
+        'normalTextColor' : l10n.normalTextColor,
+        'specialTextColor' : l10n.specialTextColor,
+        'buttonTextColor' : l10n.buttonTextColor,
+        'focusColor' : l10n.focusColor,
+        'heaterWidgetManuelStateColor' : l10n.heaterWidgetManuelStateColor,
+        'warningColor' : l10n.warningColor,
+        'errorColor' : l10n.errorColor,
+        'successColor' : l10n.successColor,
+      };
+    }
+    return _themeColors;
+  }
   Future<void> loadConfigFile({BuildContext? context}) async {
     if (!_initDone) {
       prefs = await SharedPreferences.getInstance();
@@ -70,6 +94,149 @@ class Settings {
       setActiveTheme(activeThemeName);
       _initDone = true;
     }
+  }
+
+  String configToJson() {
+    Map<String, dynamic> configToSave = {
+      'mqtt': {
+        'SendTopic': MQTT.sendTopic,
+        'onIsAliveTopic': MQTT.onIsAliveTopic,
+        'onResponseTopic': MQTT.onResponseTopic,
+        'onSchedulerTopic': MQTT.onSchedulerTopic,
+        'onDevicesTopic': MQTT.onDevicesTopic,
+        'onEntitiesTopic': MQTT.onEntitiesTopic,
+        'onDeviceChangeTopic': MQTT.onDeviceChangeTopic,
+        //'brokerAddress': MQTT.brokerAddress,
+        'port': MQTT.port,
+        'secure': MQTT.secure,
+        //'user': MQTT.user,
+        //'password': MQTT.password,
+        'isAliveTimeout': MQTT.isAliveTimeout,
+      },
+      'temperatureSetDefaultColor': temperatureSetDefaultColor,
+      'defaultSetpoint': defaultSetpoint,
+      'minSetpoint': minSetpoint,
+      'maxSetpoint': maxSetpoint,
+      'thermostatResolution': thermostatResolution,
+      'locale': locale?.toLanguageTag() ?? '',
+      'themeName': activeThemeName,
+      'themes': _themes,
+    };
+
+    const encoderSpaces = JsonEncoder.withIndent('    ');
+    return encoderSpaces.convert(configToSave);
+  }
+
+  Future<void> loadConfigFromJson(String jsonString) async {
+    final decoded = jsonDecode(jsonString);
+    if (decoded is! Map) {
+      throw const FormatException('Le fichier doit contenir un objet JSON.');
+    }
+
+    final config = Map<String, dynamic>.from(decoded);
+    final mqttConfigValue = config['mqtt'];
+    if (mqttConfigValue is! Map) {
+      throw const FormatException('La section MQTT est absente ou invalide.');
+    }
+    final mqttConfig = Map<String, dynamic>.from(mqttConfigValue);
+
+    String readString(Map<String, dynamic> source, String key) {
+      final value = source[key];
+      if (value is! String) throw FormatException('${wcLocalizations().settingsErrorInvalidKey} : "$key"');
+      return value;
+    }
+
+    int readInt(Map<String, dynamic> source, String key) {
+      final value = source[key];
+      if (value is! int) throw FormatException('${wcLocalizations().settingsErrorInvalidKey} : "$key"');
+      return value;
+    }
+
+    double readDouble(Map<String, dynamic> source, String key) {
+      final value = source[key];
+      if (value is! num) throw FormatException('${wcLocalizations().settingsErrorInvalidKey} : "$key"');
+      return value.toDouble();
+    }
+
+    final sendTopic = readString(mqttConfig, 'SendTopic');
+    final onIsAliveTopic = readString(mqttConfig, 'onIsAliveTopic');
+    final onResponseTopic = readString(mqttConfig, 'onResponseTopic');
+    final onSchedulerTopic = readString(mqttConfig, 'onSchedulerTopic');
+    final onDevicesTopic = readString(mqttConfig, 'onDevicesTopic');
+    final onEntitiesTopic = readString(mqttConfig, 'onEntitiesTopic');
+    final onDeviceChangeTopic = readString(mqttConfig, 'onDeviceChangeTopic');
+    final port = readInt(mqttConfig, 'port');
+    final secure = mqttConfig['secure'];
+    if (secure is! bool) {
+      throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "secure"');
+    }
+    final isAliveTimeout = readInt(mqttConfig, 'isAliveTimeout');
+
+    final temperatureSetDefaultColor = readInt(config, 'temperatureSetDefaultColor');
+    final defaultSetpoint = readDouble(config, 'defaultSetpoint');
+    final minSetpoint = readInt(config, 'minSetpoint');
+    final maxSetpoint = readInt(config, 'maxSetpoint');
+    final thermostatResolution = readDouble(config, 'thermostatResolution');
+    final localeTag = readString(config, 'locale');
+    final importedLocale = localeTag.isEmpty ? null : tryParseLocale(localeTag);
+    if (localeTag.isNotEmpty && importedLocale == null) {
+      throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "locale"');
+    }
+    final themeName = readString(config, 'themeName');
+    final themesValue = config['themes'];
+    if (themesValue is! List) {
+      throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "themes"');
+    }
+    final themes = themesValue.map((theme) {
+      if (theme is! Map || theme['name'] is! String) {
+        throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "themes"');
+      }
+      final themeMap = Map<String, dynamic>.from(theme);
+      if (getThemeColors().keys.any((color) => themeMap[color] is! String)) {
+        throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "themes"');
+      }
+      return themeMap;
+    }).toList();
+    if (themes.isEmpty || !themes.any((theme) => theme['name'] == themeName)) {
+      throw FormatException('${wcLocalizations().settingsErrorInvalidValue} : "themeName"');
+    }
+
+    prefs ??= await SharedPreferences.getInstance();
+    MQTT
+      ..sendTopic = sendTopic
+      ..onIsAliveTopic = onIsAliveTopic
+      ..onResponseTopic = onResponseTopic
+      ..onSchedulerTopic = onSchedulerTopic
+      ..onDevicesTopic = onDevicesTopic
+      ..onEntitiesTopic = onEntitiesTopic
+      ..onDeviceChangeTopic = onDeviceChangeTopic
+      ..port = port
+      ..secure = secure
+      ..isAliveTimeout = isAliveTimeout;
+    MQTT.saveToSharedPrefs();
+
+    this.temperatureSetDefaultColor = temperatureSetDefaultColor;
+    this.defaultSetpoint = defaultSetpoint;
+    this.minSetpoint = minSetpoint;
+    this.maxSetpoint = maxSetpoint;
+    this.thermostatResolution = thermostatResolution;
+    locale = importedLocale;
+    _themes = themes;
+
+    await prefs!.setInt('temperatureSetDefaultColor', temperatureSetDefaultColor);
+    await prefs!.setDouble('defaultSetpoint', defaultSetpoint);
+    await prefs!.setInt('minSetpoint', minSetpoint);
+    await prefs!.setInt('maxSetpoint', maxSetpoint);
+    await prefs!.setDouble('thermostatResolution', thermostatResolution);
+    await prefs!.setString('locale', localeTag);
+    await prefs!.setString('themes', jsonEncode(_themes));
+    setActiveTheme(themeName);
+    await prefs!.setString('themeName', themeName);
+  }
+
+  void saveConfigToFile(String filePath) {
+    final file = File(filePath);
+    file.writeAsStringSync(configToJson());
   }
 
   List<String> getThemesList() {

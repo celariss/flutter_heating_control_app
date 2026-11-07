@@ -218,7 +218,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsErrorMandatoryValue => 'Une valeur est obligatoire';
 
   @override
-  String get settingsErrorInvalidFormat => 'la valeur est invalide';
+  String get settingsErrorInvalidValue => 'la valeur est invalide';
+
+  @override
+  String get settingsErrorInvalidKey => 'la clé est invalide';
 
   @override
   String get settingsShowHidePassword => 'Montrer/cacher le mot de passe';
@@ -411,4 +414,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get successColor => 'Succès';
+
+  @override
+  String get loadFileDialogTitle => 'Charger les paramètres de l\'application';
+
+  @override
+  String get loadFileError => 'Une erreur s\'est produite';
+
+  @override
+  String get saveFileDialogTitle =>
+      'Enregistrer les paramètres de l\'application';
+
+  @override
+  String get saveFileError => 'Une erreur s\'est produite';
 }

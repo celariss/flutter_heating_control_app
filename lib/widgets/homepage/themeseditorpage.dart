@@ -18,21 +18,6 @@ class ThemesEditorPage extends StatefulWidget {
 }
 
 class _ThemesEditorPageState extends State<ThemesEditorPage> {
-  static const List<String> _colorNames = [
-    'background1Color',
-    'background2Color',
-    'background3Color',
-    'appBarColor',
-    'appBarTextColor',
-    'normalTextColor',
-    'specialTextColor',
-    'buttonTextColor',
-    'focusColor',
-    'heaterWidgetManuelStateColor',
-    'warningColor',
-    'errorColor',
-    'successColor',
-  ];
 
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _newThemeNameController = TextEditingController();
@@ -177,7 +162,7 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
             ),
 
             if (selectedTheme != null)
-              ..._colorNames.map((name) {
+              ...Settings().getThemeColors().keys.map((name) {
                 final colorValue = selectedTheme[name] as String? ?? '';
                 final color = AppTheme.string2Color(colorValue);
                 return Card(
@@ -209,22 +194,9 @@ class _ThemesEditorPageState extends State<ThemesEditorPage> {
   }
 
   String _displayColorName(String name) {
-    final l10n = wcLocalizations();
-    switch (name) {
-      case "background1Color": return l10n.background1Color;
-      case "background2Color": return l10n.background2Color;
-      case "background3Color": return l10n.background3Color;
-      case "normalTextColor": return l10n.normalTextColor;
-      case "specialTextColor": return l10n.specialTextColor;
-      case "appBarColor": return l10n.appBarColor;
-      case "appBarTextColor": return l10n.appBarTextColor;
-      case "focusColor": return l10n.focusColor;
-      case "heaterWidgetManuelStateColor": return l10n.heaterWidgetManuelStateColor;
-      case "buttonTextColor": return l10n.buttonTextColor;
-      case "warningColor": return l10n.warningColor;
-      case "errorColor": return l10n.errorColor;
-      case "successColor": return l10n.successColor;
-      default: return '*** UNKNOWN NAME ***';
+    if (Settings().getThemeColors().containsKey(name)) {
+      return Settings().getThemeColors()[name]!;
     }
+    return '*** UNKNOWN NAME ***';
   }
 }

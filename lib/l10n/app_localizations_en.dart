@@ -217,7 +217,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsErrorMandatoryValue => 'value is mandatory';
 
   @override
-  String get settingsErrorInvalidFormat => 'value is invalid';
+  String get settingsErrorInvalidValue => 'value is invalid';
+
+  @override
+  String get settingsErrorInvalidKey => 'key is invalid';
 
   @override
   String get settingsShowHidePassword => 'Show/hide password';
@@ -410,4 +413,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get successColor => 'Success';
+
+  @override
+  String get loadFileDialogTitle => 'Load app settings from file';
+
+  @override
+  String get loadFileError => 'An error occured';
+
+  @override
+  String get saveFileDialogTitle => 'Save app settings to file';
+
+  @override
+  String get saveFileError => 'An error occured';
 }

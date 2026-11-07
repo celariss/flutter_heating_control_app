@@ -15,6 +15,8 @@ import 'model_ctrl.dart';
 import 'settings.dart';
 import 'theme.dart';
 
+const EdgeInsets defaultButtonPadding = EdgeInsets.symmetric(horizontal: 15.0);
+
 double? str2Double(String str) {
   try {
     return double.parse(str);
@@ -147,15 +149,17 @@ class Common {
         title: Text(title),
         actions: actions +
             [
-              Common.createCircleIcon(
-                  size: 32,
-                  iconData: ModelCtrl().isConnectedToCtrlServer() ? Icons.link : Icons.link_off,
-                  iconColor: Colors.white,
-                  backColor: ModelCtrl().isConnectedToCtrlServer()
-                      ? Colors.green.shade700
-                      : ModelCtrl().isConnectedToMQTT()
-                          ? Colors.orange.shade700
-                          : Colors.red.shade800),
+              _createIconButton(
+                ModelCtrl().isConnectedToCtrlServer() ? Icons.link : Icons.link_off,
+                onPressed: null,
+                //iconSize: 32,
+                iconColor: Colors.white,
+                backColor: ModelCtrl().isConnectedToCtrlServer()
+                    ? Colors.green.shade700
+                    : ModelCtrl().isConnectedToMQTT()
+                        ? Colors.orange.shade700
+                        : Colors.red.shade800,
+              )
             ]);
   }
 
@@ -269,8 +273,9 @@ class Common {
     );
   }
 
-  static Widget createCircleIcon({required IconData iconData, required double size, Color ? iconColor, Color ? backColor, String? tooltip}) {
-    final Widget widget = Container(
+  static Widget createCircleIcon({required IconData iconData, required double size, Color ? iconColor, Color ? backColor, String? tooltip,
+    EdgeInsetsGeometry ?padding}) {
+    Widget widget = Container(
       width: size,
       height: size,
       decoration: BoxDecoration(
@@ -279,6 +284,10 @@ class Common {
       ),
       child: Icon(iconData, color: iconColor ??AppTheme().buttonTextColor),
     );
+
+    if (padding != null) {
+      widget = Padding(padding: padding, child: widget);
+    }
   
     if (tooltip == null || tooltip.isEmpty) return widget;
     return Tooltip(message: tooltip, child: widget);
@@ -341,13 +350,13 @@ class Common {
 
   static Widget _createIconButton(
     IconData iconData,
-   {required void Function() onPressed,
+   {required void Function() ?onPressed,
     required Color iconColor,
     required Color backColor,
     double? iconSize,
     OutlinedBorder shape = const CircleBorder(),
     bool? enabled,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    EdgeInsetsGeometry ?padding = defaultButtonPadding,
     String? tooltip,}
   ) {
     final Color buttonBackgroundColor = backColor;
@@ -367,7 +376,11 @@ class Common {
         overlayColor: WidgetStateProperty.resolveWith((states) {
           if (states.contains(WidgetState.pressed)) return overlayColor.withValues(alpha: 0.2);
           if (states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)) {
-            return overlayColor.withValues(alpha: 0.20);
+            if (onPressed == null) {
+              return buttonBackgroundColor;
+            } else {
+              return overlayColor.withValues(alpha: 0.20);
+            }
           }
           return null;
         }),
@@ -377,12 +390,12 @@ class Common {
 
   static Widget createTransparentIconButton(
     IconData iconData,
-   {required void Function() onPressed,
+   {required void Function() ?onPressed,
     Color? iconColor,
     double? iconSize,
     OutlinedBorder shape = const CircleBorder(),
     bool? enabled,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    EdgeInsetsGeometry ?padding,
     String? tooltip,}
   ) {
     return _createIconButton(
@@ -400,13 +413,13 @@ class Common {
 
   static Widget createPlainIconButton(
     IconData iconData,
-   {required void Function() onPressed,
+   {required void Function() ?onPressed,
     Color? iconColor,
     Color? backColor,
     double? iconSize,
     OutlinedBorder shape = const CircleBorder(),
     bool? enabled,
-    EdgeInsetsGeometry padding = const EdgeInsets.symmetric(horizontal: 20.0),
+    EdgeInsetsGeometry ?padding,
     String? tooltip,}
   ) {
     return _createIconButton(
@@ -474,57 +487,57 @@ class Common {
       required Widget content,
       EdgeInsets? insetPadding,
       void Function()? onValidate}) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        List<Widget> actions = [];
-        switch (dlgButtons) {
-          case DlgButtons.close:
-            actions = [
-              Common.createTextButton(
-                wcLocalizations().closeAction,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (onValidate != null) {
-                    onValidate();
-                  }
-                },
-              ),
-            ];
-            break;
-          case DlgButtons.okCancel:
-          case DlgButtons.continueCancel:
-            actions = [
-              Common.createTextButton(
-                wcLocalizations().cancelAction,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              ),
-              Common.createTextButton(
-                dlgButtons == DlgButtons.okCancel ? wcLocalizations().validateAction : wcLocalizations().continueAction,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  if (onValidate != null) {
-                    onValidate();
-                  }
-                },
-              ),
-            ];
-        }
-        return AlertDialog(
-            title: Text(title, style: TextStyle(color: AppTheme().focusColor)),
-            backgroundColor: AppTheme().background2Color,
-            contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
-            insetPadding: insetPadding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
-            content: SingleChildScrollView(
-              //shrinkWrap: true,
-              child: content,
-            ),
-            actionsAlignment: MainAxisAlignment.spaceEvenly,
-            actions: actions);
-      },
-    );
+        await showDialog(
+          context: context,
+          builder: (context) {
+            List<Widget> actions = [];
+            switch (dlgButtons) {
+              case DlgButtons.close:
+                actions = [
+                  Common.createTextButton(
+                    wcLocalizations().closeAction,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (onValidate != null) {
+                        onValidate();
+                      }
+                    },
+                  ),
+                ];
+                break;
+              case DlgButtons.okCancel:
+              case DlgButtons.continueCancel:
+                actions = [
+                  Common.createTextButton(
+                    wcLocalizations().cancelAction,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                  Common.createTextButton(
+                    dlgButtons == DlgButtons.okCancel ? wcLocalizations().validateAction : wcLocalizations().continueAction,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      if (onValidate != null) {
+                        onValidate();
+                      }
+                    },
+                  ),
+                ];
+            }
+            return AlertDialog(
+                title: Text(title, style: TextStyle(color: AppTheme().focusColor)),
+                backgroundColor: AppTheme().background2Color,
+                contentPadding: const EdgeInsets.fromLTRB(10, 10, 10, 20),
+                insetPadding: insetPadding ?? const EdgeInsets.symmetric(horizontal: 40, vertical: 24),
+                content: SingleChildScrollView(
+                  //shrinkWrap: true,
+                  child: content,
+                ),
+                actionsAlignment: MainAxisAlignment.spaceEvenly,
+                actions: actions);
+          },
+        );
   }
 
   /// Shows a dialog that allows the user to select a list of devices.

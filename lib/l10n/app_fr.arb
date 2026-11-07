@@ -154,7 +154,8 @@
     "settingsServerVersion": "Version serveur",
 
     "settingsErrorMandatoryValue": "Une valeur est obligatoire",
-    "settingsErrorInvalidFormat": "la valeur est invalide",
+    "settingsErrorInvalidValue": "la valeur est invalide",
+    "settingsErrorInvalidKey": "la clé est invalide",    
     "settingsShowHidePassword": "Montrer/cacher le mot de passe",
     "settingsGroupServer": "Paramètres du serveur",
     "settingsGroupMain": "Général",
@@ -226,5 +227,10 @@
     "buttonTextColor": "Texte boutons/îcones",
     "warningColor": "Avertissements",
     "errorColor": "Erreurs",
-    "successColor": "Succès"
+    "successColor": "Succès",
+
+    "loadFileDialogTitle" : "Charger les paramètres de l'application",
+    "loadFileError": "Une erreur s'est produite",
+    "saveFileDialogTitle" : "Enregistrer les paramètres de l'application",
+    "saveFileError": "Une erreur s'est produite"
 }

@@ -32,10 +32,6 @@ Future<void> main() async {
   await Package().init();
   await Settings().loadConfigFile();
 
-  /*Map test = AppTheme().saveToMap();
-  YamlWriter writer = YamlWriter();
-  String serialized = writer.write(test);*/
-
   runApp(
     ChangeNotifierProvider<ThemeNotifier>(
       create: (_) => ThemeNotifier(),

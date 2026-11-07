@@ -51,6 +51,7 @@ dependencies:
   path: ">=1.9.1"
   yaml: ">=3.1.4"
   flutter_secure_storage : ">=11.2.0"
+  file_picker: ^13.3.2
 
 dev_dependencies:
   flutter_test:

@@ -154,7 +154,8 @@
     "settingsServerVersion": "Server version",
 
     "settingsErrorMandatoryValue": "value is mandatory",
-    "settingsErrorInvalidFormat": "value is invalid",
+    "settingsErrorInvalidValue": "value is invalid",
+    "settingsErrorInvalidKey": "key is invalid",
     "settingsShowHidePassword": "Show/hide password",
     "settingsGroupServer": "Server side settings",
     "settingsGroupMain": "Main",
@@ -226,5 +227,10 @@
     "buttonTextColor": "Button text",
     "warningColor": "Warning",
     "errorColor": "Error",
-    "successColor": "Success"
+    "successColor": "Success",
+
+    "loadFileDialogTitle" : "Load app settings from file",
+    "loadFileError": "An error occured",
+    "saveFileDialogTitle" : "Save app settings to file",
+    "saveFileError": "An error occured"
 }

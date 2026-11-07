@@ -416,11 +416,17 @@ abstract class AppLocalizations {
   /// **'value is mandatory'**
   String get settingsErrorMandatoryValue;
 
-  /// No description provided for @settingsErrorInvalidFormat.
+  /// No description provided for @settingsErrorInvalidValue.
   ///
   /// In en, this message translates to:
   /// **'value is invalid'**
-  String get settingsErrorInvalidFormat;
+  String get settingsErrorInvalidValue;
+
+  /// No description provided for @settingsErrorInvalidKey.
+  ///
+  /// In en, this message translates to:
+  /// **'key is invalid'**
+  String get settingsErrorInvalidKey;
 
   /// No description provided for @settingsShowHidePassword.
   ///
@@ -793,6 +799,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Success'**
   String get successColor;
+
+  /// No description provided for @loadFileDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Load app settings from file'**
+  String get loadFileDialogTitle;
+
+  /// No description provided for @loadFileError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occured'**
+  String get loadFileError;
+
+  /// No description provided for @saveFileDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save app settings to file'**
+  String get saveFileDialogTitle;
+
+  /// No description provided for @saveFileError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occured'**
+  String get saveFileError;
 }
 
 class _AppLocalizationsDelegate

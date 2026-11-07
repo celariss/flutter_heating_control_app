@@ -31,6 +31,14 @@ class MQTTSettings {
     password = await _storage.read(key: 'password') ?? password;
     port = prefs.getInt('port') ?? port;
     secure = prefs.getBool('secure') ?? secure;
+    sendTopic = prefs.getString('SendTopic') ?? sendTopic;
+    onIsAliveTopic = prefs.getString('onIsAliveTopic') ?? onIsAliveTopic;
+    onResponseTopic = prefs.getString('onResponseTopic') ?? onResponseTopic;
+    onSchedulerTopic = prefs.getString('onSchedulerTopic') ?? onSchedulerTopic;
+    onDevicesTopic = prefs.getString('onDevicesTopic') ?? onDevicesTopic;
+    onEntitiesTopic = prefs.getString('onEntitiesTopic') ?? onEntitiesTopic;
+    onDeviceChangeTopic = prefs.getString('onDeviceChangeTopic') ?? onDeviceChangeTopic;
+    isAliveTimeout = prefs.getInt('isAliveTimeout') ?? isAliveTimeout;
   }
 
   void saveToSharedPrefs() async {
@@ -40,6 +48,14 @@ class MQTTSettings {
     await _storage.write(key: 'password', value:password);
     await prefs.setInt('port', port);
     await prefs.setBool('secure', secure);
+    await prefs.setString('SendTopic', sendTopic);
+    await prefs.setString('onIsAliveTopic', onIsAliveTopic);
+    await prefs.setString('onResponseTopic', onResponseTopic);
+    await prefs.setString('onSchedulerTopic', onSchedulerTopic);
+    await prefs.setString('onDevicesTopic', onDevicesTopic);
+    await prefs.setString('onEntitiesTopic', onEntitiesTopic);
+    await prefs.setString('onDeviceChangeTopic', onDeviceChangeTopic);
+    await prefs.setInt('isAliveTimeout', isAliveTimeout);
   }
 
   final FlutterSecureStorage _storage = FlutterSecureStorage();

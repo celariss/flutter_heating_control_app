@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:event/event.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:heating_control_app/common/common.dart';
 import 'package:heating_control_app/common/model_ctrl.dart';
@@ -40,6 +43,7 @@ class _SettingsPage extends State<SettingsPage> {
   List<String> themesList = [];
   String manualResetMode = '';
   int manualResetDuration = 4;
+  int _settingsFormVersion = 0;
 
   List<String> getManualResetModesList() {
     return [
@@ -138,9 +142,23 @@ class _SettingsPage extends State<SettingsPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle)),
+        appBar: AppBar(title: Text(wcLocalizations().settingsPageTitle), actions:[
+          Common.createAppBarIconButton(
+              Icons.save,
+              onPressed:  () async {
+                await _saveSettingsToFile(context);
+              },
+          ),
+          Common.createAppBarIconButton(
+              Icons.file_open_outlined,
+              onPressed: () async {
+                await _loadSettingsFromFile(context);
+              },
+          ),
+        ]),
         body: SingleChildScrollView(
           child: Column(
+                key: ValueKey(_settingsFormVersion),
                 children: [
                   _buildInformationSection(),
                   _buildServerSection(),
@@ -268,7 +286,7 @@ class _SettingsPage extends State<SettingsPage> {
             Icons.edit_note,
             () async {
               await Common.navigate(context, ThemesEditorPage.route, isRootNavigator: false);
-              if (!mounted) return;
+              if (!context.mounted) return;
               setState(() {
                 themesList = Settings().getThemesList();
                 if (!themesList.contains(themeName)) {
@@ -339,7 +357,7 @@ class _SettingsPage extends State<SettingsPage> {
           },
           mandatory: true,
           requiredErrorText: wcLocalizations().settingsErrorMandatoryValue,
-          errorText:wcLocalizations().settingsErrorInvalidFormat,
+          errorText:wcLocalizations().settingsErrorInvalidValue,
         ),
         _buildSettingBool(wcLocalizations().settingsIsPortSecured, mqttSecure, (value) {
           mqttSecure = value;
@@ -361,5 +379,62 @@ class _SettingsPage extends State<SettingsPage> {
       noText:wcLocalizations().no,
       yesText: wcLocalizations().yes
     );
+  }
+
+  Future<void> _saveSettingsToFile(BuildContext context) async {
+    try {
+      final settingsJson = Settings().configToJson();
+      final outputUri = await FilePicker.saveFile(
+        fileName: 'heating_ctrl_settings.json',
+        bytes: utf8.encode(settingsJson),
+        mimeType: 'application/json',
+        dialogTitle: wcLocalizations().saveFileDialogTitle,
+      );
+
+      if (outputUri == null) return;
+    } catch (e) {
+      if (!context.mounted) return;
+      await Common.showWarningDialog(
+        context,
+        "${wcLocalizations().saveFileError} : ${e.toString()}",
+        closeBtnOnly: true,
+      );
+    }
+  }
+
+  Future<void> _loadSettingsFromFile(BuildContext context) async {
+    try {
+      final selectedFile = await FilePicker.pickFile(
+        dialogTitle: wcLocalizations().loadFileDialogTitle,
+        type: FileType.custom,
+        allowedExtensions: ['json'],
+      );
+      if (selectedFile == null) return;
+
+      final settingsJson = utf8.decode(await selectedFile.readAsBytes());
+      await Settings().loadConfigFromJson(settingsJson);
+
+      final settings = Settings();
+      setState(() {
+        mqttUrl = settings.MQTT.brokerAddress;
+        mqttUser = settings.MQTT.user;
+        mqttPassword = settings.MQTT.password;
+        mqttPort = settings.MQTT.port;
+        mqttSecure = settings.MQTT.secure;
+        mqttChanged = true;
+        themeName = settings.activeThemeName;
+        themesList = settings.getThemesList();
+        _settingsFormVersion++;
+      });
+      MyApp.setLocale(settings.locale);
+      await themeNotifier?.refreshAppTheme();
+    } catch (e) {
+      if (!context.mounted) return;
+      await Common.showWarningDialog(
+        context,
+        "${wcLocalizations().loadFileError} : ${e.toString()}",
+        closeBtnOnly: true,
+      );
+    }
   }
 }
