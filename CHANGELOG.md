@@ -1,3 +1,15 @@
+# Toolchain used to build latest version :
+- Flutter 3.47.9
+- OpenJDK 25.0.3 (Android Studio 2026.1.4)
+
+# Changed log
+## V1.1.4 (2026-11-08) :
+- new features added to settings page :
+	- save button : saves, to a JSON file, all settings but MQTT credentials and server settings
+	- load button : load a JSON settings file
+<br>-> can be used to restore settings after app re-installation
+- various visual enhancements
+
 ## V1.1.3 (2026-11-03) :
 - theme editor now use localized strings
 - fixed code warnings (obsolete calls)

@@ -64,18 +64,14 @@ And it depends on following flutter plugins :
 - Go to https://docs.flutter.dev/get-started/install and follow instructions.
 - I use the following tool chain :
   - Visual Studio Code (for code edition)
-  - Flutter : see CHANGELOG.md to know which version to install
-To use the correct flutter version, do the following :
+  - Flutter and JDK : see CHANGELOG.md to know which version to install
+<br>To use the correct flutter version, do the following :
     ```sh
     cd <flutter_git_dir>
     git checkout <flutter_version>
     flutter doctor -v
     ```
-  - Java JDK : 18.0
-To make flutter use the correct version of the JDK, do the following :
-    ```sh
-    flutter config --jdk-dir <jdk_install_dir>
-    ```
+  - Java JDK : install Android Studio, flutter will find the JDK
 
 #### 3- Build the app
 - On android (complete instructions in https://docs.flutter.dev/deployment/android to build the apk)
@@ -105,3 +101,4 @@ From the repo root folder, type :
   [flutter_colorpicker]: <https://pub.dev/packages/flutter_colorpicker>
   [flutter_launcher_icons]: <https://pub.dev/packages/flutter_launcher_icons>
   [sleek_circular_slider]: <https://pub.dev/packages/sleek_circular_slider>
+  [file_picker>]: <https://pub.dev/packages/file_picker>

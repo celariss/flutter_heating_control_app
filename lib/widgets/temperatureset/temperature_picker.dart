@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../common/common.dart';
 import '../../common/theme.dart';
 import '../../utils/decimal_picker.dart';
 import '../../utils/localizations.dart';
@@ -79,16 +80,14 @@ class _TemperaturePickerDialogState extends State<_TemperaturePickerDialog> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(wcLocalizations().cancelAction, style: TextStyle(color: theme.buttonTextColor)),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(currentValue);
-              },
-              child: Text(wcLocalizations().validateAction, style: TextStyle(color: theme.buttonTextColor)),
-            ),
+              Common.createTextButton(
+                wcLocalizations().cancelAction,
+                onPressed: () => Navigator.of(context).pop(),
+              ),
+              Common.createTextButton(
+                wcLocalizations().validateAction,
+                onPressed: () => Navigator.of(context).pop(currentValue),
+              ),
           ]
         ),
       ],
